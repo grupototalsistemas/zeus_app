@@ -1,13 +1,14 @@
 'use client';
-import Checkbox from '@/components/form/input/Checkbox';
 import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
 import Button from '@/components/ui/button/Button';
 import { EyeCloseIcon, EyeIcon } from '@/icons';
-import { AuthService } from '@/service/authService';
+import { AuthService } from '@/service/auth.service';
+import { setPessoa } from '@/store/slices/pessoaSlice';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,6 +17,8 @@ export default function SignInForm() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch();
 
   const router = useRouter();
 
@@ -32,7 +35,9 @@ export default function SignInForm() {
     }
 
     try {
-      await AuthService.login(login, password); 
+      const response = await AuthService.login(login, password);
+      console.log('response: ', response);
+      dispatch(setPessoa(response.user));
       router.push('/listar-chamado');
     } catch (err: any) {
       if (err.response?.data?.message) {
@@ -75,7 +80,7 @@ export default function SignInForm() {
                 <Input
                   placeholder="ex.: Fulano"
                   type="text"
-                  defaultValue={login}
+                  value={login}
                   onChange={(e) => setLogin(e.target.value)}
                 />
               </div>
@@ -87,7 +92,7 @@ export default function SignInForm() {
                   <Input
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Sua senha"
-                    defaultValue={password}
+                    value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
                   <span
@@ -103,12 +108,12 @@ export default function SignInForm() {
                 </div>
               </div>
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
+                {/* <div className="flex items-center gap-3">
                   <Checkbox checked={isChecked} onChange={setIsChecked} />
                   <span className="text-theme-sm block font-normal text-gray-700 dark:text-gray-400">
                     Me manter conectado
                   </span>
-                </div>
+                </div> */}
                 <Link
                   href="/reset-password"
                   className="text-brand-500 hover:text-brand-600 dark:text-brand-400 text-sm"
@@ -117,12 +122,7 @@ export default function SignInForm() {
                 </Link>
               </div>
               <div>
-                <Button
-                  className="w-full"
-                  size="sm"
-                  
-                  disabled={loading}
-                >
+                <Button className="w-full" size="sm" disabled={loading}>
                   {loading ? 'Entrando...' : 'Entrar'}
                 </Button>
               </div>
