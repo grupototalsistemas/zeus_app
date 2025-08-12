@@ -1,8 +1,9 @@
 'use client';
 
 import { MoreDotIcon } from '@/icons';
+import { PessoaService } from '@/service/pessoa.service';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Badge from '../ui/badge/Badge';
 import { Dropdown } from '../ui/dropdown/Dropdown';
 import { DropdownItem } from '../ui/dropdown/DropdownItem';
@@ -23,11 +24,24 @@ export default function UserList() {
   const totalPages = Math.ceil(users.length / itemsPerPage);
 
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
-
+  const [pessoas, setPessoas] = useState<any[]>([]);
   const paginatedData = users.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await PessoaService.getPessoas();
+        setPessoas(response);
+        console.log(response);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   const handleToggle = (id: string) => {
     setOpenDropdownId((prev) => (prev === id ? null : id));
@@ -72,57 +86,68 @@ export default function UserList() {
             </TableRow>
           </TableHeader>
           <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {paginatedData.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                  {user.nome}
-                </TableCell>
-                <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                  {user.email}
-                </TableCell>
-                <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                  {user.empresa}
-                </TableCell>
-                <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                  <Badge
-                    size="sm"
-                    color={
-                      user.acesso === 'admin'
-                        ? 'success'
-                        : user.acesso === 'suporte'
-                          ? 'warning'
-                          : 'info'
-                    }
-                  >
-                    {user.acesso}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <div className="relative inline-block">
-                    <button
-                      onClick={() => handleToggle(user.id)}
-                      className="dropdown-toggle"
+            {pessoas.length > 0 &&
+              pessoas.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                    {user.nomeSocial || user.nome}
+                  </TableCell>
+                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                    {user.usuarios[0].email}
+                  </TableCell>
+                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                    {user.empresa.nomeFantasia}
+                  </TableCell>
+                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                    <Badge
+                      size="sm"
+                      color={
+                        user.tipo.descricao === 'FUNCIONARIO'
+                          ? 'success'
+                          : user.acesso === 'suporte'
+                            ? 'warning'
+                            : 'info'
+                      }
                     >
-                      <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
-                    </button>
-                    <Dropdown
-                      isOpen={openDropdownId === user.id}
-                      onClose={() => setOpenDropdownId(null)}
-                      className="w-40 p-2"
-                    >
-                      <DropdownItem
-                        onClick={() =>
-                          router.push(`/editar-usuario/${user.id}`)
-                        }
+                      {user.tipo.descricao}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="relative inline-block">
+                      <button
+                        onClick={() => handleToggle(user.id)}
+                        className="dropdown-toggle"
                       >
-                        Editar
-                      </DropdownItem>
-                      <DropdownItem>Deletar</DropdownItem>
-                    </Dropdown>
-                  </div>
+                        <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
+                      </button>
+                      <Dropdown
+                        isOpen={openDropdownId === user.id}
+                        onClose={() => setOpenDropdownId(null)}
+                        className="w-40 p-2"
+                      >
+                        <DropdownItem
+                          onClick={() =>
+                            router.push(`/editar-usuario/${user.id}`)
+                          }
+                        >
+                          Editar
+                        </DropdownItem>
+                        <DropdownItem>Deletar</DropdownItem>
+                      </Dropdown>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            {pessoas.length === 0 && (
+              <TableRow>
+                <TableCell
+                  {...{ colSpan: 5 }}
+                  className="text-theme-sm flex items-center justify-center py-10 text-gray-500 dark:text-gray-400"
+                >
+                  Nenhum usuário encontrado
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </div>

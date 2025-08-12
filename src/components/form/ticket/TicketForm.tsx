@@ -49,7 +49,7 @@ export function TicketFormBase({
     watch,
   } = useForm<TicketFormData>({
     resolver: zodResolver(ticketSchema),
-    defaultValues: initialData,
+    values: initialData,
   });
 
   // Simulação de opções vindas do backend
@@ -97,7 +97,7 @@ export function TicketFormBase({
               type="text"
               placeholder="Informe o protocolo"
               //   {...register("protocolo")}
-              defaultValue={initialData?.protocolo}
+              value={initialData?.protocolo}
             />
             {errors.protocolo && (
               <p className="text-sm text-red-500">{errors.protocolo.message}</p>
@@ -111,7 +111,7 @@ export function TicketFormBase({
               <Input
                 type="text"
                 placeholder="Informe o sistema"
-                defaultValue={initialData?.sistema}
+                value={initialData?.sistema}
               />
               {errors.sistema && (
                 <p className="text-sm text-red-500">{errors.sistema.message}</p>
@@ -123,7 +123,7 @@ export function TicketFormBase({
               <Input
                 type="text"
                 placeholder="Informe a serventia"
-                defaultValue={initialData?.serventia}
+                value={initialData?.serventia}
               />
               {errors.serventia && (
                 <p className="text-sm text-red-500">
@@ -137,7 +137,7 @@ export function TicketFormBase({
               <Input
                 type="text"
                 placeholder="Informe o código"
-                defaultValue={initialData?.codigo}
+                value={initialData?.codigo}
               />
               {errors.codigo && (
                 <p className="text-sm text-red-500">{errors.codigo.message}</p>
@@ -149,7 +149,7 @@ export function TicketFormBase({
               <Input
                 type="text"
                 placeholder="Informe o prazo"
-                defaultValue={initialData?.prazo}
+                value={initialData?.prazo}
               />
               {errors.prazo && (
                 <p className="text-sm text-red-500">{errors.prazo.message}</p>
@@ -163,7 +163,7 @@ export function TicketFormBase({
                   options={responsaveisExample}
                   placeholder="Selecionar responsável"
                   onChange={(opt: any) => setValue('responsavel', opt.value)}
-                  defaultValue={
+                  value={
                     responsaveisExample.find(
                       (r) => r.value === initialData?.responsavel
                     )?.value
@@ -185,7 +185,7 @@ export function TicketFormBase({
               <Input
                 type="text"
                 placeholder="Informe um título"
-                defaultValue={initialData?.title}
+                value={initialData?.title}
               />
               {errors.title && (
                 <p className="text-sm text-red-500">{errors.title.message}</p>
@@ -221,7 +221,7 @@ export function TicketFormBase({
                   options={statusOptions}
                   placeholder="Selecione o status"
                   onChange={(opt: any) => setValue('status', opt.value)}
-                  defaultValue={
+                  value={
                     statusOptions.find((s) => s.value === initialData?.status)
                       ?.value
                   }
@@ -238,7 +238,7 @@ export function TicketFormBase({
                   options={prioridadesExample}
                   placeholder="Selecione a prioridade"
                   onChange={(opt: any) => setValue('priority', opt.value)}
-                  defaultValue={
+                  value={
                     prioridadesExample.find(
                       (p) => p.value === initialData?.priority
                     )?.value

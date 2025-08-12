@@ -313,21 +313,9 @@ const AppSidebar: React.FC = () => {
         <Link href="/">
           {isExpanded || isHovered || isMobileOpen ? (
             <>
-              {/* <Image
-                className="dark:hidden"
-                src="/images/logo/logo.svg"
-                alt="Logo"
-                width={150}
-                height={40}
-              /> */}
+              
               <h1 className="ml-2 text-4xl dark:text-white">Zeus</h1>
-              {/* <Image
-                className="hidden dark:block"
-                src="/images/logo/logo-dark.svg"
-                alt="Logo"
-                width={150}
-                height={40}
-              /> */}
+              
             </>
           ) : (
             <h1 className="ml-2 text-4xl dark:text-white">Z</h1>

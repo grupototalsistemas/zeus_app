@@ -1,17 +1,19 @@
 'use client';
-import Link from 'next/link';
+import { AuthService } from '@/service/auth.service';
+import { RootState } from '@/store/store';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Dropdown } from '../ui/dropdown/Dropdown';
 import { DropdownItem } from '../ui/dropdown/DropdownItem';
-import { useRouter } from 'next/navigation';
-import { NextResponse } from 'next/server';
-import { serialize } from 'cookie';
-import { AuthService } from '@/service/authService';
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const dispatch = useDispatch();
+  const { pessoaInfo } = useSelector((state: RootState) => state.pessoa);
   const router = useRouter();
 
   function toggleDropdown(e: React.MouseEvent<HTMLButtonElement>) {
@@ -24,14 +26,13 @@ export default function UserDropdown() {
   }
 
   const handleLogout = async () => {
-     
     setError(null);
     setLoading(true);
 
     try {
       // Simplesmente limpa o token do localStorage
-      await AuthService.logout()
-      
+      await AuthService.logout();
+
       router.push('/signin');
     } catch (err: any) {
       setError('Erro ao sair. Tente novamente.');
@@ -46,7 +47,9 @@ export default function UserDropdown() {
         onClick={toggleDropdown}
         className="dropdown-toggle flex h-11 items-center rounded-full border border-gray-200 bg-white px-4 text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
       >
-        <span className="text-theme-sm mr-1 block font-medium">Ewerton</span>
+        <span className="text-theme-sm mr-1 block font-medium">
+          {pessoaInfo.nomeSocial || pessoaInfo.nome}
+        </span>
 
         <svg
           className={`stroke-gray-500 transition-transform duration-200 dark:stroke-gray-400 ${
@@ -75,10 +78,10 @@ export default function UserDropdown() {
       >
         <div>
           <span className="text-theme-sm block font-medium text-gray-700 dark:text-gray-400">
-            Ewerton
+            {pessoaInfo.nomeSocial || pessoaInfo.nome}
           </span>
           <span className="text-theme-xs mt-0.5 block text-gray-500 dark:text-gray-400">
-            teste@gmail.com
+            {pessoaInfo.email}
           </span>
         </div>
 
@@ -87,7 +90,7 @@ export default function UserDropdown() {
             <DropdownItem
               onItemClick={closeDropdown}
               tag="a"
-              href="/editar-usuario/1"
+              href={`/editar-usuario/${pessoaInfo.id}`}
               className="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
             >
               <svg
@@ -162,7 +165,7 @@ export default function UserDropdown() {
         <button
           onClick={handleLogout}
           disabled={loading}
-          className="group text-theme-sm mt-3 flex w-full items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-red-400 disabled:opacity-60"
+          className="group text-theme-sm mt-3 flex w-full items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-60 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-red-400"
         >
           <svg
             className="fill-gray-500 group-hover:fill-gray-700 dark:group-hover:fill-red-400"

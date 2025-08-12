@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Badge from '../ui/badge/Badge';
 
 import { MoreDotIcon } from '@/icons';
+import { ChamadoService } from '@/service/chamado.service';
 import { useRouter } from 'next/navigation';
 import { Dropdown } from '../ui/dropdown/Dropdown';
 import { DropdownItem } from '../ui/dropdown/DropdownItem';
@@ -23,7 +24,7 @@ export default function TicketList() {
   const itemsPerPage = 10;
   const totalPages = Math.ceil(tickets.length / itemsPerPage);
   const [open, setOpen] = useState(false);
-
+  const [chamados, setChamados] = useState<any[]>([]);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
 
   // Dados da página atual
@@ -31,6 +32,19 @@ export default function TicketList() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  useEffect(() => {
+    const fetchChamados = async () => {
+      try {
+        const response = await ChamadoService.getChamados();
+
+        console.log('Chamadinho: ', response);
+      } catch (error) {
+        console.error('Error fetching chamados:', error);
+      }
+    };
+    fetchChamados();
+  });
   const handleToggle = (id: string) => {
     setOpenDropdownId((prev) => (prev === id ? null : id));
   };
@@ -120,85 +134,96 @@ export default function TicketList() {
           {/* Table Body */}
 
           <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {paginatedData.map((product) => (
-              <TableRow key={product.id} className="">
-                <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                  {product.protocolo}
-                </TableCell>
-                <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                  {product.entrada.getTime()}
-                </TableCell>
-                <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                  {product.hora}
-                </TableCell>
-                <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                  {product.sistema}
-                </TableCell>
-                <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                  {product.serventia}
-                </TableCell>
-                <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                  {product.codigo}
-                </TableCell>
-                <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                  <Badge
-                    size="sm"
-                    color={
-                      product.status === 'open'
-                        ? 'success'
-                        : product.status === 'in-progress'
-                          ? 'warning'
-                          : 'error'
-                    }
-                  >
-                    {product.status}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                  {product.prazo}
-                </TableCell>
-                <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                  {product.ultimaAtualizacao.getTime()}
-                </TableCell>
-                <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                  {product.diasAtras}
-                </TableCell>
-                <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                  {product.responsavel}
-                </TableCell>
-                <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                  <div className="relative inline-block">
-                    <button
-                      onClick={() => handleToggle(product.id)}
-                      className="dropdown-toggle"
+            {chamados.length > 0 &&
+              chamados.map((product) => (
+                <TableRow key={product.id} className="">
+                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                    {product.protocolo}
+                  </TableCell>
+                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                    {product.entrada.getTime()}
+                  </TableCell>
+                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                    {product.hora}
+                  </TableCell>
+                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                    {product.sistema}
+                  </TableCell>
+                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                    {product.serventia}
+                  </TableCell>
+                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                    {product.codigo}
+                  </TableCell>
+                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                    <Badge
+                      size="sm"
+                      color={
+                        product.status === 'open'
+                          ? 'success'
+                          : product.status === 'in-progress'
+                            ? 'warning'
+                            : 'error'
+                      }
                     >
-                      <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
-                    </button>
-                    <Dropdown
-                      isOpen={openDropdownId === product.id}
-                      onClose={() => setOpenDropdownId(null)}
-                      className="w-40 p-2"
-                    >
-                      <DropdownItem
-                        tag="a"
-                        onClick={() =>
-                          router.push(`/editar-chamado/${product.id}`)
-                        }
-                        className="flex w-full rounded-lg text-left font-normal text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+                      {product.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                    {product.prazo}
+                  </TableCell>
+                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                    {product.ultimaAtualizacao.getTime()}
+                  </TableCell>
+                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                    {product.diasAtras}
+                  </TableCell>
+                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                    {product.responsavel}
+                  </TableCell>
+                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                    <div className="relative inline-block">
+                      <button
+                        onClick={() => handleToggle(product.id)}
+                        className="dropdown-toggle"
                       >
-                        Editar
-                      </DropdownItem>
-                      <DropdownItem
-                        tag="a"
-                        className="flex w-full rounded-lg text-left font-normal text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+                        <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
+                      </button>
+                      <Dropdown
+                        isOpen={openDropdownId === product.id}
+                        onClose={() => setOpenDropdownId(null)}
+                        className="w-40 p-2"
                       >
-                        Deletar
-                      </DropdownItem>
-                    </Dropdown>
-                  </div>
+                        <DropdownItem
+                          tag="a"
+                          onClick={() =>
+                            router.push(`/editar-chamado/${product.id}`)
+                          }
+                          className="flex w-full rounded-lg text-left font-normal text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+                        >
+                          Editar
+                        </DropdownItem>
+                        <DropdownItem
+                          tag="a"
+                          className="flex w-full rounded-lg text-left font-normal text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+                        >
+                          Deletar
+                        </DropdownItem>
+                      </Dropdown>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            {chamados.length === 0 && (
+              <TableRow>
+                <TableCell
+                  {...{ colSpan: 12 }}
+                  className="text-theme-sm h-24 py-3 text-center text-gray-500 dark:text-gray-400"
+                >
+                  Nenhum chamado encontrado.
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </div>

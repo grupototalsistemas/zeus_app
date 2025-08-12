@@ -40,7 +40,7 @@ export function UserFormBase({
     setValue,
   } = useForm<UserFormData>({
     resolver: zodResolver(userSchema),
-    defaultValues: initialData,
+    values: initialData,
   });
 
   const acessoOptions = [
@@ -72,7 +72,7 @@ export function UserFormBase({
             <Input
               type="text"
               placeholder="Informe o nome"
-              defaultValue={initialData?.nome}
+              value={initialData?.nome}
             />
             {errors.nome && (
               <p className="text-sm text-red-500">{errors.nome.message}</p>
@@ -84,7 +84,7 @@ export function UserFormBase({
             <Input
               type="email"
               placeholder="Informe o email"
-              defaultValue={initialData?.email}
+              value={initialData?.email}
             />
             {errors.email && (
               <p className="text-sm text-red-500">{errors.email.message}</p>
@@ -96,7 +96,7 @@ export function UserFormBase({
             <Input
               type="password"
               placeholder="Informe a senha"
-              defaultValue={initialData?.senha}
+              value={initialData?.senha}
             />
             {errors.senha && (
               <p className="text-sm text-red-500">{errors.senha.message}</p>
@@ -108,7 +108,7 @@ export function UserFormBase({
             <Input
               type="text"
               placeholder="Informe a empresa"
-              defaultValue={initialData?.empresa}
+              value={initialData?.empresa}
             />
             {errors.empresa && (
               <p className="text-sm text-red-500">{errors.empresa.message}</p>
@@ -122,7 +122,7 @@ export function UserFormBase({
                 options={acessoOptions}
                 placeholder="Selecione o acesso"
                 onChange={(opt: any) => setValue('acesso', opt.value)}
-                defaultValue={initialData?.acesso}
+                value={initialData?.acesso}
               />
               <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">
                 <ChevronDownIcon />
