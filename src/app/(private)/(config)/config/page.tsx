@@ -7,7 +7,7 @@ import Button from '@/components/ui/button/Button';
 import { useState } from 'react';
 
 import Switch from '@/components/form/switch/Switch';
-import { notificationService } from '@/service/notificationService';
+import { notificationService } from '@/service/notification.service';
 
 export default function ConfiguracoesGeraisPage() {
   const [prazo, setPrazo] = useState('7');

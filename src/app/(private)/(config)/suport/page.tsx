@@ -48,7 +48,7 @@ export default function SuportePage() {
             <Input
               type="text"
               placeholder="Descreva brevemente o problema"
-              defaultValue={titulo}
+              value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
             />
           </div>
