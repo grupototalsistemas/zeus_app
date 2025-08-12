@@ -2,14 +2,14 @@ import { BaseEntity } from "./base.type";
 import { StatusSiglaEstado } from "./enum";
 
 export interface Empresa extends BaseEntity {
-  id_empresa: number;
+  id?: number;
   id_parent_empresa: number;
   id_empresa_tipo: number;
   id_empresa_categoria: number;
   cnpj: string;
   codigo?: string;
   razao_social: string;
-  nome_fantasia: string;
+  nomeFantasia: string;
   logradouro?: string;
   endereco?: string;
   numero?: string;
