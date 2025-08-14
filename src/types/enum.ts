@@ -69,3 +69,11 @@ export enum TipoPessoas {
   Escrevente = 4,
   Notificador = 5
 }
+
+export enum IPrioridade{
+  PRIORITÁRIA = "PRIORITÁRIA",
+  URGENTE= "URGENTE",
+  ALTA = "ALTA",
+  MEDIA = "MEDIA",
+  PEQUENA = "PEQUENA"
+}

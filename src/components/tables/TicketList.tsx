@@ -58,73 +58,73 @@ export default function TicketList() {
             <TableRow>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400 border-r border-gray-100 md:border-none dark:border-gray-800"
               >
                 Protocolo
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400 px-3 md:px-0 border-r md:border-none border-gray-100 dark:border-gray-800"
               >
                 Entrada
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400 px-3 md:px-0 border-r md:border-none border-gray-100 dark:border-gray-800"
               >
                 Hora
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-40 px-3 md:px-0 border-r md:border-none border-gray-100 dark:border-gray-800"
               >
                 Sistema
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400 px-3 md:px-0 border-r md:border-none border-gray-100 dark:border-gray-800"
               >
                 Serventia
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400 px-3 md:px-0 border-r md:border-none border-gray-100 dark:border-gray-800"
               >
                 Codigo
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400 px-3 md:px-0 border-r md:border-none border-gray-100 dark:border-gray-800"
               >
                 Status
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400 px-3 md:px-0 border-r md:border-none border-gray-100 dark:border-gray-800"
               >
                 Prazo
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400 px-3 md:px-0 border-r md:border-none border-gray-100 dark:border-gray-800"
               >
                 Ultima Atualização
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400 px-3 md:px-0 border-r md:border-none border-gray-100 dark:border-gray-800"
               >
                 Dias
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400 px-3 md:px-0 border-r md:border-none border-gray-100 dark:border-gray-800"
               >
                 Responsavel
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400 px-3 md:px-0 "
               >
                 Ações
               </TableCell>

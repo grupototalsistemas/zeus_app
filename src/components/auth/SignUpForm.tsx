@@ -11,6 +11,9 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Checkbox from '../form/input/Checkbox';
 import Select from '../form/Select';
+import { useDispatch } from 'react-redux';
+import { setEmpresas, selectEmpresasFormatadas } from '@/store/slices/empresaSlice';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 
 const options_pessoas = [
   { value: 0, label: 'Usuario' },
@@ -19,14 +22,10 @@ const options_pessoas = [
   { value: 3, label: 'Tabeliao' },
 ];
 
-interface EmpresasSelect {
-  value: number;
-  label: string;
-}
-
 export default function SignUpForm() {
+  const dispatch = useAppDispatch();
+  const empresasFormatadas = useAppSelector(selectEmpresasFormatadas);
   const [showPassword, setShowPassword] = useState(false);
-  const [empresas, setEmpresas] = useState<EmpresasSelect[]>([]);
   const [empresa, setEmpresa] = useState(0);
   const [formData, setFormData] = useState<PessoaUsuarioDTO>({
     login: '',
@@ -96,19 +95,20 @@ export default function SignUpForm() {
   useEffect(() => {
     const fetch = async () => {
       try {
-        let aux: EmpresasSelect[] = [];
         const response = await EmpresaService.getEmpresas();
-        response.forEach((empresa) => {
-          aux.push({ value: empresa.id || 0, label: empresa.nomeFantasia });
-        });
-        console.log(aux);
-        setEmpresas(aux);
+        console.log('Despachando empresas para o Redux:', response);
+        dispatch(setEmpresas(response));
       } catch (err: any) {
         console.error(err);
       }
     };
     fetch();
-  }, [error]);
+  }, [dispatch]);
+
+  // Log para verificar se o estado do Redux está sendo atualizado
+  useEffect(() => {
+    console.log('Estado do Redux - empresas formatadas:', empresasFormatadas);
+  }, [empresasFormatadas]);
 
   return (
     <div className="no-scrollbar flex w-full flex-1 flex-col overflow-y-auto px-4 sm:px-6 lg:w-1/2">
@@ -182,9 +182,9 @@ export default function SignUpForm() {
             <Label>Empresa</Label>
             <div className="relative">
               <Select
-                options={empresas}
+                options={empresasFormatadas}
                 placeholder="Selecione a empresa"
-                onChange={(opt: string) => setEmpresa(Number(opt))}
+                onChange={(opt: string) => {handleChange('pessoa.id_empresa', Number(opt));handleChange('perfil.id_empresa', Number(opt))} }
               />
               <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">
                 <ChevronDownIcon />
