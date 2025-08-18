@@ -1,11 +1,15 @@
 import { combineReducers } from '@reduxjs/toolkit';
 
-import PessoaReducer from './slices/pessoaSlice';
 import EmpresaReducer from './slices/empresaSlice';
+import PerfilReducer from './slices/perfilSlice';
+import PessoaReducer from './slices/pessoaSlice';
+import TipoReducer from './slices/tipoSlice';
 
 export const appReducer = combineReducers({
   pessoa: PessoaReducer,
   empresa: EmpresaReducer,
+  perfil: PerfilReducer,
+  tipo: TipoReducer,
 });
 
 export type RootState = ReturnType<typeof appReducer>;

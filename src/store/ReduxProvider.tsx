@@ -1,5 +1,6 @@
 'use client';
 
+import { WithInitialData } from '@/components/WithInitialData';
 import { persistor, store } from '@/store/store';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -13,7 +14,7 @@ export function ReduxProvider({ children }: ReduxProviderProps) {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        {children}
+        <WithInitialData>{children}</WithInitialData>
       </PersistGate>
     </Provider>
   );
