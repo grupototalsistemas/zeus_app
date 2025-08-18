@@ -8,10 +8,12 @@ import {
   CalenderIcon,
   ChevronDownIcon,
   GridIcon,
+  GroupIcon,
   HorizontaLDots,
   ListIcon,
   PieChartIcon,
   PlugInIcon,
+  ShootingStarIcon,
   UserCircleIcon,
 } from '../icons/index';
 
@@ -34,15 +36,37 @@ const navItems: NavItem[] = [
     subItems: [
       { name: 'Criar Chamado', path: '/criar-chamado', pro: false },
       { name: 'Listar Chamados', path: '/listar-chamado', pro: false },
+      {
+        name: 'Gerenciar tempo de execução',
+        path: '/tempo-execucao',
+        pro: false,
+      },
+      { name: 'Gerenciar ocorrencias', path: '/ocorrencia', pro: false },
     ],
   },
-
   {
     icon: <UserCircleIcon />,
     name: 'Usuarios',
     subItems: [
-      { name: 'Criar Usuario', path: '/criar-usuario', pro: false },
-      { name: 'Listar Usuarios', path: '/listar-usuario', pro: false },
+      { name: 'Criar usuario', path: '/criar-usuario', pro: false },
+      { name: 'Listar usuarios', path: '/listar-usuario', pro: false },
+    ],
+  },
+
+  {
+    icon: <ShootingStarIcon />,
+    name: 'Perfis',
+    subItems: [
+      { name: 'Criar perfil', path: '/criar-perfil', pro: false },
+      { name: 'Listar perfil', path: '/listar-perfil', pro: false },
+    ],
+  },
+  {
+    icon: <GroupIcon />,
+    name: 'Função',
+    subItems: [
+      { name: 'Criar função', path: '/criar-tipo', pro: false },
+      { name: 'Listar funções', path: '/listar-tipo', pro: false },
     ],
   },
 
@@ -313,9 +337,7 @@ const AppSidebar: React.FC = () => {
         <Link href="/">
           {isExpanded || isHovered || isMobileOpen ? (
             <>
-              
               <h1 className="ml-2 text-4xl dark:text-white">Zeus</h1>
-              
             </>
           ) : (
             <h1 className="ml-2 text-4xl dark:text-white">Z</h1>

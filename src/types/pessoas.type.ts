@@ -1,12 +1,11 @@
-import { BaseEntity } from "./base.type";
-import { StatusGenero } from "./enum";
+import { BaseEntity } from './base.type';
+import { StatusGenero } from './enum';
 
-export interface Pessoa extends BaseEntity{
-  id_pessoa?: number;
-  id_empresa?: number;
-  id_pessoa_tipo?: number;
+export interface Pessoa extends BaseEntity {
+  id?: number;
+  empresaId?: number;
+  tipoId?: number;
   genero: StatusGenero;
   nome: string;
-  nome_social?: string;
-  
+  nomeSocial?: string;
 }

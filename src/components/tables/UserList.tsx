@@ -2,6 +2,7 @@
 
 import { MoreDotIcon } from '@/icons';
 import { PessoaService } from '@/service/pessoa.service';
+import { Pessoa } from '@/types/pessoas.type';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Badge from '../ui/badge/Badge';
@@ -42,6 +43,36 @@ export default function UserList() {
     };
     fetchUsers();
   }, []);
+
+  const handleDelete = async (pessoa: Pessoa) => {
+    // Confirmação antes de excluir
+    const confirmDelete = window.confirm(
+      `Tem certeza que deseja excluir o/a "${pessoa.nome}"?\n\nEsta ação não pode ser desfeita.`
+    );
+
+    if (!confirmDelete) {
+      return; // Usuário cancelou a exclusão
+    }
+
+    try {
+      // await deletePessoa(pessoa.id!);
+      const response = await PessoaService.deletePessoa(pessoa.id!);
+      console.log(response);
+      // Fecha o dropdown se estiver aberto
+      setOpenDropdownId(null);
+
+      // Ajusta a página atual se necessário
+      const newTotalPages = Math.ceil((pessoas.length - 1) / itemsPerPage);
+      if (currentPage > newTotalPages && newTotalPages > 0) {
+        setCurrentPage(newTotalPages);
+      }
+
+      console.log('Tipo excluído com sucesso');
+    } catch (error) {
+      console.error('Erro ao excluir tipo:', error);
+      alert('Erro ao excluir o tipo. Tente novamente.');
+    }
+  };
 
   const handleToggle = (id: string) => {
     setOpenDropdownId((prev) => (prev === id ? null : id));
@@ -132,7 +163,9 @@ export default function UserList() {
                         >
                           Editar
                         </DropdownItem>
-                        <DropdownItem>Deletar</DropdownItem>
+                        <DropdownItem onClick={() => handleDelete(user)}>
+                          Deletar
+                        </DropdownItem>
                       </Dropdown>
                     </div>
                   </TableCell>
