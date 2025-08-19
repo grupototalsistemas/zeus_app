@@ -4,6 +4,7 @@ import api from "./api";
 
 const getEmpresas = async (): Promise<Empresa[]> => {
     const response = await api.get('/empresas')
+    console.log(response.data)
     return response.data
 }
 

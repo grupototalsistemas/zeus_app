@@ -77,6 +77,15 @@ export default function OcorrenciaList() {
     if (ocorrencias.length === 0 && !loading) {
       fetchOcorrencias();
     }
+
+    // Temporizador para buscar ocorrências a cada 15 segundos
+    const interval = setInterval(() => {
+      if (!loading) {
+        fetchOcorrencias();
+      }
+    }, 15000);
+
+    return () => clearInterval(interval);
   }, [fetchOcorrencias, ocorrencias.length, loading]);
 
   const handleToggle = (id: number) => {
@@ -153,12 +162,12 @@ export default function OcorrenciaList() {
                   <Badge
                     size="sm"
                     color={
-                      ocorrencia.ativo === StatusRegistro.Ativo
+                      ocorrencia.ativo === StatusRegistro.ATIVO
                         ? 'success'
                         : 'error'
                     }
                   >
-                    {ocorrencia.ativo === StatusRegistro.Ativo
+                    {ocorrencia.ativo === StatusRegistro.ATIVO
                       ? 'Ativo'
                       : 'Inativo'}
                   </Badge>

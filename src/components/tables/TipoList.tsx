@@ -147,10 +147,10 @@ export default function TipoList() {
                   <Badge
                     size="sm"
                     color={
-                      tipo.ativo === StatusRegistro.Ativo ? 'success' : 'error'
+                      tipo.ativo === StatusRegistro.ATIVO ? 'success' : 'error'
                     }
                   >
-                    {tipo.ativo === StatusRegistro.Ativo ? 'Ativo' : 'Inativo'}
+                    {tipo.ativo === StatusRegistro.ATIVO ? 'Ativo' : 'Inativo'}
                   </Badge>
                 </TableCell>
                 <TableCell>

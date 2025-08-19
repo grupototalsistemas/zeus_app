@@ -2,12 +2,6 @@ import { Ocorrencia, OcorrenciaTipo } from '@/types/ocorrencia.type';
 import api from './api';
 
 const getOcorrencias = async (): Promise<Ocorrencia[]> => {
-  const response = await api.get('/chamado-ocorrencia');
-  console.log(response.data);
-  return response.data;
-};
-
-const getOcorrenciasTipos = async (): Promise<OcorrenciaTipo[]> => {
   const response = await api.get('/chamado-ocorrencia-tipo');
   console.log(response.data);
   return response.data;
@@ -19,12 +13,12 @@ const getOcorrencia = async (id: number) => {
 };
 
 const createOcorrencia = async (data: Ocorrencia) => {
-  const response = await api.post('/chamado-ocorrencia', data);
+  const response = await api.post('/chamado-ocorrencia-tipo', data);
   return response.data;
 };
 
 const createOcorrenciaTipo = async (data: OcorrenciaTipo) => {
-  const response = await api.post('/ocorrencia', data);
+  const response = await api.post('/chamado-ocorrencia-tipo', data);
   return response.data;
 };
 
@@ -47,9 +41,8 @@ const deleteOcorrenciaTipo = async (id: number) => {
   const response = await api.delete(`/ocorrencia/${id}`);
   return response.data;
 };
-export const OcorrenciaService = {
+export const TipoOcorrenciaService = {
   getOcorrencias,
-  getOcorrenciasTipos,
   getOcorrencia,
   createOcorrencia,
   createOcorrenciaTipo,

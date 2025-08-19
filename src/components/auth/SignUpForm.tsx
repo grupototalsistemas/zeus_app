@@ -34,14 +34,14 @@ export default function SignUpForm() {
     login: '',
     email: '',
     pessoa: {
-      empresaId: empresa,
-      tipoId: 1,
+      id_empresa: empresa,
+      id_pessoa_tipo: 1,
       genero: StatusGenero.MASCULINO,
       nome: '',
-      nomeSocial: '',
+      nome_social: '',
     },
     perfil: {
-      empresaId: empresa,
+      id_empresa: empresa,
       descricao: 'MASTER',
     },
     senha: '',
@@ -146,9 +146,9 @@ export default function SignUpForm() {
               <Input
                 type="text"
                 placeholder="(Opcional)"
-                value={formData.pessoa.nomeSocial}
+                value={formData.pessoa.nome_social}
                 onChange={(e) =>
-                  handleChange('pessoa.nomeSocial', e.target.value)
+                  handleChange('pessoa.nome_social', e.target.value)
                 }
               />
             </div>
@@ -185,8 +185,8 @@ export default function SignUpForm() {
                 options={empresasFormatadas}
                 placeholder="Selecione a empresa"
                 onChange={(opt: string) => {
-                  handleChange('pessoa.empresaId', Number(opt));
-                  handleChange('perfil.empresaId', Number(opt));
+                  handleChange('pessoa.id_empresa', Number(opt));
+                  handleChange('perfil.id_empresa', Number(opt));
                 }}
               />
               <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">
@@ -203,7 +203,7 @@ export default function SignUpForm() {
                 placeholder="Selecione"
                 onChange={(opt: any) => {
                   console.log('tipo pessoa: ', opt);
-                  handleChange('pessoa.tipoId', Number(opt));
+                  handleChange('pessoa.id_pessoa_tipo', Number(opt));
                 }}
               />
               <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">

@@ -1,8 +1,8 @@
 /** 0=Inativo, 1=Ativo, 2=Excluído */
 export enum StatusRegistro {
-  Inativo = 'INATIVO',
-  Ativo = 'ATIVO',
-  Excluido = 'EXCLUIDO',
+  INATIVO = 'INATIVO',
+  ATIVO = 'ATIVO',
+  EXCLUIDO = 'EXCLUIDO',
 }
 
 /** Siglas de estados brasileiros */

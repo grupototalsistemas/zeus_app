@@ -10,11 +10,16 @@ import { Prioridade } from '@/types/prioridade.type';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import ColorPicker from 'react-pick-color';
+import DatePicker from '../date-picker';
 
 export interface PrioridadeFormData {
-  empresaId: number;
   descricao: string;
+  empresaId: number;
+  cor: string;
+  tempo: string;
   ativo: StatusRegistro;
+  motivo?: string;
 }
 
 interface PrioridadeFormBaseProps {
@@ -35,7 +40,10 @@ export function PrioridadeFormBase({
   const [formData, setFormData] = useState<PrioridadeFormData>({
     empresaId: initialData?.empresaId || 0,
     descricao: initialData?.descricao || '',
-    ativo: initialData?.ativo || StatusRegistro.Ativo,
+    cor: initialData?.cor || '#fff',
+    tempo: initialData?.tempo || '',
+    ativo: initialData?.ativo || StatusRegistro.ATIVO,
+    motivo: initialData?.motivo || '',
   });
 
   const handleChange = (name: string, value: any) => {
@@ -61,12 +69,12 @@ export function PrioridadeFormBase({
   };
 
   return (
-    <ComponentCard title={`${mode === 'create' ? 'Criar' : 'Editar'} Função`}>
+    <ComponentCard title={`${mode === 'create' ? 'Criar' : 'Editar'} Tempo de Execução`}>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-2 gap-6">
           {/* Descrição */}
           <div>
-            <Label>Descrição da Função</Label>
+            <Label>Informe um nome para o tempo de execução</Label>
             <input
               type="text"
               value={formData.descricao}
@@ -100,20 +108,50 @@ export function PrioridadeFormBase({
           </div>
         </div>
 
+        <div className="grid grid-cols-2 gap-6">
+          {/* Descrição */}
+          <div>
+            <Label>Escolha uma cor para representar a prioridade</Label>
+            {/* <input
+              type="text"
+              value={formData.cor}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                handleChange('cor', e.target.value)
+              }
+              placeholder="Digite a cor da prioridade"
+              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+              required
+              disabled={disabled}
+            /> */}
+            <ColorPicker color={formData.cor} onChange={color => handleChange('cor', color.hex)} />
+          </div>
+          <div>
+            <Label>Informe o tempo limite para essa prioridade</Label>
+            
+            <DatePicker
+              id='tempo'
+              defaultDate={formData.tempo}
+              onChange={(date) => handleChange('tempo', date.toString())}
+              mode='single'
+              disabled={disabled}
+            />
+          </div>
+        </div>
+
         {/* Status */}
         <div className="flex items-center gap-2">
           <Label>Status</Label>
           <Switch
-            defaultChecked={formData.ativo === StatusRegistro.Ativo}
+            defaultChecked={formData.ativo === StatusRegistro.ATIVO}
             onChange={(checked) =>
               handleChange(
                 'ativo',
-                checked ? StatusRegistro.Ativo : StatusRegistro.Inativo
+                checked ? StatusRegistro.ATIVO : StatusRegistro.INATIVO
               )
             }
-            color={formData.ativo === StatusRegistro.Ativo ? 'blue' : 'gray'}
+            color={formData.ativo === StatusRegistro.ATIVO ? 'blue' : 'gray'}
             label={
-              formData.ativo === StatusRegistro.Ativo ? 'Ativo' : 'Inativo'
+              formData.ativo === StatusRegistro.ATIVO ? 'Ativo' : 'Inativo'
             }
             disabled={disabled}
           />

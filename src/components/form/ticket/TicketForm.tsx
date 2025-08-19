@@ -16,25 +16,30 @@ import DropzoneComponent from '../form-elements/DropZone';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import DatePicker from '../date-picker';
-import { IPrioridade } from '@/types/enum';
+import { IPrioridade, StatusRegistro } from '@/types/enum';
 import { useAppSelector } from '@/hooks/useRedux';
 import { selectEmpresasFormatadas } from '@/store/slices/empresaSlice';
 import { dataAgora } from '@/utils/fomata-data';
+import { selectOcorrencias, selectOcorrenciasFormatadas } from '@/store/slices/ocorrenciaSlice';
+import { selectPrioridades, selectPrioridadesFormatadas } from '@/store/slices/prioridadeSlice';
 
 const ticketSchema = z.object({
 
-  hora: z.string().optional(),
+  empresaId: z.string().min(1, 'Empresa é obrigatória'),
+  sistemaId: z.string().min(1, 'Sistema é obrigatório'),
+  pessoaId: z.string().min(1, 'Pessoa é obrigatória'),
+  usuarioId: z.string().min(1, 'Usuário é obrigatório'),
+  inicio: z.string().optional(),
   sistema: z.string().min(1, 'Sistema é obrigatório'),
-  serventia: z.string().min(1, 'Serventia é obrigatória'),
   prazo: z.string().min(1, 'Prazo é obrigatório'),
   responsavel: z.string().min(1, 'Responsável é obrigatório'),
-  title: z.string().min(3, 'Título é obrigatório'),
-  description: z.string().min(5, 'Descrição é obrigatória'),
-  status: z.enum(['open', 'closed', 'in-progress']),
-  prioridade: z.enum(IPrioridade),
-  cliente: z.string().min(3, 'Cliente é obrigatório'),
-  messagem_chamado: z.string().optional(),
-  ocorrencia: z.string().optional(),
+  titulo: z.string().min(3, 'Título não pode ser menor que 3 caracteres'),
+  descricao: z.string().min(5, 'Descrição é obrigatória'),
+  ativo: z.enum(StatusRegistro),
+  prioridadeId: z.string().min(1, 'Prioridade é obrigatória'),
+  protocolo: z.string().optional(),
+  observacao: z.string().optional(),
+  ocorrenciaId: z.string().optional(),
 });
 
 export type TicketFormData = z.infer<typeof ticketSchema>;
@@ -62,23 +67,23 @@ export function TicketFormBase({
   } = useForm<TicketFormData>({
     resolver: zodResolver(ticketSchema),
     defaultValues: {
-      sistema: initialData?.sistema ?? '',
-      serventia: initialData?.serventia ?? '',
-      ocorrencia: initialData?.ocorrencia ?? '',
-      prazo: initialData?.prazo ?? '',
+      sistemaId: initialData?.sistemaId ?? '',
+      ocorrenciaId: initialData?.ocorrenciaId ?? '',
       responsavel: initialData?.responsavel ?? (pessoaInfo?.nomeSocial || pessoaInfo?.nome),
-      title: initialData?.title ?? '',
-      description: initialData?.description ?? '',
-      status: initialData?.status ?? 'open',
-      prioridade: initialData?.prioridade ?? IPrioridade.PEQUENA,
-      hora: initialData?.hora ?? '',
-      cliente: initialData?.cliente ?? '',
-      messagem_chamado: initialData?.messagem_chamado ?? '',
-      // protocolo: initialData?.protocolo ?? '',
-      // entrada: initialData?.entrada ?? dataAgora(),
+      titulo: initialData?.titulo ?? '',
+      descricao: initialData?.descricao ?? '',
+      ativo: initialData?.ativo ? StatusRegistro.ATIVO : StatusRegistro.INATIVO,
+      prioridadeId: initialData?.prioridadeId ?? '',
+      inicio: initialData?.inicio ?? '',
+      empresaId: initialData?.empresaId ?? '',
+      observacao: initialData?.observacao ?? '',
+      pessoaId: initialData?.pessoaId ?? '',
+      protocolo: initialData?.protocolo ?? '',
+      sistema: initialData?.sistema ?? '',
+      usuarioId: initialData?.usuarioId ?? '',
+      
     },
   });
-
 
   // Simulação de opções vindas do backend
 
@@ -93,7 +98,10 @@ export function TicketFormBase({
     label: p
   }));
 
-  const [message, setMessage] = useState(initialData?.description || '');
+  const ocorrencia = useSelector(selectOcorrenciasFormatadas);
+  const prioridade = useSelector(selectPrioridadesFormatadas);
+
+  const [message, setMessage] = useState(initialData?.descricao || '');
 
   // Atualiza valores iniciais se vierem depois (edição async)
   useEffect(() => {
@@ -126,29 +134,29 @@ export function TicketFormBase({
                 options={empresasFormatadas}
                 placeholder="Selecione a Serventia "
                 onChange={(opt: any) => {
-                  setValue('serventia', opt);
-                  trigger('serventia');
+                  setValue('empresaId', opt);
+                  trigger('empresaId');
                 }}
-                value={watch('serventia')}
+                value={watch('empresaId')}
               />
               <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">
                 <ChevronDownIcon />
               </span>
             </div>
-            {errors.serventia && (
-              <p className="text-sm text-red-500">{errors.serventia.message}</p>
+            {errors.empresaId && (
+              <p className="text-sm text-red-500">{errors.empresaId.message}</p>
             )}
           </div>
           
           {/* Itens preenchidos automaticamente e disabled */}
-          <div>
+          {/* <div>
               <DatePicker
                 id="entrada-chamado"
                 label="Entrada"
                 placeholder={dataAgora()}
                 disabled
               />
-            </div>
+            </div> */}
           <div>
             <Label>Responsavel</Label>
             <Input
@@ -184,68 +192,55 @@ export function TicketFormBase({
               <Label>Ocorrência</Label>
               <div className="relative">
                 <Select
-                  options={exemplosSistema}
+                  options={ocorrencia}
                   placeholder="Selecione a Ocorrência "
                   onChange={(opt: any) => {
-                    setValue('ocorrencia', opt);
-                    trigger('ocorrencia');
+                    setValue('ocorrenciaId', opt);
+                    trigger('ocorrenciaId');
                   }}
-                  value={watch('ocorrencia')}
+                  value={watch('ocorrenciaId')}
                 />
                 <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">
                   <ChevronDownIcon />
                 </span>
               </div>
-              {errors.ocorrencia && (
-                <p className="text-sm text-red-500">{errors.ocorrencia.message}</p>
+              {errors.ocorrenciaId && (
+                <p className="text-sm text-red-500">{errors.ocorrenciaId.message}</p>
               )}
             </div>
             <div>
               <Label>Prioridade</Label>
               <div className="relative">
                 <Select
-                  options={prioridadesExample}
+                  options={prioridade}
                   placeholder="Selecione a Prioridade do chamado "
                   onChange={(opt: any) => {
-                    setValue('prioridade', opt);
-                    trigger('prioridade');
+                    setValue('prioridadeId', opt);
+                    trigger('prioridadeId');
                   }}
-                  value={watch('prioridade')}
+                  value={watch('prioridadeId')}
                 />
                 <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">
                   <ChevronDownIcon />
                 </span>
               </div>
-              {errors.prioridade && (
-                <p className="text-sm text-red-500">{errors.prioridade.message}</p>
+              {errors.prioridadeId && (
+                <p className="text-sm text-red-500">{errors.prioridadeId.message}</p>
               )}
             </div>
-            <div>
-              <DatePicker
-                id="prazo-chamado"
-                label="Prazo"
-                placeholder="Informe um prazo para o chamado"
-                onChange={(dates, currentDateString) => {
-                  // Handle your logic
-                  setValue('prazo', dates[0]?.toISOString() || '');
-                }}
-              />
-            </div>
-              {errors.prazo && (
-                <p className="text-sm text-red-500">{errors.prazo.message}</p>
-              )}
+           
             </div>
             <div>
               <Label>Cliente</Label>
               <Input
                 type="text"
                 placeholder="Informe o nome do cliente"
-                value={watch('cliente')}
-                onChange={(e) => setValue('cliente', e.target.value)}
+                value={watch('pessoaId')}
+                onChange={(e) => setValue('pessoaId', e.target.value)}
               />
-              {errors.cliente && (
+              {errors.pessoaId && (
                 <p className="text-sm text-red-500">
-                  {errors.cliente.message}
+                  {errors.pessoaId.message}
                 </p>
               )}
             </div>
@@ -255,11 +250,11 @@ export function TicketFormBase({
               <Input
                 type="text"
                 placeholder="Informe um título"
-                value={watch('title')}
-                onChange={(e) => setValue('title', e.target.value)}
+                value={watch('titulo')}
+                onChange={(e) => setValue('titulo', e.target.value)}
               />
-              {errors.title && (
-                <p className="text-sm text-red-500">{errors.title.message}</p>
+              {errors.titulo && (
+                <p className="text-sm text-red-500">{errors.titulo.message}</p>
               )}
             </div>
           
@@ -272,13 +267,13 @@ export function TicketFormBase({
               placeholder="Descreva o chamado"
               onChange={(value) => {
                 setMessage(value);
-                setValue('description', value);
+                setValue('descricao', value);
               }}
               rows={6}
             />
-            {errors.description && (
+            {errors.descricao && (
               <p className="text-sm text-red-500">
-                {errors.description.message}
+                {errors.descricao.message}
               </p>
             )}
           </div>
@@ -289,12 +284,12 @@ export function TicketFormBase({
               <Input
                 type="text"
                 placeholder="Informe uma mensagem adicional (opcional) "
-                value={watch('messagem_chamado')}
-                onChange={(e) => setValue('messagem_chamado', e.target.value)}
+                value={watch('observacao')}
+                onChange={(e) => setValue('observacao', e.target.value)}
               />
-              {errors.messagem_chamado && (
+              {errors.observacao && (
                 <p className="text-sm text-red-500">
-                  {errors.messagem_chamado.message}
+                  {errors.observacao.message}
                 </p>
               )}
             </div>

@@ -35,7 +35,7 @@ export function TipoFormBase({
   const [formData, setFormData] = useState<TipoFormData>({
     empresaId: initialData?.empresaId || 0,
     descricao: initialData?.descricao || '',
-    ativo: initialData?.ativo || StatusRegistro.Ativo,
+    ativo: initialData?.ativo || StatusRegistro.ATIVO,
   });
 
   const handleChange = (name: string, value: any) => {
@@ -104,16 +104,16 @@ export function TipoFormBase({
         <div className="flex items-center gap-2">
           <Label>Status</Label>
           <Switch
-            defaultChecked={formData.ativo === StatusRegistro.Ativo}
+            defaultChecked={formData.ativo === StatusRegistro.ATIVO}
             onChange={(checked) =>
               handleChange(
                 'ativo',
-                checked ? StatusRegistro.Ativo : StatusRegistro.Inativo
+                checked ? StatusRegistro.ATIVO : StatusRegistro.INATIVO
               )
             }
-            color={formData.ativo === StatusRegistro.Ativo ? 'blue' : 'gray'}
+            color={formData.ativo === StatusRegistro.ATIVO ? 'blue' : 'gray'}
             label={
-              formData.ativo === StatusRegistro.Ativo ? 'Ativo' : 'Inativo'
+              formData.ativo === StatusRegistro.ATIVO ? 'Ativo' : 'Inativo'
             }
             disabled={disabled}
           />

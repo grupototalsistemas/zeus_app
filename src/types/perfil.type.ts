@@ -10,6 +10,11 @@ export interface Perfil extends BaseEntity {
   motivo?: string;
 }
 
+export interface PerfilDTO extends BaseEntity {
+  id_empresa?: number;
+  descricao: string;
+}
+
 export interface PerfilPermissao extends BaseEntity {
   id_perfil_permissao?: number;
   id_perfil: number;

@@ -42,6 +42,7 @@ const navItems: NavItem[] = [
         pro: false,
       },
       { name: 'Gerenciar ocorrencias', path: '/ocorrencia', pro: false },
+      { name: 'Gerenciar tipos de ocorrencias', path: '/tipo-ocorrencia', pro: false },
     ],
   },
   {

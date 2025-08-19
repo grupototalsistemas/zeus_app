@@ -5,41 +5,37 @@ import Label from '@/components/form/Label';
 import Switch from '@/components/form/switch/Switch';
 import Button from '@/components/ui/button/Button';
 import { selectEmpresas } from '@/store/slices/empresaSlice';
-import { selectOcorrenciasTipos, selectOcorrenciasTiposFormatados } from '@/store/slices/ocorrenciaSlice';
 import { StatusRegistro } from '@/types/enum';
 import { Ocorrencia } from '@/types/ocorrencia.type';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 
-export interface OcorrenciaFormData {
+export interface TipoOcorrenciaFormData {
   empresaId: number;
   descricao: string;
-  tipoId: number;
   ativo: StatusRegistro;
 }
 
 interface OcorrenciaFormBaseProps {
   mode: 'create' | 'edit';
   initialData?: Ocorrencia;
-  onSubmit: (data: OcorrenciaFormData) => void;
+  onSubmit: (data: TipoOcorrenciaFormData) => void;
   disabled?: boolean;
 }
 
-export function OcorrenciaFormBase({
+export function TipoOcorrenciaFormBase({
   mode,
   initialData,
   onSubmit,
   disabled = false,
 }: OcorrenciaFormBaseProps) {
   const empresas = useSelector(selectEmpresas);
-  const tipos = useSelector(selectOcorrenciasTipos);
   const router = useRouter();
-  const [formData, setFormData] = useState<OcorrenciaFormData>({
+  const [formData, setFormData] = useState<TipoOcorrenciaFormData>({
     empresaId: initialData?.idEmpresa || 0,
     descricao: initialData?.descricao || '',
     ativo: initialData?.ativo || StatusRegistro.ATIVO,
-    tipoId: initialData?.idOcorrenciaTipo || 0,
   });
 
   const handleChange = (name: string, value: any) => {
@@ -65,19 +61,19 @@ export function OcorrenciaFormBase({
   };
 
   return (
-    <ComponentCard title={`${mode === 'create' ? 'Criar' : 'Editar'} Ocorrencia`}>
+    <ComponentCard title={`${mode === 'create' ? 'Criar' : 'Editar'} Tipo de Ocorrência`}>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-2 gap-6">
           {/* Descrição */}
           <div>
-            <Label>Ocorrencia</Label>
+            <Label>Tipo de Ocorrencia</Label>
             <input
               type="text"
               value={formData.descricao}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 handleChange('descricao', e.target.value)
               }
-              placeholder="Informe um nome para a Ocorrencia"
+              placeholder="Informe um nome para o tipo Ocorrencia"
               className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
               required
               disabled={disabled}
@@ -104,26 +100,6 @@ export function OcorrenciaFormBase({
           </div>
         </div>
 
-        <div>
-            <Label>Tipo de Ocorrência</Label>
-            <select
-              value={formData.tipoId}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                handleChange('tipoId', Number(e.target.value))
-              }
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-              required
-              disabled={disabled}
-            >
-              <option value="">Selecione um tipo de ocorrência</option>
-              {tipos.map((tipo) => (
-                <option key={tipo.id} value={tipo.id}>
-                  {tipo.descricao}
-                </option>
-              ))}
-            </select>
-          </div>
-
         {/* Status */}
         <div className="flex items-center gap-2">
           <Label>Status</Label>
@@ -149,7 +125,7 @@ export function OcorrenciaFormBase({
             Cancelar
           </Button>
           <Button disabled={disabled}>
-            {mode === 'create' ? 'Criar Ocorrência' : 'Salvar Alterações'}
+            {mode === 'create' ? 'Criar Tipo de Ocorrência' : 'Salvar Alterações'}
           </Button>
         </div>
       </form>

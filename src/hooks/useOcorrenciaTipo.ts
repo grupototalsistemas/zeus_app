@@ -53,7 +53,7 @@ export const useOcorrencia = () => {
       dispatch(setLoading(true));
       dispatch(setError(null));
 
-      const response = await OcorrenciaService.getOcorrenciasTipos();
+      const response = await OcorrenciaService.getOcorrencias();
       dispatch(setOcorrenciasTipos(response));
     } catch (error) {
       console.error('Erro ao buscar tipos de ocorrências:', error);

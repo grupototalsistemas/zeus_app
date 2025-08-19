@@ -1,9 +1,9 @@
 'use client';
 
-import { usePerfil } from '@/hooks/usePerfil';
+import { useOcorrencia } from '@/hooks/useOcorrencia';
 import { MoreDotIcon } from '@/icons';
 import { StatusRegistro } from '@/types/enum';
-import { Perfil } from '@/types/perfil.type';
+import { Ocorrencia, OcorrenciaTipo } from '@/types/ocorrencia.type';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Badge from '../ui/badge/Badge';
@@ -18,29 +18,35 @@ import {
 } from '../ui/table';
 import Pagination from './Pagination';
 
-export default function PerfilList() {
+export default function TipoOcorrenciaList() {
   const router = useRouter();
 
-  // Hook customizado com todas as operações de perfil
-  const { perfis, loading, error, fetchPerfis, deletePerfil, clearError } =
-    usePerfil();
+  // Hook customizado com todas as operações de ocorrencia
+  const {
+    ocorrenciasTipos,
+    loading,
+    error,
+    fetchOcorrenciasTipos,
+    deleteOcorrenciaTipo,
+    clearError,
+  } = useOcorrencia();
 
   // Estados locais (apenas para UI)
   const [currentPage, setCurrentPage] = useState(1);
   const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
 
   const itemsPerPage = 10;
-  const totalPages = Math.ceil(perfis.length / itemsPerPage);
+  const totalPages = Math.ceil(ocorrenciasTipos.length / itemsPerPage);
 
-  const paginatedData = perfis.slice(
+  const paginatedData = ocorrenciasTipos.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
-  const handleDelete = async (perfil: Perfil) => {
+  const handleDelete = async (ocorrenciaTipo: OcorrenciaTipo) => {
     // Confirmação antes de excluir
     const confirmDelete = window.confirm(
-      `Tem certeza que deseja excluir o perfil "${perfil.descricao}"?\n\nEsta ação não pode ser desfeita.`
+      `Tem certeza que deseja excluir o ocorrenciaTipo "${ocorrenciaTipo.descricao}"?\n\nEsta ação não pode ser desfeita.`
     );
 
     if (!confirmDelete) {
@@ -48,41 +54,50 @@ export default function PerfilList() {
     }
 
     try {
-      await deletePerfil(perfil.id!);
+      await deleteOcorrenciaTipo(ocorrenciaTipo.id!);
 
       // Fecha o dropdown se estiver aberto
       setOpenDropdownId(null);
 
       // Ajusta a página atual se necessário
-      const newTotalPages = Math.ceil((perfis.length - 1) / itemsPerPage);
+      const newTotalPages = Math.ceil((ocorrenciasTipos.length - 1) / itemsPerPage);
       if (currentPage > newTotalPages && newTotalPages > 0) {
         setCurrentPage(newTotalPages);
       }
 
-      console.log('Perfil excluído com sucesso');
+      console.log('Ocorrencia excluído com sucesso');
     } catch (error) {
-      console.error('Erro ao excluir perfil:', error);
-      alert('Erro ao excluir o perfil. Tente novamente.');
+      console.error('Erro ao excluir ocorrenciaTipo:', error);
+      alert('Erro ao excluir o ocorrenciaTipo. Tente novamente.');
     }
   };
 
   useEffect(() => {
-    // Só carrega se não há perfis no store ou se houver erro
-    if (perfis.length === 0 && !loading) {
-      fetchPerfis();
+    // Só carrega se não há ocorrencias no store ou se houver erro
+    if (ocorrenciasTipos.length === 0 && !loading) {
+      fetchOcorrenciasTipos();
     }
-  }, [fetchPerfis, perfis.length, loading]);
+
+    // Temporizador para buscar ocorrências a cada 15 segundos
+    const interval = setInterval(() => {
+      if (!loading) {
+        fetchOcorrenciasTipos();
+      }
+    }, 15000);
+
+    return () => clearInterval(interval);
+  }, [fetchOcorrenciasTipos, ocorrenciasTipos.length, loading]);
 
   const handleToggle = (id: number) => {
     setOpenDropdownId(openDropdownId === id ? null : id);
   };
 
-  if (loading && perfis.length === 0) {
+  if (loading && ocorrenciasTipos.length === 0) {
     return (
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pt-4 pb-3 sm:px-6 dark:border-gray-800 dark:bg-white/[0.03]">
         <div className="flex items-center justify-center py-10">
           <div className="text-gray-500 dark:text-gray-400">
-            Carregando perfis...
+            Carregando ocorrencias...
           </div>
         </div>
       </div>
@@ -97,7 +112,7 @@ export default function PerfilList() {
             <span>{error}</span>
             <div className="space-x-2">
               <button
-                onClick={fetchPerfis}
+                onClick={fetchOcorrenciasTipos}
                 className="underline hover:no-underline"
               >
                 Tentar novamente
@@ -121,7 +136,7 @@ export default function PerfilList() {
                 isHeader
                 className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
               >
-                Nome
+                Descrição
               </TableCell>
               <TableCell
                 isHeader
@@ -138,21 +153,21 @@ export default function PerfilList() {
             </TableRow>
           </TableHeader>
           <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {paginatedData.map((perfil) => (
-              <TableRow key={perfil.id}>
+            {paginatedData.map((ocorrencia) => (
+              <TableRow key={ocorrencia.id}>
                 <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                  {perfil.descricao}
+                  {ocorrencia.descricao}
                 </TableCell>
                 <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                   <Badge
                     size="sm"
                     color={
-                      perfil.ativo === StatusRegistro.ATIVO
+                      ocorrencia.ativo === StatusRegistro.ATIVO
                         ? 'success'
                         : 'error'
                     }
                   >
-                    {perfil.ativo === StatusRegistro.ATIVO
+                    {ocorrencia.ativo === StatusRegistro.ATIVO
                       ? 'Ativo'
                       : 'Inativo'}
                   </Badge>
@@ -160,27 +175,28 @@ export default function PerfilList() {
                 <TableCell>
                   <div className="relative inline-block">
                     <button
-                      onClick={() => handleToggle(perfil.id!)}
+                      onClick={() => handleToggle(ocorrencia.id!)}
                       className="dropdown-toggle"
                       disabled={loading}
                     >
                       <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
                     </button>
+
                     <Dropdown
-                      isOpen={openDropdownId === perfil.id}
+                      isOpen={openDropdownId === ocorrencia.id}
                       onClose={() => setOpenDropdownId(null)}
                       className="w-40 p-2"
                     >
                       <DropdownItem
                         onClick={() =>
-                          router.push(`/editar-perfil/${perfil.id}`)
+                          router.push(`/editar-ocorrencia/${ocorrencia.id}`)
                         }
                         className="flex w-full rounded-lg text-left font-normal text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
                       >
                         Editar
                       </DropdownItem>
                       <DropdownItem
-                        onClick={() => handleDelete(perfil)}
+                        onClick={() => handleDelete(ocorrencia)}
                         className="flex w-full rounded-lg text-left font-normal text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
                       >
                         Deletar
@@ -190,13 +206,13 @@ export default function PerfilList() {
                 </TableCell>
               </TableRow>
             ))}
-            {perfis.length === 0 && !loading && (
+            {ocorrenciasTipos.length === 0 && !loading && (
               <TableRow>
                 <TableCell
                   {...{ colSpan: 3 }}
                   className="text-theme-sm flex items-center justify-center py-10 text-gray-500 dark:text-gray-400"
                 >
-                  Nenhum perfil encontrado
+                  Nenhuma função encontrada
                 </TableCell>
               </TableRow>
             )}
@@ -204,7 +220,7 @@ export default function PerfilList() {
         </Table>
       </div>
 
-      {perfis.length > 0 && (
+      {ocorrenciasTipos.length > 0 && (
         <div className="mt-4 flex items-center justify-between">
           <Pagination
             currentPage={currentPage}

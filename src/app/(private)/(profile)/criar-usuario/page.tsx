@@ -24,7 +24,7 @@ export default function CreateUserPage() {
         genero: data.genero as StatusGenero,
         nome: data.nome,
         nomeSocial: data.nome_social || '',
-        ativo: StatusRegistro.Ativo,
+        ativo: StatusRegistro.ATIVO,
       },
     };
   };

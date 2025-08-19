@@ -9,3 +9,12 @@ export interface Pessoa extends BaseEntity {
   nome: string;
   nomeSocial?: string;
 }
+
+export interface PessoaDTO extends BaseEntity {
+  
+  id_empresa?: number;
+  id_pessoa_tipo?: number;
+  genero: StatusGenero;
+  nome: string;
+  nome_social?: string;
+}

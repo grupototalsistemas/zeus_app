@@ -77,6 +77,14 @@ export default function PrioridadeList() {
     if (prioridades.length === 0 && !loading) {
       fetchPrioridades();
     }
+
+    const interval = setInterval(() => {
+      if (!loading) {
+        fetchPrioridades();
+      }
+    }, 15000);
+
+    return () => clearInterval(interval);
   }, [fetchPrioridades, prioridades.length, loading]);
 
   const handleToggle = (id: number) => {
@@ -153,12 +161,12 @@ export default function PrioridadeList() {
                   <Badge
                     size="sm"
                     color={
-                      prioridade.ativo === StatusRegistro.Ativo
+                      prioridade.ativo === StatusRegistro.ATIVO
                         ? 'success'
                         : 'error'
                     }
                   >
-                    {prioridade.ativo === StatusRegistro.Ativo
+                    {prioridade.ativo === StatusRegistro.ATIVO
                       ? 'Ativo'
                       : 'Inativo'}
                   </Badge>
