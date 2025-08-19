@@ -1,4 +1,4 @@
-import { PessoaUsuarioDTO } from '@/types/pessoaUsuario.type';
+import { PessoaUsuarioRegisterDTO } from '@/types/pessoaUsuario.type';
 import api from './api';
 
 const login = async (login: string, senha: string) => {
@@ -6,7 +6,7 @@ const login = async (login: string, senha: string) => {
   return res.data;
 };
 
-const register = async (data: PessoaUsuarioDTO) => {
+const register = async (data: PessoaUsuarioRegisterDTO) => {
   const response = await api.post('/auth/register', data);
   return response.data;
 };

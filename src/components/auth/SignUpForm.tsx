@@ -1,19 +1,19 @@
 'use client';
 import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
+import { useAppDispatch } from '@/hooks/useRedux';
 import { ChevronDownIcon, EyeCloseIcon, EyeIcon } from '@/icons';
 import { AuthService } from '@/service/auth.service';
-import { EmpresaService } from '@/service/empresa.service';
+import { RootState } from '@/store/rootReducer';
+import { Empresa } from '@/types/empresa.type';
 import { StatusGenero } from '@/types/enum';
-import { PessoaUsuarioDTO } from '@/types/pessoaUsuario.type';
+import { PessoaUsuarioRegisterDTO } from '@/types/pessoaUsuario.type';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import Checkbox from '../form/input/Checkbox';
 import Select from '../form/Select';
-import { useDispatch } from 'react-redux';
-import { setEmpresas, selectEmpresasFormatadas } from '@/store/slices/empresaSlice';
-import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 
 const options_pessoas = [
   { value: 0, label: 'Usuario' },
@@ -24,21 +24,24 @@ const options_pessoas = [
 
 export default function SignUpForm() {
   const dispatch = useAppDispatch();
-  const empresasFormatadas = useAppSelector(selectEmpresasFormatadas);
+  const { empresas } = useSelector((state: RootState) => state.empresa);
   const [showPassword, setShowPassword] = useState(false);
   const [empresa, setEmpresa] = useState(0);
-  const [formData, setFormData] = useState<PessoaUsuarioDTO>({
+  const [empresasFormatadas, setEmpresasFormatadas] = useState([
+    { value: 0, label: 'Selecione uma empresa' },
+  ]);
+  const [formData, setFormData] = useState<PessoaUsuarioRegisterDTO>({
     login: '',
     email: '',
     pessoa: {
-      id_empresa: empresa,
-      id_pessoa_tipo: 1,
+      empresaId: empresa,
+      tipoId: 1,
       genero: StatusGenero.MASCULINO,
       nome: '',
-      nome_social: '',
+      nomeSocial: '',
     },
     perfil: {
-      id_empresa: empresa,
+      empresaId: empresa,
       descricao: 'MASTER',
     },
     senha: '',
@@ -92,23 +95,20 @@ export default function SignUpForm() {
     }
   };
 
-  useEffect(() => {
-    const fetch = async () => {
-      try {
-        const response = await EmpresaService.getEmpresas();
-        console.log('Despachando empresas para o Redux:', response);
-        dispatch(setEmpresas(response));
-      } catch (err: any) {
-        console.error(err);
-      }
-    };
-    fetch();
-  }, [dispatch]);
+  const formataEmpresa = (empresas: Empresa[]) => {
+    const empresasFormatadas = empresas.map((empresa) => ({
+      value: empresa.id || 0,
+      label: empresa.nomeFantasia,
+    }));
+    setEmpresasFormatadas(empresasFormatadas);
+  };
 
-  // Log para verificar se o estado do Redux está sendo atualizado
   useEffect(() => {
-    console.log('Estado do Redux - empresas formatadas:', empresasFormatadas);
-  }, [empresasFormatadas]);
+    if (empresas && empresas.length > 0) {
+      console.log('empresas: ', empresas);
+      formataEmpresa(empresas);
+    }
+  }, [empresas]);
 
   return (
     <div className="no-scrollbar flex w-full flex-1 flex-col overflow-y-auto px-4 sm:px-6 lg:w-1/2">
@@ -146,9 +146,9 @@ export default function SignUpForm() {
               <Input
                 type="text"
                 placeholder="(Opcional)"
-                value={formData.pessoa.nome_social}
+                value={formData.pessoa.nomeSocial}
                 onChange={(e) =>
-                  handleChange('pessoa.nome_social', e.target.value)
+                  handleChange('pessoa.nomeSocial', e.target.value)
                 }
               />
             </div>
@@ -184,7 +184,10 @@ export default function SignUpForm() {
               <Select
                 options={empresasFormatadas}
                 placeholder="Selecione a empresa"
-                onChange={(opt: string) => {handleChange('pessoa.id_empresa', Number(opt));handleChange('perfil.id_empresa', Number(opt))} }
+                onChange={(opt: string) => {
+                  handleChange('pessoa.empresaId', Number(opt));
+                  handleChange('perfil.empresaId', Number(opt));
+                }}
               />
               <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">
                 <ChevronDownIcon />
@@ -200,7 +203,7 @@ export default function SignUpForm() {
                 placeholder="Selecione"
                 onChange={(opt: any) => {
                   console.log('tipo pessoa: ', opt);
-                  handleChange('pessoa.id_pessoa_tipo', Number(opt));
+                  handleChange('pessoa.tipoId', Number(opt));
                 }}
               />
               <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">
