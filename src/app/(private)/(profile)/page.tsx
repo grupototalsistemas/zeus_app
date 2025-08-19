@@ -1,6 +1,3 @@
-import UserAddressCard from '@/components/user-profile/UserAddressCard';
-import UserInfoCard from '@/components/user-profile/UserInfoCard';
-import UserMetaCard from '@/components/user-profile/UserMetaCard';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -16,11 +13,7 @@ export default function Profile() {
         <h3 className="mb-5 text-lg font-semibold text-gray-800 lg:mb-7 dark:text-white/90">
           Perfil
         </h3>
-        <div className="space-y-6">
-          <UserMetaCard />
-          <UserInfoCard />
-          <UserAddressCard />
-        </div>
+        <div className="space-y-6"></div>
       </div>
     </div>
   );

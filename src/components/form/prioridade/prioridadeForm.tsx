@@ -6,33 +6,33 @@ import Switch from '@/components/form/switch/Switch';
 import Button from '@/components/ui/button/Button';
 import { selectEmpresas } from '@/store/slices/empresaSlice';
 import { StatusRegistro } from '@/types/enum';
-import { Tipo } from '@/types/tipo.type';
+import { Prioridade } from '@/types/prioridade.type';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 
-export interface TipoFormData {
+export interface PrioridadeFormData {
   empresaId: number;
   descricao: string;
   ativo: StatusRegistro;
 }
 
-interface TipoFormBaseProps {
+interface PrioridadeFormBaseProps {
   mode: 'create' | 'edit';
-  initialData?: Tipo;
-  onSubmit: (data: TipoFormData) => void;
+  initialData?: Prioridade;
+  onSubmit: (data: PrioridadeFormData) => void;
   disabled?: boolean;
 }
 
-export function TipoFormBase({
+export function PrioridadeFormBase({
   mode,
   initialData,
   onSubmit,
   disabled = false,
-}: TipoFormBaseProps) {
+}: PrioridadeFormBaseProps) {
   const empresas = useSelector(selectEmpresas);
   const router = useRouter();
-  const [formData, setFormData] = useState<TipoFormData>({
+  const [formData, setFormData] = useState<PrioridadeFormData>({
     empresaId: initialData?.empresaId || 0,
     descricao: initialData?.descricao || '',
     ativo: initialData?.ativo || StatusRegistro.Ativo,

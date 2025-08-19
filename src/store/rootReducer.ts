@@ -1,8 +1,10 @@
 import { combineReducers } from '@reduxjs/toolkit';
 
 import EmpresaReducer from './slices/empresaSlice';
+import OcorrenciaReducer from './slices/ocorrenciaSlice';
 import PerfilReducer from './slices/perfilSlice';
 import PessoaReducer from './slices/pessoaSlice';
+import PrioridadeReducer from './slices/prioridadeSlice';
 import TipoReducer from './slices/tipoSlice';
 
 export const appReducer = combineReducers({
@@ -10,6 +12,8 @@ export const appReducer = combineReducers({
   empresa: EmpresaReducer,
   perfil: PerfilReducer,
   tipo: TipoReducer,
+  ocorrencia: OcorrenciaReducer,
+  prioridade: PrioridadeReducer,
 });
 
 export type RootState = ReturnType<typeof appReducer>;

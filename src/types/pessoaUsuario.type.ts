@@ -1,4 +1,5 @@
 import { BaseEntity } from './base.type';
+import { Perfil } from './perfil.type';
 import { Pessoa } from './pessoas.type';
 
 export interface PessoaUsuario extends BaseEntity {
@@ -13,6 +14,14 @@ export interface PessoaUsuario extends BaseEntity {
 export interface PessoaUsuarioDTO extends BaseEntity {
   pessoa: Pessoa;
   perfilId: number;
+  email: string;
+  login: string;
+  senha: string;
+}
+
+export interface PessoaUsuarioRegisterDTO extends BaseEntity {
+  pessoa: Pessoa;
+  perfil: Perfil;
   email: string;
   login: string;
   senha: string;

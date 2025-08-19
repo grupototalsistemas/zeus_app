@@ -1,9 +1,17 @@
-import { BaseEntity } from "./base.type";
+import { BaseEntity } from './base.type';
 
-export interface Ocorrencia extends BaseEntity{
-  id_ocorrencia: number;
-  id_ocorrencia_tipo: number;
-  id_empresa: number;
+export interface OcorrenciaTipo extends BaseEntity {
+  id?: number;
+  idEmpresa: number;
   descricao: string;
-  
+}
+
+export interface Ocorrencia extends BaseEntity {
+  id?: number;
+  idOcorrenciaTipo: number;
+  idEmpresa: number;
+  descricao: string;
+
+  // Para joins
+  ocorrenciaTipo?: OcorrenciaTipo;
 }
