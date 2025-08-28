@@ -4,7 +4,9 @@ import { StatusRegistro } from './enum';
 export interface Perfil extends BaseEntity {
   id?: number;
   empresaId: number;
-
+  email?: string;
+  senha?: string;
+  nome: string;
   descricao: string;
   ativo?: StatusRegistro;
   motivo?: string;
