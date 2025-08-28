@@ -7,13 +7,18 @@ const getPessoas = async (): Promise<Pessoa[]> => {
   return response.data;
 };
 
+const search = async (term: string): Promise<Pessoa[]> => {
+  const response = await api.get(`/pessoas/search?term=${encodeURIComponent(term)}`);
+  return response.data;
+};
+
 const getPessoa = async (id: number) => {
-  const response = await api.get(`/pessoa/${id}`);
+  const response = await api.get(`/pessoas/${id}`);
   return response.data;
 };
 
 const createPessoa = async (data: Pessoa) => {
-  const response = await api.post('/pessoa', data);
+  const response = await api.post('/pessoas', data);
   return response.data;
 };
 
@@ -39,4 +44,5 @@ export const PessoaService = {
   updatePessoa,
   deletePessoa,
   createPessoaUsuario,
+  search,
 };

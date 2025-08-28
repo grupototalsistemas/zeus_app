@@ -160,6 +160,13 @@ export const usePerfil = () => {
     dispatch(setError(null));
   }, [dispatch]);
 
+  // selecionar por Id
+  const selectPerfilById = 
+    (id: number) => {
+      return perfis.find((p) => p.id === id);
+      
+    }
+
   return {
     // Estado
     perfis,
@@ -181,5 +188,6 @@ export const usePerfil = () => {
     selectPerfil,
     clearPerfilData,
     clearError,
+    selectPerfilById
   };
 };

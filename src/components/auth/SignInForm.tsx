@@ -38,7 +38,7 @@ export default function SignInForm() {
       const response = await AuthService.login(login, password);
       console.log('response: ', response);
       dispatch(setPessoa(response.user));
-      router.push('/listar-chamado');
+      router.push('/loading'); // Redireciona para a tela de carregamento primeiro
     } catch (err: any) {
       if (err.response?.data?.message) {
         setError(err.response.data.message);

@@ -141,6 +141,13 @@ export const useTipo = () => {
     dispatch(setError(null));
   }, [dispatch]);
 
+  // Selecionar por Id e mostrar o selecionado
+  const selectTipoById = 
+    (id: number) => {
+      return tipos.find((t) => t.id === id); 
+    }
+    
+  
   return {
     // Estado
     tipos,
@@ -161,5 +168,6 @@ export const useTipo = () => {
     selectTipo,
     clearTipoData,
     clearError,
+    selectTipoById
   };
 };

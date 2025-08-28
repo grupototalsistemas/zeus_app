@@ -229,6 +229,12 @@ export const useOcorrencia = () => {
     dispatch(setError(null));
   }, [dispatch]);
 
+  // selecionar por Id e mostrar o selecionado
+  const selectOcorrenciaTipoById = 
+    (id: number) => {
+      return ocorrenciasTipos.find((ot) => ot.id === id);
+    }
+
   return {
     // Estado
     ocorrenciasTipos,
@@ -259,5 +265,6 @@ export const useOcorrencia = () => {
     selectOcorrencia,
     clearOcorrenciaData,
     clearError,
+    selectOcorrenciaTipoById
   };
 };

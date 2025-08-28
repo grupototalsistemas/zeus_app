@@ -4,17 +4,17 @@ import { usePathname } from 'next/navigation';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSidebar } from '../context/SidebarContext';
 import {
-  BoxCubeIcon,
-  CalenderIcon,
-  ChevronDownIcon,
-  GridIcon,
-  GroupIcon,
-  HorizontaLDots,
-  ListIcon,
-  PieChartIcon,
-  PlugInIcon,
-  ShootingStarIcon,
-  UserCircleIcon,
+    BoxCubeIcon,
+    CalenderIcon,
+    ChevronDownIcon,
+    GridIcon,
+    GroupIcon,
+    HorizontaLDots,
+    ListIcon,
+    PieChartIcon,
+    PlugInIcon,
+    ShootingStarIcon,
+    UserCircleIcon,
 } from '../icons/index';
 
 type NavItem = {
@@ -43,6 +43,7 @@ const navItems: NavItem[] = [
       },
       { name: 'Gerenciar ocorrencias', path: '/ocorrencia', pro: false },
       { name: 'Gerenciar tipos de ocorrencias', path: '/tipo-ocorrencia', pro: false },
+      { name: 'Gerenciar etapas de movimento', path: '/etapas', pro: false },
     ],
   },
   {

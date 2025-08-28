@@ -145,6 +145,12 @@ export const usePrioridade = () => {
     dispatch(setError(null));
   }, [dispatch]);
 
+  // Selecionar por Id
+  const selectPrioridadeById = 
+    (id: number) => {
+      return prioridades.find((p) => p.id === id);   
+    }
+
   return {
     // Estado
     prioridades,
@@ -165,5 +171,6 @@ export const usePrioridade = () => {
     selectPrioridade,
     clearPrioridadeData,
     clearError,
+    selectPrioridadeById
   };
 };

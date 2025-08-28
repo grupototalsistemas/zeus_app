@@ -8,6 +8,10 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+
+// src/components/WithReduxInitialData.tsx
+// Pegar os dados iniciais necessários para a aplicação
+// e armazená-los no Redux Store
 export function WithReduxInitialData({
   children,
 }: {

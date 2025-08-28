@@ -9,9 +9,8 @@ import { StatusRegistro } from '@/types/enum';
 import { Prioridade } from '@/types/prioridade.type';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
 import ColorPicker from 'react-pick-color';
-import DatePicker from '../date-picker';
+import { useSelector } from 'react-redux';
 
 export interface PrioridadeFormData {
   descricao: string;
@@ -69,7 +68,9 @@ export function PrioridadeFormBase({
   };
 
   return (
-    <ComponentCard title={`${mode === 'create' ? 'Criar' : 'Editar'} Tempo de Execução`}>
+    <ComponentCard
+      title={`${mode === 'create' ? 'Criar' : 'Editar'} Tempo de Execução`}
+    >
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-2 gap-6">
           {/* Descrição */}
@@ -123,18 +124,31 @@ export function PrioridadeFormBase({
               required
               disabled={disabled}
             /> */}
-            <ColorPicker color={formData.cor} onChange={color => handleChange('cor', color.hex)} />
+            <ColorPicker
+              color={formData.cor}
+              onChange={(color) => handleChange('cor', color.hex)}
+            />
           </div>
           <div>
-            <Label>Informe o tempo limite para essa prioridade</Label>
-            
-            <DatePicker
-              id='tempo'
-              defaultDate={formData.tempo}
-              onChange={(date) => handleChange('tempo', date.toString())}
-              mode='single'
-              disabled={disabled}
-            />
+            <Label>Informe o tempo limite em minutos</Label>
+            <div className="mt-1">
+              <input
+                type="number"
+                min="1"
+                value={formData.tempo || ''}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  handleChange('tempo', String(Number(e.target.value)));
+                }}
+                placeholder="Digite o tempo em minutos"
+                className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                required
+                disabled={disabled}
+              />
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                Digite o tempo em minutos (ex: 30 para meia hora, 60 para uma
+                hora, 120 para duas horas)
+              </p>
+            </div>
           </div>
         </div>
 
@@ -163,7 +177,7 @@ export function PrioridadeFormBase({
             Cancelar
           </Button>
           <Button disabled={disabled}>
-            {mode === 'create' ? 'Criar Função' : 'Salvar Alterações'}
+            {mode === 'create' ? 'Criar Prioridade' : 'Salvar Alterações'}
           </Button>
         </div>
       </form>
