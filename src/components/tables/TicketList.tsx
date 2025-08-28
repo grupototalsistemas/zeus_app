@@ -1,11 +1,17 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Badge from '../ui/badge/Badge';
 
+import { usePerfil } from '@/hooks/usePerfil';
+import { usePrioridade } from '@/hooks/usePrioridade';
 import { MoreDotIcon } from '@/icons';
 import { ChamadoService } from '@/service/chamado.service';
+import { Chamado } from '@/types/chamado.type';
+import { StatusRegistro } from '@/types/enum';
+import { diasAtras, formataDataParaExibir, formataHoraParaExibir } from '@/utils/fomata-data';
 import { useRouter } from 'next/navigation';
+import React from 'react';
 import { Dropdown } from '../ui/dropdown/Dropdown';
 import { DropdownItem } from '../ui/dropdown/DropdownItem';
 import {
@@ -24,8 +30,12 @@ export default function TicketList() {
   const itemsPerPage = 10;
   const totalPages = Math.ceil(tickets.length / itemsPerPage);
   const [open, setOpen] = useState(false);
-  const [chamados, setChamados] = useState<any[]>([]);
+  const [chamados, setChamados] = useState<Chamado[]>([]);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+  const triggerRefs = useRef<{ [key: string]: React.RefObject<HTMLButtonElement | null> }>({});
+
+  const { selectPerfilById } = usePerfil();
+  const {selectPrioridadeById} = usePrioridade();
 
   // Dados da página atual
   const paginatedData = tickets.slice(
@@ -33,18 +43,65 @@ export default function TicketList() {
     currentPage * itemsPerPage
   );
 
+  //função para pegar o ultimo movimento do chamado
+  const ultimoMovimento = (chamado: Chamado) => {
+    if (chamado.movimentos && chamado.movimentos.length > 0) {
+      return chamado.movimentos[chamado.movimentos.length - 1];
+    }
+    return null;
+  }
+
+  // Criar refs para cada botão de dropdown
+  const getTriggerRef = (id: string) => {
+    if (!triggerRefs.current[id]) {
+      triggerRefs.current[id] = React.createRef<HTMLButtonElement>();
+    }
+    return triggerRefs.current[id];
+  };
+
   useEffect(() => {
     const fetchChamados = async () => {
       try {
         const response = await ChamadoService.getChamados();
 
         console.log('Chamadinho: ', response);
+
+        setChamados(response);
       } catch (error) {
         console.error('Error fetching chamados:', error);
       }
     };
     fetchChamados();
-  });
+  }, []);
+
+  const handleDelete = async (chamado: Chamado) => {
+      // Confirmação antes de excluir
+      const confirmDelete = window.confirm(
+        `Tem certeza que deseja excluir o chamado: "${chamado.titulo}"?\n\nEsta ação não pode ser desfeita.`
+      );
+  
+      if (!confirmDelete) {
+        return; // Usuário cancelou a exclusão
+      }
+  
+      try {
+        // await deleteTipo(tipo.id!);
+        await ChamadoService.deleteChamado(chamado.id!);
+        // Fecha o dropdown se estiver aberto
+        setOpenDropdownId(null);
+  
+        // Ajusta a página atual se necessário
+        const newTotalPages = Math.ceil((chamados.length - 1) / itemsPerPage);
+        if (currentPage > newTotalPages && newTotalPages > 0) {
+          setCurrentPage(newTotalPages);
+        }
+  
+        console.log('Tipo excluído com sucesso');
+      } catch (error) {
+        console.error('Erro ao excluir tipo:', error);
+        alert('Erro ao excluir o tipo. Tente novamente.');
+      }
+    };
   const handleToggle = (id: string) => {
     setOpenDropdownId((prev) => (prev === id ? null : id));
   };
@@ -58,73 +115,73 @@ export default function TicketList() {
             <TableRow>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400 border-r border-gray-100 md:border-none dark:border-gray-800"
+                className="text-theme-xs border-r border-gray-100 py-3 text-start font-medium text-gray-500 md:border-none dark:border-gray-800 dark:text-gray-400"
               >
                 Protocolo
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400 px-3 md:px-0 border-r md:border-none border-gray-100 dark:border-gray-800"
+                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-start font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
               >
                 Entrada
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400 px-3 md:px-0 border-r md:border-none border-gray-100 dark:border-gray-800"
+                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-start font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
               >
                 Hora
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-40 px-3 md:px-0 border-r md:border-none border-gray-100 dark:border-gray-800"
+                className="text-theme-xs dark:text-gray-40 border-r border-gray-100 px-3 py-3 text-start font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800"
               >
                 Sistema
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400 px-3 md:px-0 border-r md:border-none border-gray-100 dark:border-gray-800"
+                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-start font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
               >
                 Serventia
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400 px-3 md:px-0 border-r md:border-none border-gray-100 dark:border-gray-800"
+                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-start font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
               >
                 Codigo
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400 px-3 md:px-0 border-r md:border-none border-gray-100 dark:border-gray-800"
+                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-start font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
               >
                 Status
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400 px-3 md:px-0 border-r md:border-none border-gray-100 dark:border-gray-800"
+                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-start font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
               >
                 Prazo
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400 px-3 md:px-0 border-r md:border-none border-gray-100 dark:border-gray-800"
+                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-start font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
               >
                 Ultima Atualização
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400 px-3 md:px-0 border-r md:border-none border-gray-100 dark:border-gray-800"
+                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-start font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
               >
                 Dias
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400 px-3 md:px-0 border-r md:border-none border-gray-100 dark:border-gray-800"
+                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-start font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
               >
                 Responsavel
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400 px-3 md:px-0 "
+                className="text-theme-xs px-3 py-3 text-start font-medium text-gray-500 md:px-0 dark:text-gray-400"
               >
                 Ações
               </TableCell>
@@ -135,69 +192,72 @@ export default function TicketList() {
 
           <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
             {chamados.length > 0 &&
-              chamados.map((product) => (
-                <TableRow key={product.id} className="">
+              chamados.map((chamado) => (
+                <TableRow key={chamado.id} className="">
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    {product.protocolo}
+                    {chamado.protocolo || 'N/A'}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    {product.entrada.getTime()}
+                    {formataDataParaExibir(chamado.createdAt ||'') }
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    {product.hora}
+                    {formataHoraParaExibir(chamado.createdAt || '')}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    {product.sistema}
+                    {chamado.sistemaId}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    {product.serventia}
+                    {chamado.empresaId}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    {product.codigo}
+                    {chamado.id}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                     <Badge
                       size="sm"
                       color={
-                        product.status === 'open'
+                        chamado.ativo === StatusRegistro.ATIVO
                           ? 'success'
-                          : product.status === 'in-progress'
+                          : chamado.ativo === StatusRegistro.INATIVO
                             ? 'warning'
                             : 'error'
                       }
                     >
-                      {product.status}
+                      {ultimoMovimento(chamado)?.etapa?.descricao || 'N/A'}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    {product.prazo}
+                    {selectPrioridadeById(chamado.prioridadeId)?.descricao}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    {product.ultimaAtualizacao.getTime()}
+                    {ultimoMovimento(chamado)?.createdAt && formataDataParaExibir(ultimoMovimento(chamado)?.createdAt || '')}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    {product.diasAtras}
+                    { diasAtras(formataDataParaExibir(chamado.createdAt || ''))}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    {product.responsavel}
+                    {selectPerfilById(ultimoMovimento(chamado)?.usuarioId || 0)?.descricao
+                    }
                   </TableCell>
-                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                  <TableCell className="text-theme-sm py-3 text-gr  ay-500 dark:text-gray-400">
                     <div className="relative inline-block">
                       <button
-                        onClick={() => handleToggle(product.id)}
+                        ref={getTriggerRef(String(chamado.id))}
+                        onClick={() => handleToggle(String(chamado.id))}
                         className="dropdown-toggle"
                       >
                         <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
                       </button>
                       <Dropdown
-                        isOpen={openDropdownId === product.id}
+                        isOpen={openDropdownId === String(chamado.id)}
                         onClose={() => setOpenDropdownId(null)}
-                        className="w-40 p-2"
+                        className="p-2"
+                        
                       >
                         <DropdownItem
                           tag="a"
                           onClick={() =>
-                            router.push(`/editar-chamado/${product.id}`)
+                            router.push(`/editar-chamado/${chamado.id}`)
                           }
                           className="flex w-full rounded-lg text-left font-normal text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
                         >
@@ -205,6 +265,7 @@ export default function TicketList() {
                         </DropdownItem>
                         <DropdownItem
                           tag="a"
+                          onClick={() => handleDelete(chamado)}
                           className="flex w-full rounded-lg text-left font-normal text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
                         >
                           Deletar

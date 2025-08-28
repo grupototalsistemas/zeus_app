@@ -28,7 +28,7 @@ export default function TempoExecucao() {
       <PageBreadcrumb pageTitle="Tempo de Execução" pageBefore="Chamados" />
       <PrioridadeFormBase mode="create" onSubmit={handleSubmit} />
        
-        
+        <br />
       
       <PrioridadeList />
     </>

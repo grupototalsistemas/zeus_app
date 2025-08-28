@@ -1,44 +1,61 @@
-"use client";
-import React from "react";
-import ComponentCard from "../../common/ComponentCard";
-import { useDropzone } from "react-dropzone";
+'use client';
+import React from 'react';
+import { useDropzone } from 'react-dropzone';
+import ComponentCard from '../../common/ComponentCard';
 
-const DropzoneComponent: React.FC = () => {
+interface DropzoneProps {
+  onFilesChange: (files: File[]) => void;
+}
+
+const DropzoneComponent: React.FC<DropzoneProps> = ({ onFilesChange }) => {
+  const [files, setFiles] = React.useState<File[]>([]);
+
   const onDrop = (acceptedFiles: File[]) => {
-    console.log("Files dropped:", acceptedFiles);
-    // Handle file uploads here
+    console.log('Files dropped:', acceptedFiles);
+    setFiles((prev) => [...prev, ...acceptedFiles]);
+    onFilesChange([...files, ...acceptedFiles]);
+  };
+
+  const removeFile = (fileIndex: number) => {
+    const newFiles = files.filter((_, index) => index !== fileIndex);
+    setFiles(newFiles);
+    onFilesChange(newFiles);
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
+    maxSize: 5242880, // 5MB em bytes
     accept: {
-      "image/png": [],
-      "image/jpeg": [],
-      "image/webp": [],
-      "image/svg+xml": [],
+      'image/png': [],
+      'image/jpeg': [],
+      'image/webp': [],
+      'image/svg+xml': [],
+      'application/pdf': [],
+      'application/msword': [],
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+        [], // .docx
     },
   });
+
   return (
     <ComponentCard title="Anexar arquivos" className="mb-5">
-      <div className="transition border border-gray-300 border-dashed cursor-pointer dark:hover:border-brand-500 dark:border-gray-700 rounded-xl hover:border-brand-500">
-        {/* <form
+      <div className="dark:hover:border-brand-500 hover:border-brand-500 cursor-pointer rounded-xl border border-dashed border-gray-300 transition dark:border-gray-700">
+        <div
           {...getRootProps()}
-          className={`dropzone rounded-xl   border-dashed border-gray-300 p-7 lg:p-10
-        ${
-          isDragActive
-            ? "border-brand-500 bg-gray-100 dark:bg-gray-800"
-            : "border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-900"
-        }
-      `}
+          className={`dropzone cursor-pointer rounded-xl border-dashed border-gray-300 p-7 lg:p-10 ${
+            isDragActive
+              ? 'border-brand-500 bg-gray-100 dark:bg-gray-800'
+              : 'border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-900'
+          } `}
           id="demo-upload"
-        > */}
+        >
           {/* Hidden Input */}
           <input {...getInputProps()} />
 
-          <div className="dz-message flex flex-col items-center m-0!">
+          <div className="dz-message m-0! flex flex-col items-center">
             {/* Icon Container */}
             <div className="mb-[22px] flex justify-center">
-              <div className="flex h-[68px] w-[68px]  items-center justify-center rounded-full bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-400">
+              <div className="flex h-[68px] w-[68px] items-center justify-center rounded-full bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-400">
                 <svg
                   className="fill-current"
                   width="29"
@@ -56,19 +73,61 @@ const DropzoneComponent: React.FC = () => {
             </div>
 
             {/* Text Content */}
-            <h4 className="mb-3 font-semibold text-gray-800 text-theme-xl dark:text-white/90">
-              {isDragActive ? "Solte arquivos aqui" : "Arraste e solte os arquivos aqui"}
+            <h4 className="text-theme-xl mb-3 font-semibold text-gray-800 dark:text-white/90">
+              {isDragActive
+                ? 'Solte arquivos aqui'
+                : 'Arraste e solte os arquivos aqui'}
             </h4>
 
-            <span className=" text-center mb-5 block w-full max-w-[290px] text-sm text-gray-700 dark:text-gray-400">
+            <span className="mb-5 block w-full max-w-[290px] text-center text-sm text-gray-700 dark:text-gray-400">
               PNG, JPG, WebP, SVG imagens (max. 5MB).
             </span>
 
-            <span className="font-medium underline text-theme-sm text-brand-500">
+            <span className="text-theme-sm text-brand-500 font-medium underline">
               Procurar arquivos
             </span>
           </div>
-        
+        </div>
+
+        {/* Lista de arquivos */}
+        {files.length > 0 && (
+          <div className="mt-4 space-y-2">
+            <h4 className="font-semibold text-gray-800 dark:text-white/90">
+              Arquivos selecionados:
+            </h4>
+            <ul className="space-y-2">
+              {files.map((file, index) => (
+                <li
+                  key={index}
+                  className="flex items-center justify-between rounded-lg border border-gray-300 p-2 dark:border-gray-700"
+                >
+                  <div className="flex items-center">
+                    <span className="ml-2 text-sm text-gray-700 dark:text-gray-400">
+                      {file.name} ({(file.size / 1024 / 1024).toFixed(2)}MB)
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeFile(index)}
+                    className="text-red-500 hover:text-red-600"
+                  >
+                    <svg
+                      className="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </ComponentCard>
   );

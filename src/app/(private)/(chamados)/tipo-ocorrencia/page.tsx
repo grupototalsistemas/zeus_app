@@ -1,9 +1,7 @@
 'use client';
 
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
-import { OcorrenciaFormBase } from '@/components/form/ocorrencia/ocorrenciaForm';
 import { TipoOcorrenciaFormBase } from '@/components/form/tipoOcorrencia/TipoOcorrenciaForm';
-import OcorrenciaList from '@/components/tables/OcorrenciaList';
 import TipoOcorrenciaList from '@/components/tables/TipoOcorrenciaList';
 import { TipoOcorrenciaService } from '@/service/ocorrenciaTipo.service';
 

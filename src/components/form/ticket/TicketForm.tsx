@@ -5,41 +5,40 @@ import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import Input from '@/components/form/input/InputField';
 import TextArea from '@/components/form/input/TextArea';
 import Label from '@/components/form/Label';
+import PessoaAutocomplete from '@/components/form/pessoa/PessoaAutocomplete';
 import Select from '@/components/form/Select';
 import Button from '@/components/ui/button/Button';
-import { ChevronDownIcon } from '@/icons';
+import { useAppSelector } from '@/hooks/useRedux';
+import { SistemaService } from '@/service/sistemas.service';
+import { selectEmpresasFormatadas } from '@/store/slices/empresaSlice';
+import { selectOcorrenciasFormatadas } from '@/store/slices/ocorrenciaSlice';
+import { selectPrioridadesFormatadas } from '@/store/slices/prioridadeSlice';
+import { RootState } from '@/store/store';
+import { StatusRegistro } from '@/types/enum';
+import { Pessoa } from '@/types/pessoas.type';
+import { dataAgora } from '@/utils/fomata-data';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useSelector } from 'react-redux';
 import { z } from 'zod';
 import DropzoneComponent from '../form-elements/DropZone';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store/store';
-import DatePicker from '../date-picker';
-import { IPrioridade, StatusRegistro } from '@/types/enum';
-import { useAppSelector } from '@/hooks/useRedux';
-import { selectEmpresasFormatadas } from '@/store/slices/empresaSlice';
-import { dataAgora } from '@/utils/fomata-data';
-import { selectOcorrencias, selectOcorrenciasFormatadas } from '@/store/slices/ocorrenciaSlice';
-import { selectPrioridades, selectPrioridadesFormatadas } from '@/store/slices/prioridadeSlice';
 
 const ticketSchema = z.object({
-
   empresaId: z.string().min(1, 'Empresa é obrigatória'),
   sistemaId: z.string().min(1, 'Sistema é obrigatório'),
   pessoaId: z.string().min(1, 'Pessoa é obrigatória'),
   usuarioId: z.string().min(1, 'Usuário é obrigatório'),
-  inicio: z.string().optional(),
-  sistema: z.string().min(1, 'Sistema é obrigatório'),
-  prazo: z.string().min(1, 'Prazo é obrigatório'),
-  responsavel: z.string().min(1, 'Responsável é obrigatório'),
-  titulo: z.string().min(3, 'Título não pode ser menor que 3 caracteres'),
+  titulo: z.string().min(3, 'Título é obrigatório'),
   descricao: z.string().min(5, 'Descrição é obrigatória'),
-  ativo: z.enum(StatusRegistro),
   prioridadeId: z.string().min(1, 'Prioridade é obrigatória'),
+  // opcionais / backend preenchidos
+  inicio: z.string().optional(),
+  ocorrenciaId: z.string().optional(),
   protocolo: z.string().optional(),
   observacao: z.string().optional(),
-  ocorrenciaId: z.string().optional(),
+  ativo: z.enum(StatusRegistro),
+  anexos: z.array(z.instanceof(File)).optional(),
 });
 
 export type TicketFormData = z.infer<typeof ticketSchema>;
@@ -50,13 +49,23 @@ interface TicketFormBaseProps {
   onSubmit: (data: TicketFormData) => void;
 }
 
+interface Option {
+  value: number;
+  label: string;
+}
+
 export function TicketFormBase({
   mode,
   initialData,
   onSubmit,
 }: TicketFormBaseProps) {
   const empresasFormatadas = useAppSelector(selectEmpresasFormatadas);
-  const {pessoaInfo}= useSelector((state:RootState)=>state.pessoa)
+  const ocorrencias = useSelector(selectOcorrenciasFormatadas);
+  const prioridades = useSelector(selectPrioridadesFormatadas);
+  const [sistemas, setSistemas] = useState<Option[]>([]);
+  const [anexosFiles, setAnexosFiles] = useState<File[]>([]);
+  const { pessoaInfo } = useSelector((state: RootState) => state.pessoa);
+  // console.log('initial  data:', initialData);
   const {
     register,
     handleSubmit,
@@ -64,53 +73,107 @@ export function TicketFormBase({
     setValue,
     watch,
     trigger,
+    reset,
   } = useForm<TicketFormData>({
     resolver: zodResolver(ticketSchema),
     defaultValues: {
+      empresaId: initialData?.empresaId ?? '',
       sistemaId: initialData?.sistemaId ?? '',
       ocorrenciaId: initialData?.ocorrenciaId ?? '',
-      responsavel: initialData?.responsavel ?? (pessoaInfo?.nomeSocial || pessoaInfo?.nome),
       titulo: initialData?.titulo ?? '',
       descricao: initialData?.descricao ?? '',
-      ativo: initialData?.ativo ? StatusRegistro.ATIVO : StatusRegistro.INATIVO,
       prioridadeId: initialData?.prioridadeId ?? '',
-      inicio: initialData?.inicio ?? '',
-      empresaId: initialData?.empresaId ?? '',
       observacao: initialData?.observacao ?? '',
-      pessoaId: initialData?.pessoaId ?? '',
-      protocolo: initialData?.protocolo ?? '',
-      sistema: initialData?.sistema ?? '',
-      usuarioId: initialData?.usuarioId ?? '',
-      
+      pessoaId: initialData?.pessoaId ?? (pessoaInfo?.id || ''), // vem do redux
+      usuarioId: initialData?.usuarioId ?? (pessoaInfo?.id || ''), // vem do redux
+      ativo: initialData?.ativo ?? StatusRegistro.ATIVO,
+      inicio: initialData?.inicio ?? dataAgora(),
+      protocolo: initialData?.protocolo ?? Date.now().toString(),
     },
   });
 
-  // Simulação de opções vindas do backend
+  useEffect(() => {
+    async function fetchSistemas() {
+      const sistemasFromApi = await SistemaService.getSistemas();
+      console.log('Sistemas carregados:', sistemasFromApi);
+      const sistemasFormatados = sistemasFromApi.map((sistema) => ({
+        value: sistema.id || 0,
+        label: sistema.descricao,
+      }));
+      setSistemas(sistemasFormatados);
+    }
+    fetchSistemas();
+  }, []);
 
-  const exemplosSistema = [
-    { value: 'Notas', label: 'Notas' },
-    { value: 'Dinner', label: 'Dinner' },
-    { value: 'Foodlivre', label: 'Foodlivre' },
-  ];
-  // Exemplo de sintaxe para enum
-  const prioridadesExample = Object.values(IPrioridade).map(p => ({
-    value: p,
-    label: p
-  }));
-
-  const ocorrencia = useSelector(selectOcorrenciasFormatadas);
-  const prioridade = useSelector(selectPrioridadesFormatadas);
-
-  const [message, setMessage] = useState(initialData?.descricao || '');
-
-  // Atualiza valores iniciais se vierem depois (edição async)
+  // Atualiza valores no modo edit
   useEffect(() => {
     if (initialData) {
       Object.entries(initialData).forEach(([key, value]) => {
-        if (value) setValue(key as keyof TicketFormData, value as any);
+        if (value !== undefined)
+          setValue(key as keyof TicketFormData, value as any);
       });
     }
   }, [initialData, setValue]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      setAnexosFiles(files);
+      setValue('anexos', files);
+    }
+  };
+
+  useEffect(() => {
+    // Quando houver erros, encontra o primeiro erro e faz scroll até ele
+    if (Object.keys(errors).length > 0) {
+      const firstErrorKey = Object.keys(errors)[0];
+      const errorElement = document.querySelector(
+        `[name="${firstErrorKey}"], [data-field="${firstErrorKey}"]`
+      );
+      if (errorElement) {
+        errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (errorElement instanceof HTMLElement) {
+          errorElement.focus();
+        }
+      }
+    }
+  }, [errors]);
+
+  const handleFormSubmit = (data: TicketFormData) => {
+    const formDataWithFiles = {
+      ...data,
+      anexos: anexosFiles,
+    };
+    onSubmit(formDataWithFiles);
+    if (mode === 'create') {
+      reset(
+        {
+          empresaId: '',
+          sistemaId: '',
+          ocorrenciaId: '',
+          titulo: '',
+          descricao: '',
+          prioridadeId: '',
+          observacao: '',
+          pessoaId: pessoaInfo?.id || '',
+          usuarioId: pessoaInfo?.id || '',
+          ativo: StatusRegistro.ATIVO,
+          inicio: dataAgora(),
+          protocolo: Date.now().toString(),
+        },
+        { keepValues: false }
+      );
+      setValue('empresaId', '');
+      setValue('sistemaId', '');
+      setValue('pessoaId', '');
+      setValue('ocorrenciaId', '');
+      setValue('titulo', '');
+      setValue('descricao', '');
+      setValue('prioridadeId', '');
+      setValue('observacao', '');
+      setAnexosFiles([]);
+    }
+  };
 
   return (
     <>
@@ -121,204 +184,159 @@ export function TicketFormBase({
       <ComponentCard
         title={mode === 'create' ? 'Novo Chamado' : 'Editar Chamado'}
       >
-        <form onSubmit={handleSubmit((data) => {
-          console.log('Form submitted with data:', data);
-          console.log('Form errors:', errors);
-          onSubmit(data);
-        })} className="space-y-6">
-          {/* Serventia */}
-          <div>
-            <Label>Serventia</Label>
-            <div className="relative">
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+          {/* Identificação */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <Label>Empresa *</Label>
               <Select
                 options={empresasFormatadas}
-                placeholder="Selecione a Serventia "
+                placeholder="Selecione a Empresa"
                 onChange={(opt: any) => {
                   setValue('empresaId', opt);
                   trigger('empresaId');
                 }}
                 value={watch('empresaId')}
               />
-              <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">
-                <ChevronDownIcon />
-              </span>
+              {errors.empresaId && (
+                <p className="text-sm text-red-500">
+                  {errors.empresaId.message}
+                </p>
+              )}
             </div>
-            {errors.empresaId && (
-              <p className="text-sm text-red-500">{errors.empresaId.message}</p>
+            <div>
+              <Label>Sistema *</Label>
+              <Select
+                options={sistemas}
+                placeholder="Selecione o Sistema"
+                onChange={(opt: any) => {
+                  setValue('sistemaId', opt);
+                  trigger('sistemaId');
+                }}
+                value={watch('sistemaId')}
+              />
+              {errors.sistemaId && (
+                <p className="text-sm text-red-500">
+                  {errors.sistemaId?.message}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Identificação da Pessoa */}
+          <div className="grid grid-cols-1 gap-4">
+            <PessoaAutocomplete
+              onSelect={(pessoa: Pessoa | null) => {
+                if (pessoa) {
+                  setValue('pessoaId', pessoa.id?.toString() || '');
+                  trigger('pessoaId');
+                } else {
+                  setValue('pessoaId', '');
+                }
+              }}
+              empresaId={watch('empresaId')}
+              disabled={isSubmitting || !!watch('empresaId') === false}
+            />
+            {errors.pessoaId && (
+              <p className="text-sm text-red-500">{errors.pessoaId.message}</p>
             )}
           </div>
-          
-          {/* Itens preenchidos automaticamente e disabled */}
-          {/* <div>
-              <DatePicker
-                id="entrada-chamado"
-                label="Entrada"
-                placeholder={dataAgora()}
-                disabled
-              />
-            </div> */}
+
+          {/* Detalhes */}
           <div>
-            <Label>Responsavel</Label>
+            <Label>Título *</Label>
             <Input
               type="text"
-              placeholder={pessoaInfo?.nomeSocial || pessoaInfo?.nome}
-              value={pessoaInfo?.nomeSocial || pessoaInfo?.nome}
-              disabled
+              placeholder="Informe um título"
+              value={watch('titulo')}
+              onChange={(e) => setValue('titulo', e.target.value)}
             />
-          </div>
-          {/* Campos a serem preenchidos apos a serventia */}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <Label>Sistema</Label>
-              <div className="relative">
-                <Select
-                  options={exemplosSistema}
-                  placeholder="Selecione o sistema "
-                  onChange={(opt: any) => {
-                    setValue('sistema', opt);
-                    trigger('sistema');
-                  }}
-                  value={watch('sistema')}
-                />
-                <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">
-                  <ChevronDownIcon />
-                </span>
-              </div>
-              {errors.sistema && (
-                <p className="text-sm text-red-500">{errors.sistema.message}</p>
-              )}
-            </div>
-            <div>
-              <Label>Ocorrência</Label>
-              <div className="relative">
-                <Select
-                  options={ocorrencia}
-                  placeholder="Selecione a Ocorrência "
-                  onChange={(opt: any) => {
-                    setValue('ocorrenciaId', opt);
-                    trigger('ocorrenciaId');
-                  }}
-                  value={watch('ocorrenciaId')}
-                />
-                <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">
-                  <ChevronDownIcon />
-                </span>
-              </div>
-              {errors.ocorrenciaId && (
-                <p className="text-sm text-red-500">{errors.ocorrenciaId.message}</p>
-              )}
-            </div>
-            <div>
-              <Label>Prioridade</Label>
-              <div className="relative">
-                <Select
-                  options={prioridade}
-                  placeholder="Selecione a Prioridade do chamado "
-                  onChange={(opt: any) => {
-                    setValue('prioridadeId', opt);
-                    trigger('prioridadeId');
-                  }}
-                  value={watch('prioridadeId')}
-                />
-                <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">
-                  <ChevronDownIcon />
-                </span>
-              </div>
-              {errors.prioridadeId && (
-                <p className="text-sm text-red-500">{errors.prioridadeId.message}</p>
-              )}
-            </div>
-           
-            </div>
-            <div>
-              <Label>Cliente</Label>
-              <Input
-                type="text"
-                placeholder="Informe o nome do cliente"
-                value={watch('pessoaId')}
-                onChange={(e) => setValue('pessoaId', e.target.value)}
-              />
-              {errors.pessoaId && (
-                <p className="text-sm text-red-500">
-                  {errors.pessoaId.message}
-                </p>
-              )}
-            </div>
-            {/* Campos com opcionais */}
-            <div>
-              <Label>Título</Label>
-              <Input
-                type="text"
-                placeholder="Informe um título"
-                value={watch('titulo')}
-                onChange={(e) => setValue('titulo', e.target.value)}
-              />
-              {errors.titulo && (
-                <p className="text-sm text-red-500">{errors.titulo.message}</p>
-              )}
-            </div>
-          
-
-          {/* Descrição */}
-          <div>
-            <Label>Descrição</Label>
-            <TextArea
-              value={message}
-              placeholder="Descreva o chamado"
-              onChange={(value) => {
-                setMessage(value);
-                setValue('descricao', value);
-              }}
-              rows={6}
-            />
-            {errors.descricao && (
-              <p className="text-sm text-red-500">
-                {errors.descricao.message}
-              </p>
+            {errors.titulo && (
+              <p className="text-sm text-red-500">{errors.titulo.message}</p>
             )}
           </div>
-          <DropzoneComponent/>
-          {/* Informar alguma mensagem caso necessite*/}
+
           <div>
-              <Label>Mensagem</Label>
-              <Input
-                type="text"
-                placeholder="Informe uma mensagem adicional (opcional) "
-                value={watch('observacao')}
-                onChange={(e) => setValue('observacao', e.target.value)}
+            <Label>Descrição *</Label>
+            <TextArea
+              value={watch('descricao')}
+              placeholder="Descreva o chamado"
+              onChange={(value) => setValue('descricao', value)}
+              rows={5}
+            />
+            {errors.descricao && (
+              <p className="text-sm text-red-500">{errors.descricao.message}</p>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <Label>Ocorrência</Label>
+              <Select
+                options={ocorrencias}
+                placeholder="Selecione a Ocorrência"
+                onChange={(opt: any) => setValue('ocorrenciaId', opt)}
+                value={watch('ocorrenciaId')}
               />
-              {errors.observacao && (
+            </div>
+            <div>
+              <Label>Prioridade *</Label>
+              <Select
+                options={prioridades}
+                placeholder="Selecione a Prioridade"
+                onChange={(opt: any) => {
+                  setValue('prioridadeId', opt);
+                  trigger('prioridadeId');
+                }}
+                value={watch('prioridadeId')}
+              />
+              {errors.prioridadeId && (
                 <p className="text-sm text-red-500">
-                  {errors.observacao.message}
+                  {errors.prioridadeId.message}
                 </p>
               )}
             </div>
-          {/* Botão */}
-          <div className="text-right space-x-2">
-            <Button 
-              size="sm" 
-              variant="outline" 
-              onClick={() => {
-                console.log('Form values:', watch());
-                console.log('Form errors:', errors);
-                console.log('Is form valid:', Object.keys(errors).length === 0);
-              }}
+          </div>
+
+          {/* Extras */}
+          <DropzoneComponent
+            onFilesChange={(files) => {
+              handleFileChange({ target: { files } } as any);
+            }}
+          />
+
+          <div>
+            <Label>Observação (opcional)</Label>
+            <Input
+              type="text"
+              placeholder="Alguma mensagem adicional?"
+              value={watch('observacao')}
+              onChange={(e) => setValue('observacao', e.target.value)}
+            />
+          </div>
+
+          {/* Campos automáticos / ocultos */}
+          <input type="hidden" {...register('pessoaId')} />
+          <input type="hidden" {...register('usuarioId')} />
+          <input type="hidden" {...register('inicio')} />
+          <input type="hidden" {...register('protocolo')} />
+
+          {/* Ações */}
+          <div className="flex justify-end gap-3">
+            {/* <Button
+              variant="outline"
+              onClick={() => console.log('DEBUG', watch())}
             >
               Debug
-            </Button>
-            <Button 
-              size="md" 
-              variant="primary" 
-              onClick={handleSubmit((data) => {
-                console.log('Button click - Form submitted with data:', data);
-                onSubmit(data);
-              })}
-              disabled={isSubmitting}
-            >
-              {isSubmitting 
-                ? (mode === 'create' ? 'Salvando...' : 'Atualizando...') 
-                : (mode === 'create' ? 'Salvar Chamado' : 'Atualizar Chamado')
-              }
+            </Button> */}
+            <Button variant="primary" disabled={isSubmitting}>
+              {isSubmitting
+                ? mode === 'create'
+                  ? 'Salvando...'
+                  : 'Atualizando...'
+                : mode === 'create'
+                  ? 'Salvar Chamado'
+                  : 'Atualizar Chamado'}
             </Button>
           </div>
         </form>
