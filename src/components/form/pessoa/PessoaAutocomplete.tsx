@@ -3,9 +3,9 @@
 import useDebounce from '@/hooks/useDebounce';
 import { useAppSelector } from '@/hooks/useRedux';
 import { PessoaService } from '@/service/pessoa.service';
-import { selectPessoaTiposFormatados } from '@/store/slices/pessoaTipoSlice';
+import { selectPessoasTiposFormatados } from '@/store/slices/pessoaTipoSlice';
 import { StatusGenero } from '@/types/enum';
-import { Pessoa } from '@/types/pessoas.type';
+import { Pessoa } from '@/types/pessoa.type';
 import { useEffect, useState } from 'react';
 import Label from '../Label';
 import Select from '../Select';
@@ -40,7 +40,7 @@ export default function PessoaAutocomplete({
   // Novo: estado da pessoa selecionada
   const [selectedPessoa, setSelectedPessoa] = useState<Pessoa | null>(null);
 
-  const pessoaTipos = useAppSelector(selectPessoaTiposFormatados);
+  const pessoaTipos = useAppSelector(selectPessoasTiposFormatados);
   const debouncedSearch = useDebounce(searchTerm, 500);
 
   // Buscar pessoas quando o termo de pesquisa mudar

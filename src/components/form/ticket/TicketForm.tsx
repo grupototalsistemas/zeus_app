@@ -15,8 +15,7 @@ import { selectOcorrenciasFormatadas } from '@/store/slices/ocorrenciaSlice';
 import { selectPrioridadesFormatadas } from '@/store/slices/prioridadeSlice';
 import { RootState } from '@/store/store';
 import { StatusRegistro } from '@/types/enum';
-import { Pessoa } from '@/types/pessoas.type';
-import { dataAgora } from '@/utils/fomata-data';
+import { Pessoa } from '@/types/pessoa.type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -33,7 +32,7 @@ const ticketSchema = z.object({
   descricao: z.string().min(5, 'Descrição é obrigatória'),
   prioridadeId: z.string().min(1, 'Prioridade é obrigatória'),
   // opcionais / backend preenchidos
-  inicio: z.string().optional(),
+
   ocorrenciaId: z.string().optional(),
   protocolo: z.string().optional(),
   observacao: z.string().optional(),
@@ -87,7 +86,6 @@ export function TicketFormBase({
       pessoaId: initialData?.pessoaId ?? (pessoaInfo?.id || ''), // vem do redux
       usuarioId: initialData?.usuarioId ?? (pessoaInfo?.id || ''), // vem do redux
       ativo: initialData?.ativo ?? StatusRegistro.ATIVO,
-      inicio: initialData?.inicio ?? dataAgora(),
       protocolo: initialData?.protocolo ?? Date.now().toString(),
     },
   });
@@ -123,19 +121,31 @@ export function TicketFormBase({
     }
   };
 
+  const scrollToError = (errorKey: string) => {
+    const selectors = [
+      `[name="${errorKey}"]`,
+      `#${errorKey}`,
+      `[data-field="${errorKey}"]`,
+      `[aria-label*="${errorKey}"]`,
+      `.error-${errorKey}`,
+    ];
+
+    for (const selector of selectors) {
+      const element = document.querySelector(selector);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (element instanceof HTMLElement) {
+          element.focus();
+        }
+        break;
+      }
+    }
+  };
+
   useEffect(() => {
-    // Quando houver erros, encontra o primeiro erro e faz scroll até ele
     if (Object.keys(errors).length > 0) {
       const firstErrorKey = Object.keys(errors)[0];
-      const errorElement = document.querySelector(
-        `[name="${firstErrorKey}"], [data-field="${firstErrorKey}"]`
-      );
-      if (errorElement) {
-        errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        if (errorElement instanceof HTMLElement) {
-          errorElement.focus();
-        }
-      }
+      scrollToError(firstErrorKey);
     }
   }, [errors]);
 
@@ -155,10 +165,9 @@ export function TicketFormBase({
           descricao: '',
           prioridadeId: '',
           observacao: '',
-          pessoaId: pessoaInfo?.id || '',
-          usuarioId: pessoaInfo?.id || '',
+          pessoaId: '',
+          usuarioId: '',
           ativo: StatusRegistro.ATIVO,
-          inicio: dataAgora(),
           protocolo: Date.now().toString(),
         },
         { keepValues: false }
@@ -318,7 +327,7 @@ export function TicketFormBase({
           {/* Campos automáticos / ocultos */}
           <input type="hidden" {...register('pessoaId')} />
           <input type="hidden" {...register('usuarioId')} />
-          <input type="hidden" {...register('inicio')} />
+
           <input type="hidden" {...register('protocolo')} />
 
           {/* Ações */}

@@ -34,14 +34,15 @@ export default function SignUpForm() {
     login: '',
     email: '',
     pessoa: {
-      id_empresa: empresa,
-      id_pessoa_tipo: 1,
+      empresaId: empresa,
+      tipoId: 1,
       genero: StatusGenero.MASCULINO,
       nome: '',
-      nome_social: '',
+      nomeSocial: '',
     },
     perfil: {
-      id_empresa: empresa,
+      nome: 'MASTER',
+      empresaId: empresa,
       descricao: 'MASTER',
     },
     senha: '',
@@ -146,7 +147,7 @@ export default function SignUpForm() {
               <Input
                 type="text"
                 placeholder="(Opcional)"
-                value={formData.pessoa.nome_social}
+                value={formData.pessoa.nomeSocial}
                 onChange={(e) =>
                   handleChange('pessoa.nome_social', e.target.value)
                 }
@@ -185,8 +186,8 @@ export default function SignUpForm() {
                 options={empresasFormatadas}
                 placeholder="Selecione a empresa"
                 onChange={(opt: string) => {
-                  handleChange('pessoa.id_empresa', Number(opt));
-                  handleChange('perfil.id_empresa', Number(opt));
+                  handleChange('pessoa.empresaId', Number(opt));
+                  handleChange('perfil.empresaId', Number(opt));
                 }}
               />
               <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">

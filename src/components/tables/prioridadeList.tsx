@@ -2,8 +2,8 @@
 
 import { usePrioridade } from '@/hooks/usePrioridade';
 import { MoreDotIcon } from '@/icons';
+import { Prioridade } from '@/types/chamadoPrioridade.type';
 import { StatusRegistro } from '@/types/enum';
-import { Prioridade } from '@/types/prioridade.type';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Badge from '../ui/badge/Badge';

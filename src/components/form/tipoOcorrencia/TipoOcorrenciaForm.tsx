@@ -5,8 +5,8 @@ import Label from '@/components/form/Label';
 import Switch from '@/components/form/switch/Switch';
 import Button from '@/components/ui/button/Button';
 import { selectEmpresas } from '@/store/slices/empresaSlice';
+import { Ocorrencia } from '@/types/chamadoOcorrencia.type';
 import { StatusRegistro } from '@/types/enum';
-import { Ocorrencia } from '@/types/ocorrencia.type';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -33,7 +33,7 @@ export function TipoOcorrenciaFormBase({
   const empresas = useSelector(selectEmpresas);
   const router = useRouter();
   const [formData, setFormData] = useState<TipoOcorrenciaFormData>({
-    empresaId: initialData?.idEmpresa || 0,
+    empresaId: initialData?.empresaId || 0,
     descricao: initialData?.descricao || '',
     ativo: initialData?.ativo || StatusRegistro.ATIVO,
   });
@@ -61,7 +61,9 @@ export function TipoOcorrenciaFormBase({
   };
 
   return (
-    <ComponentCard title={`${mode === 'create' ? 'Criar' : 'Editar'} Tipo de Ocorrência`}>
+    <ComponentCard
+      title={`${mode === 'create' ? 'Criar' : 'Editar'} Tipo de Ocorrência`}
+    >
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-2 gap-6">
           {/* Descrição */}
@@ -125,7 +127,9 @@ export function TipoOcorrenciaFormBase({
             Cancelar
           </Button>
           <Button disabled={disabled}>
-            {mode === 'create' ? 'Criar Tipo de Ocorrência' : 'Salvar Alterações'}
+            {mode === 'create'
+              ? 'Criar Tipo de Ocorrência'
+              : 'Salvar Alterações'}
           </Button>
         </div>
       </form>

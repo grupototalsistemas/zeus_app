@@ -8,7 +8,7 @@ import Select from '@/components/form/Select';
 import { ChevronDownIcon, EyeCloseIcon, EyeIcon } from '@/icons';
 import { EmpresaService } from '@/service/empresa.service';
 import { selectPerfisFormatados } from '@/store/slices/perfilSlice';
-import { selectTiposFormatados } from '@/store/slices/tipoSlice';
+import { selectPessoasTiposFormatados } from '@/store/slices/pessoaTipoSlice';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -47,7 +47,7 @@ export function UserFormBase({
   onSubmit,
 }: UserFormBaseProps) {
   const perfis = useSelector(selectPerfisFormatados);
-  const tipos = useSelector(selectTiposFormatados);
+  const tipos = useSelector(selectPessoasTiposFormatados);
 
   const [showPassword, setShowPassword] = useState(false);
   const [empresas, setEmpresas] = useState<EmpresasSelect[]>([]);

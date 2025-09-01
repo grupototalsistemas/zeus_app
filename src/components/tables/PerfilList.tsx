@@ -3,7 +3,7 @@
 import { usePerfil } from '@/hooks/usePerfil';
 import { MoreDotIcon } from '@/icons';
 import { StatusRegistro } from '@/types/enum';
-import { Perfil } from '@/types/perfil.type';
+import { Perfil } from '@/types/pessoaPerfil.type';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Badge from '../ui/badge/Badge';

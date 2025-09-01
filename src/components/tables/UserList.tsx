@@ -2,7 +2,7 @@
 
 import { ChevronDownIcon, ChevronUpIcon, MoreDotIcon } from '@/icons';
 import { PessoaService } from '@/service/pessoa.service';
-import { Pessoa } from '@/types/pessoas.type';
+import { Pessoa } from '@/types/pessoa.type';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Badge from '../ui/badge/Badge';

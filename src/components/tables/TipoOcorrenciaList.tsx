@@ -1,9 +1,10 @@
 'use client';
 
-import { useOcorrencia } from '@/hooks/useOcorrencia';
+import { useOcorrenciaTipo } from '@/hooks/useOcorrenciaTipo';
 import { MoreDotIcon } from '@/icons';
+
+import { OcorrenciaTipo } from '@/types/chamadoOcorrenciaTipo.type';
 import { StatusRegistro } from '@/types/enum';
-import { Ocorrencia, OcorrenciaTipo } from '@/types/ocorrencia.type';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Badge from '../ui/badge/Badge';
@@ -26,10 +27,10 @@ export default function TipoOcorrenciaList() {
     ocorrenciasTipos,
     loading,
     error,
-    fetchOcorrenciasTipos,
-    deleteOcorrenciaTipo,
-    clearError,
-  } = useOcorrencia();
+    buscarOcorrenciasTipos,
+    excluirOcorrenciaTipo,
+    limparErro,
+  } = useOcorrenciaTipo();
 
   // Estados locais (apenas para UI)
   const [currentPage, setCurrentPage] = useState(1);
@@ -54,13 +55,15 @@ export default function TipoOcorrenciaList() {
     }
 
     try {
-      await deleteOcorrenciaTipo(ocorrenciaTipo.id!);
+      await excluirOcorrenciaTipo(ocorrenciaTipo.id!);
 
       // Fecha o dropdown se estiver aberto
       setOpenDropdownId(null);
 
       // Ajusta a página atual se necessário
-      const newTotalPages = Math.ceil((ocorrenciasTipos.length - 1) / itemsPerPage);
+      const newTotalPages = Math.ceil(
+        (ocorrenciasTipos.length - 1) / itemsPerPage
+      );
       if (currentPage > newTotalPages && newTotalPages > 0) {
         setCurrentPage(newTotalPages);
       }
@@ -75,18 +78,18 @@ export default function TipoOcorrenciaList() {
   useEffect(() => {
     // Só carrega se não há ocorrencias no store ou se houver erro
     if (ocorrenciasTipos.length === 0 && !loading) {
-      fetchOcorrenciasTipos();
+      buscarOcorrenciasTipos();
     }
 
     // Temporizador para buscar ocorrências a cada 15 segundos
     const interval = setInterval(() => {
       if (!loading) {
-        fetchOcorrenciasTipos();
+        buscarOcorrenciasTipos();
       }
     }, 15000);
 
     return () => clearInterval(interval);
-  }, [fetchOcorrenciasTipos, ocorrenciasTipos.length, loading]);
+  }, [buscarOcorrenciasTipos, ocorrenciasTipos.length, loading]);
 
   const handleToggle = (id: number) => {
     setOpenDropdownId(openDropdownId === id ? null : id);
@@ -112,13 +115,13 @@ export default function TipoOcorrenciaList() {
             <span>{error}</span>
             <div className="space-x-2">
               <button
-                onClick={fetchOcorrenciasTipos}
+                onClick={buscarOcorrenciasTipos}
                 className="underline hover:no-underline"
               >
                 Tentar novamente
               </button>
               <button
-                onClick={clearError}
+                onClick={limparErro}
                 className="underline hover:no-underline"
               >
                 Fechar

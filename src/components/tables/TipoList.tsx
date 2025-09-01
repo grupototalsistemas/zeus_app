@@ -1,9 +1,9 @@
 'use client';
 
-import { useTipo } from '@/hooks/useTipo';
+import { usePessoaTipo } from '@/hooks/usePessoaTipo';
 import { MoreDotIcon } from '@/icons';
 import { StatusRegistro } from '@/types/enum';
-import { Tipo } from '@/types/tipo.type';
+import { PessoaTipo } from '@/types/pessoaTipo.type';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Badge from '../ui/badge/Badge';
@@ -22,22 +22,28 @@ export default function TipoList() {
   const router = useRouter();
 
   // Hook customizado com todas as operações de tipo
-  const { tipos, loading, error, fetchTipos, deleteTipo, clearError } =
-    useTipo();
+  const {
+    pessoasTipos,
+    loading,
+    error,
+    fetchPessoasTipos,
+    deletePessoaTipo,
+    clearError,
+  } = usePessoaTipo();
 
   // Estados locais (apenas para UI)
   const [currentPage, setCurrentPage] = useState(1);
   const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
 
   const itemsPerPage = 10;
-  const totalPages = Math.ceil(tipos.length / itemsPerPage);
+  const totalPages = Math.ceil(pessoasTipos.length / itemsPerPage);
 
-  const paginatedData = tipos.slice(
+  const paginatedData = pessoasTipos.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
-  const handleDelete = async (tipo: Tipo) => {
+  const handleDelete = async (tipo: PessoaTipo) => {
     // Confirmação antes de excluir
     const confirmDelete = window.confirm(
       `Tem certeza que deseja excluir o tipo "${tipo.descricao}"?\n\nEsta ação não pode ser desfeita.`
@@ -48,13 +54,13 @@ export default function TipoList() {
     }
 
     try {
-      await deleteTipo(tipo.id!);
+      await deletePessoaTipo(tipo.id!);
 
       // Fecha o dropdown se estiver aberto
       setOpenDropdownId(null);
 
       // Ajusta a página atual se necessário
-      const newTotalPages = Math.ceil((tipos.length - 1) / itemsPerPage);
+      const newTotalPages = Math.ceil((pessoasTipos.length - 1) / itemsPerPage);
       if (currentPage > newTotalPages && newTotalPages > 0) {
         setCurrentPage(newTotalPages);
       }
@@ -67,22 +73,22 @@ export default function TipoList() {
   };
 
   useEffect(() => {
-    // Só carrega se não há tipos no store ou se houver erro
-    if (tipos.length === 0 && !loading) {
-      fetchTipos();
+    // Só carrega se não há pessoasTipos no store ou se houver erro
+    if (pessoasTipos.length === 0 && !loading) {
+      fetchPessoasTipos();
     }
-  }, [fetchTipos, tipos.length, loading]);
+  }, [fetchPessoasTipos, pessoasTipos.length, loading]);
 
   const handleToggle = (id: number) => {
     setOpenDropdownId(openDropdownId === id ? null : id);
   };
 
-  if (loading && tipos.length === 0) {
+  if (loading && pessoasTipos.length === 0) {
     return (
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pt-4 pb-3 sm:px-6 dark:border-gray-800 dark:bg-white/[0.03]">
         <div className="flex items-center justify-center py-10">
           <div className="text-gray-500 dark:text-gray-400">
-            Carregando tipos...
+            Carregando pessoasTipos...
           </div>
         </div>
       </div>
@@ -97,7 +103,7 @@ export default function TipoList() {
             <span>{error}</span>
             <div className="space-x-2">
               <button
-                onClick={fetchTipos}
+                onClick={fetchPessoasTipos}
                 className="underline hover:no-underline"
               >
                 Tentar novamente
@@ -185,7 +191,7 @@ export default function TipoList() {
                 </TableCell>
               </TableRow>
             ))}
-            {tipos.length === 0 && !loading && (
+            {pessoasTipos.length === 0 && !loading && (
               <TableRow>
                 <TableCell
                   {...{ colSpan: 3 }}
@@ -199,7 +205,7 @@ export default function TipoList() {
         </Table>
       </div>
 
-      {tipos.length > 0 && (
+      {pessoasTipos.length > 0 && (
         <div className="mt-4 flex items-center justify-between">
           <Pagination
             currentPage={currentPage}

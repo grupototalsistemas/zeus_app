@@ -2,15 +2,20 @@
 
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import { TipoFormBase, TipoFormData } from '@/components/form/tipo/TipoForm';
-import { useTipo } from '@/hooks/useTipo';
+import { usePessoaTipo } from '@/hooks/usePessoaTipo';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function EditTipoPage() {
   const router = useRouter();
   const params = useParams();
-  const { tipoSelecionado, editTipo, fetchTipoById, loading, error } =
-    useTipo();
+  const {
+    pessoasTiposSelecionado,
+    editPessoaTipo,
+    fetchPessoaTipoById,
+    loading,
+    error,
+  } = usePessoaTipo();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notFound, setNotFound] = useState(false);
@@ -21,7 +26,7 @@ export default function EditTipoPage() {
     const loadTipo = async () => {
       try {
         if (tipoId && !isNaN(tipoId)) {
-          await fetchTipoById(tipoId);
+          await fetchPessoaTipoById(tipoId);
         } else {
           setNotFound(true);
         }
@@ -32,17 +37,17 @@ export default function EditTipoPage() {
     };
 
     loadTipo();
-  }, [tipoId, fetchTipoById]);
+  }, [tipoId, fetchPessoaTipoById]);
 
   const handleEdit = async (data: TipoFormData) => {
-    if (!tipoSelecionado) return;
+    if (!pessoasTiposSelecionado) return;
 
     try {
       setIsSubmitting(true);
 
       // Usa o hook que já gerencia o Redux
-      await editTipo({
-        ...tipoSelecionado,
+      await editPessoaTipo({
+        ...pessoasTiposSelecionado,
         ...data,
       });
 
@@ -56,7 +61,7 @@ export default function EditTipoPage() {
     }
   };
 
-  if (loading && !tipoSelecionado) {
+  if (loading && !pessoasTiposSelecionado) {
     return (
       <>
         <PageBreadcrumb pageTitle="Editar Função" pageBefore="Funções" />
@@ -69,7 +74,7 @@ export default function EditTipoPage() {
     );
   }
 
-  if (notFound || (!loading && !tipoSelecionado)) {
+  if (notFound || (!loading && !pessoasTiposSelecionado)) {
     return (
       <>
         <PageBreadcrumb
@@ -95,7 +100,7 @@ export default function EditTipoPage() {
   return (
     <>
       <PageBreadcrumb
-        pageTitle={`Editar Função: ${tipoSelecionado?.descricao}`}
+        pageTitle={`Editar Função: ${pessoasTiposSelecionado?.descricao}`}
         pageBefore="Funções"
       />
 
@@ -112,7 +117,7 @@ export default function EditTipoPage() {
       >
         <TipoFormBase
           mode="edit"
-          initialData={tipoSelecionado || undefined}
+          initialData={pessoasTiposSelecionado || undefined}
           onSubmit={handleEdit}
           disabled={loading || isSubmitting}
         />

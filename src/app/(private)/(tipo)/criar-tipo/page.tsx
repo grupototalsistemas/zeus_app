@@ -2,13 +2,13 @@
 
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import { TipoFormBase, TipoFormData } from '@/components/form/tipo/TipoForm';
-import { useTipo } from '@/hooks/useTipo';
+import { usePessoaTipo } from '@/hooks/usePessoaTipo';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function CreateTipoPage() {
   const router = useRouter();
-  const { createTipo, loading, error } = useTipo();
+  const { createPessoaTipo, loading, error } = usePessoaTipo();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleCreate = async (data: TipoFormData) => {
@@ -16,7 +16,7 @@ export default function CreateTipoPage() {
       setIsSubmitting(true);
 
       // Usa o hook que já gerencia o Redux
-      await createTipo(data);
+      await createPessoaTipo(data);
 
       // Redireciona após sucesso
       router.push('/listar-tipo');

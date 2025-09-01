@@ -5,9 +5,9 @@ import Label from '@/components/form/Label';
 import Switch from '@/components/form/switch/Switch';
 import Button from '@/components/ui/button/Button';
 import { selectEmpresas } from '@/store/slices/empresaSlice';
-import { selectOcorrenciasTipos, selectOcorrenciasTiposFormatados } from '@/store/slices/ocorrenciaSlice';
+import { selectOcorrenciaTipos } from '@/store/slices/ocorrenciaTipoSlice';
+import { Ocorrencia } from '@/types/chamadoOcorrencia.type';
 import { StatusRegistro } from '@/types/enum';
-import { Ocorrencia } from '@/types/ocorrencia.type';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -33,13 +33,13 @@ export function OcorrenciaFormBase({
   disabled = false,
 }: OcorrenciaFormBaseProps) {
   const empresas = useSelector(selectEmpresas);
-  const tipos = useSelector(selectOcorrenciasTipos);
+  const tipos = useSelector(selectOcorrenciaTipos);
   const router = useRouter();
   const [formData, setFormData] = useState<OcorrenciaFormData>({
-    empresaId: initialData?.idEmpresa || 0,
+    empresaId: initialData?.empresaId || 0,
     descricao: initialData?.descricao || '',
     ativo: initialData?.ativo || StatusRegistro.ATIVO,
-    tipoId: initialData?.idOcorrenciaTipo || 0,
+    tipoId: initialData?.tipoId || 0,
   });
 
   const handleChange = (name: string, value: any) => {
@@ -65,7 +65,9 @@ export function OcorrenciaFormBase({
   };
 
   return (
-    <ComponentCard title={`${mode === 'create' ? 'Criar' : 'Editar'} Ocorrencia`}>
+    <ComponentCard
+      title={`${mode === 'create' ? 'Criar' : 'Editar'} Ocorrencia`}
+    >
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-2 gap-6">
           {/* Descrição */}
@@ -105,24 +107,24 @@ export function OcorrenciaFormBase({
         </div>
 
         <div>
-            <Label>Tipo de Ocorrência</Label>
-            <select
-              value={formData.tipoId}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                handleChange('tipoId', Number(e.target.value))
-              }
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-              required
-              disabled={disabled}
-            >
-              <option value="">Selecione um tipo de ocorrência</option>
-              {tipos.map((tipo) => (
-                <option key={tipo.id} value={tipo.id}>
-                  {tipo.descricao}
-                </option>
-              ))}
-            </select>
-          </div>
+          <Label>Tipo de Ocorrência</Label>
+          <select
+            value={formData.tipoId}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              handleChange('tipoId', Number(e.target.value))
+            }
+            className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+            required
+            disabled={disabled}
+          >
+            <option value="">Selecione um tipo de ocorrência</option>
+            {tipos.map((tipo) => (
+              <option key={tipo.id} value={tipo.id}>
+                {tipo.descricao}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {/* Status */}
         <div className="flex items-center gap-2">

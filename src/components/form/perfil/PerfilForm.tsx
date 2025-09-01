@@ -6,7 +6,7 @@ import Switch from '@/components/form/switch/Switch';
 import Button from '@/components/ui/button/Button';
 import { selectEmpresas } from '@/store/slices/empresaSlice';
 import { StatusRegistro } from '@/types/enum';
-import { Perfil } from '@/types/perfil.type';
+import { Perfil } from '@/types/pessoaPerfil.type';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
