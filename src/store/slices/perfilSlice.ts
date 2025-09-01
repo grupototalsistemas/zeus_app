@@ -1,9 +1,10 @@
-import { Perfil, Permissao } from '@/types/perfil.type';
+import { Perfil } from '@/types/pessoaPerfil.type';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from '../rootReducer';
 
 interface PerfilState {
   perfis: Perfil[];
-  permissoes: Permissao[];
+
   perfilSelecionado: Perfil | null;
   loading: boolean;
   error: string | null;
@@ -11,14 +12,14 @@ interface PerfilState {
 
 const initialState: PerfilState = {
   perfis: [],
-  permissoes: [],
+
   perfilSelecionado: null,
   loading: false,
   error: null,
 };
 
 const PerfilSlice = createSlice({
-  name: 'perfil',
+  name: 'pessoa_perfil',
   initialState,
   reducers: {
     setLoading(state, action: PayloadAction<boolean>) {
@@ -50,17 +51,13 @@ const PerfilSlice = createSlice({
       state.perfis = state.perfis.filter((p) => p.id !== action.payload);
     },
 
-    setPermissoes(state, action: PayloadAction<Permissao[]>) {
-      state.permissoes = action.payload;
-    },
-
     setPerfilSelecionado(state, action: PayloadAction<Perfil | null>) {
       state.perfilSelecionado = action.payload;
     },
 
     clearPerfil(state) {
       state.perfis = [];
-      state.permissoes = [];
+
       state.perfilSelecionado = null;
       state.loading = false;
       state.error = null;
@@ -75,24 +72,20 @@ export const {
   addPerfil,
   updatePerfil,
   removePerfil,
-  setPermissoes,
+
   setPerfilSelecionado,
   clearPerfil,
 } = PerfilSlice.actions;
 
 // Seletores
-export const selectPerfis = (state: { perfil: PerfilState }) =>
-  state.perfil.perfis;
-export const selectPermissoes = (state: { perfil: PerfilState }) =>
-  state.perfil.permissoes;
-export const selectPerfilSelecionado = (state: { perfil: PerfilState }) =>
-  state.perfil.perfilSelecionado;
-export const selectLoading = (state: { perfil: PerfilState }) =>
-  state.perfil.loading;
-export const selectError = (state: { perfil: PerfilState }) =>
-  state.perfil.error;
-export const selectPerfisFormatados = (state: { perfil: PerfilState }) =>
-  state.perfil.perfis.map((perfil) => ({
+export const selectPerfis = (state: RootState) => state.pessoa_perfil.perfis;
+
+export const selectPerfilSelecionado = (state: RootState) =>
+  state.pessoa_perfil.perfilSelecionado;
+export const selectLoading = (state: RootState) => state.pessoa_perfil.loading;
+export const selectError = (state: RootState) => state.pessoa_perfil.error;
+export const selectPerfisFormatados = (state: RootState) =>
+  state.pessoa_perfil.perfis.map((perfil) => ({
     value: perfil.id || 0,
     label: perfil.descricao,
   }));

@@ -1,14 +1,8 @@
-import { Ocorrencia, OcorrenciaTipo } from '@/types/ocorrencia.type';
+import { Ocorrencia } from '@/types/chamadoOcorrencia.type';
 import api from './api';
 
 const getOcorrencias = async (): Promise<Ocorrencia[]> => {
   const response = await api.get('/chamado-ocorrencia');
-  console.log(response.data);
-  return response.data;
-};
-
-const getOcorrenciasTipos = async (): Promise<OcorrenciaTipo[]> => {
-  const response = await api.get('/chamado-ocorrencia-tipo');
   console.log(response.data);
   return response.data;
 };
@@ -23,17 +17,7 @@ const createOcorrencia = async (data: Ocorrencia) => {
   return response.data;
 };
 
-const createOcorrenciaTipo = async (data: OcorrenciaTipo) => {
-  const response = await api.post('/ocorrencia', data);
-  return response.data;
-};
-
 const updateOcorrencia = async (id: number, data: Ocorrencia) => {
-  const response = await api.put(`/ocorrencia/${id}`, data);
-  return response.data;
-};
-
-const updateOcorrenciaTipo = async (id: number, data: OcorrenciaTipo) => {
   const response = await api.put(`/ocorrencia/${id}`, data);
   return response.data;
 };
@@ -43,18 +27,13 @@ const deleteOcorrencia = async (id: number) => {
   return response.data;
 };
 
-const deleteOcorrenciaTipo = async (id: number) => {
-  const response = await api.delete(`/ocorrencia/${id}`);
-  return response.data;
-};
 export const OcorrenciaService = {
   getOcorrencias,
-  getOcorrenciasTipos,
+
   getOcorrencia,
   createOcorrencia,
-  createOcorrenciaTipo,
+
   updateOcorrencia,
-  updateOcorrenciaTipo,
+
   deleteOcorrencia,
-  deleteOcorrenciaTipo,
 };

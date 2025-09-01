@@ -15,7 +15,7 @@ import {
   setPrioridadeSelecionada,
   updatePrioridade,
 } from '@/store/slices/prioridadeSlice';
-import { Prioridade } from '@/types/prioridade.type';
+import { Prioridade } from '@/types/chamadoPrioridade.type';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -146,10 +146,9 @@ export const usePrioridade = () => {
   }, [dispatch]);
 
   // Selecionar por Id
-  const selectPrioridadeById = 
-    (id: number) => {
-      return prioridades.find((p) => p.id === id);   
-    }
+  const selectPrioridadeById = (id: number) => {
+    return prioridades.find((p) => p.id === id);
+  };
 
   return {
     // Estado
@@ -171,6 +170,6 @@ export const usePrioridade = () => {
     selectPrioridade,
     clearPrioridadeData,
     clearError,
-    selectPrioridadeById
+    selectPrioridadeById,
   };
 };

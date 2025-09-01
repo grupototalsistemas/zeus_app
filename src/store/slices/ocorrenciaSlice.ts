@@ -1,26 +1,23 @@
-import { Ocorrencia, OcorrenciaTipo } from '@/types/ocorrencia.type';
+import { Ocorrencia } from '@/types/chamadoOcorrencia.type';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from '../rootReducer';
 
 interface OcorrenciaState {
-  ocorrenciasTipos: OcorrenciaTipo[];
   ocorrencias: Ocorrencia[];
-  ocorrenciaTipoSelecionado: OcorrenciaTipo | null;
   ocorrenciaSelecionada: Ocorrencia | null;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: OcorrenciaState = {
-  ocorrenciasTipos: [],
   ocorrencias: [],
-  ocorrenciaTipoSelecionado: null,
   ocorrenciaSelecionada: null,
   loading: false,
   error: null,
 };
 
 const OcorrenciaSlice = createSlice({
-  name: 'ocorrencia',
+  name: 'chamado_ocorrencia',
   initialState,
   reducers: {
     setLoading(state, action: PayloadAction<boolean>) {
@@ -29,39 +26,6 @@ const OcorrenciaSlice = createSlice({
 
     setError(state, action: PayloadAction<string | null>) {
       state.error = action.payload;
-    },
-
-    // Ocorrências Tipos
-    setOcorrenciasTipos(state, action: PayloadAction<OcorrenciaTipo[]>) {
-      state.ocorrenciasTipos = action.payload;
-      state.loading = false;
-      state.error = null;
-    },
-
-    addOcorrenciaTipo(state, action: PayloadAction<OcorrenciaTipo>) {
-      state.ocorrenciasTipos.push(action.payload);
-    },
-
-    updateOcorrenciaTipo(state, action: PayloadAction<OcorrenciaTipo>) {
-      const index = state.ocorrenciasTipos.findIndex(
-        (o) => o.id === action.payload.id
-      );
-      if (index !== -1) {
-        state.ocorrenciasTipos[index] = action.payload;
-      }
-    },
-
-    removeOcorrenciaTipo(state, action: PayloadAction<number>) {
-      state.ocorrenciasTipos = state.ocorrenciasTipos.filter(
-        (o) => o.id !== action.payload
-      );
-    },
-
-    setOcorrenciaTipoSelecionado(
-      state,
-      action: PayloadAction<OcorrenciaTipo | null>
-    ) {
-      state.ocorrenciaTipoSelecionado = action.payload;
     },
 
     // Ocorrências
@@ -95,9 +59,8 @@ const OcorrenciaSlice = createSlice({
     },
 
     clearOcorrencia(state) {
-      state.ocorrenciasTipos = [];
       state.ocorrencias = [];
-      state.ocorrenciaTipoSelecionado = null;
+
       state.ocorrenciaSelecionada = null;
       state.loading = false;
       state.error = null;
@@ -108,11 +71,6 @@ const OcorrenciaSlice = createSlice({
 export const {
   setLoading,
   setError,
-  setOcorrenciasTipos,
-  addOcorrenciaTipo,
-  updateOcorrenciaTipo,
-  removeOcorrenciaTipo,
-  setOcorrenciaTipoSelecionado,
   setOcorrencias,
   addOcorrencia,
   updateOcorrencia,
@@ -122,43 +80,23 @@ export const {
 } = OcorrenciaSlice.actions;
 
 // Seletores
-export const selectOcorrenciasTipos = (state: {
-  ocorrencia: OcorrenciaState;
-}) => state.ocorrencia.ocorrenciasTipos;
-export const selectOcorrencias = (state: { ocorrencia: OcorrenciaState }) =>
-  state.ocorrencia.ocorrencias;
-export const selectOcorrenciaTipoSelecionado = (state: {
-  ocorrencia: OcorrenciaState;
-}) => state.ocorrencia.ocorrenciaTipoSelecionado;
-export const selectOcorrenciaSelecionada = (state: {
-  ocorrencia: OcorrenciaState;
-}) => state.ocorrencia.ocorrenciaSelecionada;
-export const selectLoading = (state: { ocorrencia: OcorrenciaState }) =>
-  state.ocorrencia.loading;
-export const selectError = (state: { ocorrencia: OcorrenciaState }) =>
-  state.ocorrencia.error;
-export const selectOcorrenciasTiposFormatados = (state: {
-  ocorrencia: OcorrenciaState;
-}) =>
-  state.ocorrencia.ocorrenciasTipos.map((tipo) => ({
-    value: tipo.id || 0,
-    label: tipo.descricao,
-  }));
-export const selectOcorrenciasTiposAtivos = (state: {
-  ocorrencia: OcorrenciaState;
-}) =>
-  state.ocorrencia.ocorrenciasTipos.filter((tipo) => tipo.ativo === 'ATIVO');
-export const selectOcorrenciasFormatadas = (state: {
-  ocorrencia: OcorrenciaState;
-}) =>
-  state.ocorrencia.ocorrencias.map((ocorrencia) => ({
+
+export const selectOcorrencias = (state: RootState) =>
+  state.chamado_ocorrencia.ocorrencias;
+
+export const selectOcorrenciaSelecionada = (state: RootState) =>
+  state.chamado_ocorrencia.ocorrenciaSelecionada;
+export const selectLoading = (state: RootState) =>
+  state.chamado_ocorrencia.loading;
+export const selectError = (state: RootState) => state.chamado_ocorrencia.error;
+
+export const selectOcorrenciasFormatadas = (state: RootState) =>
+  state.chamado_ocorrencia.ocorrencias.map((ocorrencia) => ({
     value: ocorrencia.id || 0,
     label: ocorrencia.descricao,
   }));
-export const selectOcorrenciasAtivas = (state: {
-  ocorrencia: OcorrenciaState;
-}) =>
-  state.ocorrencia.ocorrencias.filter(
+export const selectOcorrenciasAtivas = (state: RootState) =>
+  state.chamado_ocorrencia.ocorrencias.filter(
     (ocorrencia) => ocorrencia.ativo === 'ATIVO'
   );
 

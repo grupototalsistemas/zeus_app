@@ -39,7 +39,13 @@ export const createEtapa = createAsyncThunk(
 
 export const updateEtapa = createAsyncThunk(
   'etapaMovimento/updateEtapa',
-  async ({ id, data }: { id: number; data: Partial<ChamadoMovimentoEtapa> }) => {
+  async ({
+    id,
+    data,
+  }: {
+    id: number;
+    data: Partial<ChamadoMovimentoEtapa>;
+  }) => {
     return await EtapaMovimentoService.updateEtapa(id, data);
   }
 );
@@ -53,7 +59,7 @@ export const deleteEtapa = createAsyncThunk(
 );
 
 const etapaMovimentoSlice = createSlice({
-  name: 'etapaMovimento',
+  name: 'chamado_etapa_movimento',
   initialState,
   reducers: {
     clearEtapaAtual: (state) => {

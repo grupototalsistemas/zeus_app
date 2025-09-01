@@ -1,11 +1,6 @@
-import { BaseEntity } from "./base.type";
-import { StatusRegistro } from "./enum";
+import { BaseEntity } from './base.type';
 
-export interface EmpresaTipo extends BaseEntity{
-  id_empresa_tipo: number;
-  id_empresa: number;
+export interface EmpresaTipo extends BaseEntity {
+  empresaId: number;
   descricao: string;
-  ativo: StatusRegistro;
-  created_at: string;
-  updated_at?: string;
 }

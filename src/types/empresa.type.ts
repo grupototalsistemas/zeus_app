@@ -1,14 +1,13 @@
-import { BaseEntity } from "./base.type";
-import { StatusSiglaEstado } from "./enum";
+import { BaseEntity } from './base.type';
+import { StatusSiglaEstado } from './enum';
 
 export interface Empresa extends BaseEntity {
-  id?: number;
-  id_parent_empresa: number;
-  id_empresa_tipo: number;
-  id_empresa_categoria: number;
+  parentId: number;
+  tipoId: number;
+  categoriaId: number;
   cnpj: string;
   codigo?: string;
-  razao_social: string;
+  razaoSocial: string;
   nomeFantasia: string;
   logradouro?: string;
   endereco?: string;
@@ -21,5 +20,4 @@ export interface Empresa extends BaseEntity {
   contato?: string;
   email?: string;
   observacao?: string;
-  
 }

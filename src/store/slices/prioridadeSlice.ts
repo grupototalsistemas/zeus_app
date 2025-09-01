@@ -1,5 +1,6 @@
-import { Prioridade } from '@/types/prioridade.type';
+import { Prioridade } from '@/types/chamadoPrioridade.type';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from '../rootReducer';
 
 interface PrioridadeState {
   prioridades: Prioridade[];
@@ -16,7 +17,7 @@ const initialState: PrioridadeState = {
 };
 
 const PrioridadeSlice = createSlice({
-  name: 'prioridade',
+  name: 'chamado_prioridade',
   initialState,
   reducers: {
     setLoading(state, action: PayloadAction<boolean>) {
@@ -77,26 +78,20 @@ export const {
 } = PrioridadeSlice.actions;
 
 // Seletores
-export const selectPrioridades = (state: { prioridade: PrioridadeState }) =>
-  state.prioridade.prioridades;
-export const selectPrioridadeSelecionada = (state: {
-  prioridade: PrioridadeState;
-}) => state.prioridade.prioridadeSelecionada;
-export const selectLoading = (state: { prioridade: PrioridadeState }) =>
-  state.prioridade.loading;
-export const selectError = (state: { prioridade: PrioridadeState }) =>
-  state.prioridade.error;
-export const selectPrioridadesFormatadas = (state: {
-  prioridade: PrioridadeState;
-}) =>
-  state.prioridade.prioridades.map((prioridade) => ({
+export const selectPrioridades = (state: RootState) =>
+  state.chamado_prioridade.prioridades;
+export const selectPrioridadeSelecionada = (state: RootState) =>
+  state.chamado_prioridade.prioridadeSelecionada;
+export const selectLoading = (state: RootState) =>
+  state.chamado_prioridade.loading;
+export const selectError = (state: RootState) => state.chamado_prioridade.error;
+export const selectPrioridadesFormatadas = (state: RootState) =>
+  state.chamado_prioridade.prioridades.map((prioridade) => ({
     value: prioridade.id || 0,
     label: prioridade.descricao,
   }));
-export const selectPrioridadesAtivas = (state: {
-  prioridade: PrioridadeState;
-}) =>
-  state.prioridade.prioridades.filter(
+export const selectPrioridadesAtivas = (state: RootState) =>
+  state.chamado_prioridade.prioridades.filter(
     (prioridade) => prioridade.ativo === 'ATIVO'
   );
 

@@ -1,7 +1,7 @@
-import { BaseEntity } from "./base.type";
+import { BaseEntity } from './base.type';
+import { ChamadoMovimento } from './chamadoMovimento.type';
 export interface ChamadoMovimentoEtapa extends BaseEntity {
-  id?: number;
   empresaId: number;
   descricao: string;
-  
+  movimentos?: ChamadoMovimento[];
 }

@@ -18,7 +18,9 @@ export const useEtapaMovimento = () => {
   const dispatch = useDispatch<ThunkDispatch<RootState, unknown, any>>();
 
   // Seletores do estado do Redux
-  const { etapas, etapaAtual, loading, error } = useSelector((state: any) => state.etapaMovimento);
+  const { etapas, etapaAtual, loading, error } = useSelector(
+    (state: RootState) => state.chamado_etapa_movimento
+  );
 
   // Ações assíncronas
   const handleFetchEtapas = useCallback(async () => {
@@ -90,10 +92,9 @@ export const useEtapaMovimento = () => {
   }, [dispatch]);
 
   // Selecionar por Id e mostrar o selecionado
-  const selectEtapaById = 
-    (id: number) => {
-      return etapas.find((e: ChamadoMovimentoEtapa) => e.id === id);
-    }
+  const selectEtapaById = (id: number) => {
+    return etapas.find((e: ChamadoMovimentoEtapa) => e.id === id);
+  };
 
   return {
     // Estado
@@ -112,6 +113,6 @@ export const useEtapaMovimento = () => {
     // Ações síncronas
     clearEtapaAtual: handleClearEtapaAtual,
     clearError: handleClearError,
-    selectEtapaById
+    selectEtapaById,
   };
 };

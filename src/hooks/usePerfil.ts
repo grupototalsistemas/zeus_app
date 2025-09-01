@@ -8,14 +8,13 @@ import {
   selectPerfilSelecionado,
   selectPerfis,
   selectPerfisFormatados,
-  selectPermissoes,
   setError,
   setLoading,
   setPerfilSelecionado,
   setPerfis,
   updatePerfil,
 } from '@/store/slices/perfilSlice';
-import { Perfil } from '@/types/perfil.type';
+import { Perfil } from '@/types/pessoaPerfil.type';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -24,7 +23,7 @@ export const usePerfil = () => {
 
   // Seletores
   const perfis = useSelector(selectPerfis);
-  const permissoes = useSelector(selectPermissoes);
+
   const perfilSelecionado = useSelector(selectPerfilSelecionado);
   const loading = useSelector(selectLoading);
   const error = useSelector(selectError);
@@ -128,22 +127,6 @@ export const usePerfil = () => {
     [dispatch]
   );
 
-  const fetchPermissoes = useCallback(async () => {
-    try {
-      dispatch(setLoading(true));
-      dispatch(setError(null));
-
-      // Assumindo que existe um método para buscar permissões
-      // const response = await PerfilService.getPermissoes();
-      // dispatch(setPermissoes(response));
-    } catch (error) {
-      console.error('Erro ao buscar permissões:', error);
-      dispatch(setError('Erro ao carregar permissões'));
-    } finally {
-      dispatch(setLoading(false));
-    }
-  }, [dispatch]);
-
   // Ações síncronas
   const selectPerfil = useCallback(
     (perfil: Perfil | null) => {
@@ -161,16 +144,13 @@ export const usePerfil = () => {
   }, [dispatch]);
 
   // selecionar por Id
-  const selectPerfilById = 
-    (id: number) => {
-      return perfis.find((p) => p.id === id);
-      
-    }
+  const selectPerfilById = (id: number) => {
+    return perfis.find((p) => p.id === id);
+  };
 
   return {
     // Estado
     perfis,
-    permissoes,
     perfilSelecionado,
     loading,
     error,
@@ -182,12 +162,11 @@ export const usePerfil = () => {
     editPerfil,
     deletePerfil,
     fetchPerfilById,
-    fetchPermissoes,
 
     // Ações síncronas
     selectPerfil,
     clearPerfilData,
     clearError,
-    selectPerfilById
+    selectPerfilById,
   };
 };

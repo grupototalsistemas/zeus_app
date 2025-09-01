@@ -1,9 +1,10 @@
-import { Permissao } from '@/types/perfil.type';
-import { Prioridade } from '@/types/prioridade.type';
+import { Prioridade } from '@/types/chamadoPrioridade.type';
+
 import api from './api';
 
 const getPrioridades = async (): Promise<Prioridade[]> => {
   const response = await api.get('/chamado-prioridade');
+  console.log(response.data);
   return response.data;
 };
 
@@ -28,16 +29,10 @@ const deletePrioridade = async (id: number) => {
   return response.data;
 };
 
-const getPermissoes = async (): Promise<Permissao[]> => {
-  const response = await api.get('/permissoes');
-  return response.data;
-};
-
 export const PrioridadeService = {
   getPrioridades,
   getPrioridade,
   createPrioridade,
   updatePrioridade,
   deletePrioridade,
-  getPermissoes,
 };

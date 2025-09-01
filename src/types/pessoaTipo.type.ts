@@ -1,8 +1,6 @@
-import { BaseEntity } from "./base.type";
+import { BaseEntity } from './base.type';
 
-export interface PessoaTipo extends BaseEntity{
-  id_pessoa_tipo: number;
-  id_empresa: number;
+export interface PessoaTipo extends BaseEntity {
+  empresaId: number;
   descricao: string;
-
 }

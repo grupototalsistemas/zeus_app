@@ -1,5 +1,5 @@
-import { Pessoa } from '@/types/pessoas.type';
-import { PessoaUsuarioDTO } from '@/types/pessoaUsuario.type';
+import { Pessoa } from '@/types/pessoa.type';
+
 import api from './api';
 
 const getPessoas = async (): Promise<Pessoa[]> => {
@@ -8,7 +8,9 @@ const getPessoas = async (): Promise<Pessoa[]> => {
 };
 
 const search = async (term: string): Promise<Pessoa[]> => {
-  const response = await api.get(`/pessoas/search?term=${encodeURIComponent(term)}`);
+  const response = await api.get(
+    `/pessoas/search?term=${encodeURIComponent(term)}`
+  );
   return response.data;
 };
 
@@ -22,7 +24,7 @@ const createPessoa = async (data: Pessoa) => {
   return response.data;
 };
 
-const createPessoaUsuario = async (data: PessoaUsuarioDTO) => {
+const createPessoaUsuario = async (data: Pessoa) => {
   const response = await api.post('/pessoa-usuario', data);
   return response.data;
 };

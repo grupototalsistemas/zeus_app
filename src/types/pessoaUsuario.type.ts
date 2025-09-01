@@ -1,26 +1,17 @@
 import { BaseEntity } from './base.type';
-import { Perfil, PerfilDTO } from './perfil.type';
-import { Pessoa, PessoaDTO } from './pessoas.type';
+import { Pessoa } from './pessoa.type';
+import { PerfilDTO } from './pessoaPerfil.type';
 
 export interface PessoaUsuario extends BaseEntity {
-  id_pessoa_usuario?: number;
-  id_pessoa: number;
-  id_pessoa_perfil: number;
+  pessoaId: number;
+  perfilId: number;
   email: string;
   login: string;
   senha?: string;
 }
 
-export interface PessoaUsuarioDTO extends BaseEntity {
-  pessoa: Pessoa;
-  perfilId: number;
-  email: string;
-  login: string;
-  senha: string;
-}
-
 export interface PessoaUsuarioRegisterDTO extends BaseEntity {
-  pessoa: PessoaDTO;
+  pessoa: Pessoa;
   perfil: PerfilDTO;
   email: string;
   login: string;

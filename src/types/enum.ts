@@ -45,12 +45,6 @@ export enum StatusGenero {
   IGNORADO = 'IGNORADO',
 }
 
-/** 1=Ativo, 2=Inativo */
-export enum StatusAtivo {
-  Ativo = 1,
-  Inativo = 2,
-}
-
 /** 1=Sim, 2=Nao */
 export enum PerfisAdmintrativos {
   Master = 1,

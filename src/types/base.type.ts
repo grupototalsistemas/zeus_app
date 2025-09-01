@@ -3,8 +3,11 @@ import { StatusRegistro } from './enum';
 
 /** Campos padrão de todas as entidades */
 export interface BaseEntity {
+  id?: number;
   ativo?: StatusRegistro;
   motivo?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // ================= DTOs =================

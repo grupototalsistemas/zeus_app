@@ -1,4 +1,4 @@
-import { Perfil, PerfilPermissao, Permissao } from '@/types/perfil.type';
+import { Perfil } from '@/types/pessoaPerfil.type';
 import api from './api';
 
 const getPerfis = async (): Promise<Perfil[]> => {
@@ -26,36 +26,10 @@ const deletePerfil = async (id: number) => {
   return response.data;
 };
 
-const getPermissoes = async (): Promise<Permissao[]> => {
-  const response = await api.get('/permissoes');
-  return response.data;
-};
-
-const getPerfilPermissoes = async (
-  idPerfil: number
-): Promise<PerfilPermissao[]> => {
-  const response = await api.get(`/pessoa-perfil/${idPerfil}/permissoes`);
-  return response.data;
-};
-
-const updatePerfilPermissoes = async (
-  idPerfil: number,
-  permissoes: PerfilPermissao[]
-) => {
-  const response = await api.put(
-    `/pessoa-perfil/${idPerfil}/permissoes`,
-    permissoes
-  );
-  return response.data;
-};
-
 export const PerfilService = {
   getPerfis,
   getPerfil,
   createPerfil,
   updatePerfil,
   deletePerfil,
-  getPermissoes,
-  getPerfilPermissoes,
-  updatePerfilPermissoes,
 };

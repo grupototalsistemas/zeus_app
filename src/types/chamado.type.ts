@@ -1,8 +1,8 @@
 import { BaseEntity, MovimentoDto } from './base.type';
+import { ChamadoMovimento } from './chamadoMovimento.type';
 import { StatusRegistro } from './enum';
 
 export interface Chamado extends BaseEntity {
-  id?: number;
   empresaId: number;
   sistemaId: number;
   pessoaId: number;
@@ -13,10 +13,7 @@ export interface Chamado extends BaseEntity {
   titulo: string;
   descricao: string;
   observacao: string;
-  createdAt?: string;
-  updatedAt?: string;
-  movimentos?: MovimentoDto[];
-  ativo?: StatusRegistro;
+  movimentos?: ChamadoMovimento[];
 }
 
 // DTO principal de criação de chamado

@@ -15,7 +15,7 @@ const createChamado = async (data: CreateChamadoDto & { anexos?: File[] }) => {
   try {
     // 1. Primeiro, criar o chamado (sem anexos)
     const { anexos, ...chamadoData } = data;
-    
+
     const response = await api.post('/chamados', chamadoData, {
       headers: {
         'Content-Type': 'application/json',
@@ -28,7 +28,7 @@ const createChamado = async (data: CreateChamadoDto & { anexos?: File[] }) => {
     if (anexos && anexos.length > 0 && chamadoCriado.movimentos?.length > 0) {
       const movimentoId = chamadoCriado.movimentos[0].id;
       await uploadAnexos(movimentoId, anexos, 'Anexos do chamado');
-      
+
       // 3. Buscar o chamado atualizado com os anexos
       return getChamado(chamadoCriado.id);
     }
@@ -40,17 +40,21 @@ const createChamado = async (data: CreateChamadoDto & { anexos?: File[] }) => {
   }
 };
 
-const uploadAnexos = async (movimentoId: number, arquivos: File[], descricao: string = 'Anexo') => {
+const uploadAnexos = async (
+  movimentoId: number,
+  arquivos: File[],
+  descricao: string = 'Anexo'
+) => {
   if (!arquivos || arquivos.length === 0) {
     throw new Error('Nenhum arquivo fornecido');
   }
 
   const formData = new FormData();
-  
+
   // Adicionar dados obrigatórios
   formData.append('movimentoId', movimentoId.toString());
   formData.append('descricao', descricao);
-  
+
   // Adicionar arquivos
   arquivos.forEach((arquivo) => {
     formData.append('files', arquivo);
@@ -61,7 +65,7 @@ const uploadAnexos = async (movimentoId: number, arquivos: File[], descricao: st
       'Content-Type': 'multipart/form-data',
     },
   });
-  
+
   return response.data;
 };
 
@@ -75,16 +79,16 @@ const downloadAnexo = async (anexoId: number, nomeArquivo?: string) => {
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
     link.href = url;
-    
+
     // Nome do arquivo - usar o fornecido ou um padrão
     const fileName = nomeArquivo || `anexo-${anexoId}`;
     link.setAttribute('download', fileName);
-    
+
     // Trigger do download
     document.body.appendChild(link);
     link.click();
     link.remove();
-    
+
     // Limpar URL do blob
     window.URL.revokeObjectURL(url);
   } catch (error) {
@@ -93,7 +97,7 @@ const downloadAnexo = async (anexoId: number, nomeArquivo?: string) => {
   }
 };
 
-const updateChamado = async (id: number, data: Chamado) => {
+const updateChamado = async (id: number, data: any) => {
   const response = await api.patch(`/chamados/${id}`, data);
   return response.data;
 };
@@ -104,8 +108,24 @@ const deleteChamado = async (id: number) => {
 };
 
 // Função auxiliar para adicionar anexos a um movimento existente
-const adicionarAnexosAoMovimento = async (movimentoId: number, anexos: File[], descricao: string = 'Anexo adicional') => {
+const adicionarAnexosAoMovimento = async (
+  movimentoId: number,
+  anexos: File[],
+  descricao: string = 'Anexo adicional'
+) => {
   return uploadAnexos(movimentoId, anexos, descricao);
+};
+
+const getChamadosByEmpresa = async (empresaId: number): Promise<Chamado[]> => {
+  const response = await api.get(`/chamados/empresa/${empresaId}`);
+  return response.data;
+};
+
+const getChamadosByResponsavel = async (
+  responsavelId: number
+): Promise<Chamado[]> => {
+  const response = await api.get(`/chamados/responsavel/${responsavelId}`);
+  return response.data;
 };
 
 export const ChamadoService = {
@@ -117,4 +137,6 @@ export const ChamadoService = {
   updateChamado,
   deleteChamado,
   adicionarAnexosAoMovimento,
+  getChamadosByEmpresa,
+  getChamadosByResponsavel,
 };
