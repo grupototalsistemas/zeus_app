@@ -3,13 +3,19 @@
 import { useEffect, useRef, useState } from 'react';
 import Badge from '../ui/badge/Badge';
 
+import ChamadoModal from '@/app/(private)/(chamados)/visualizar-chamado/page';
+import { useChamado } from '@/hooks/useChamado';
 import { usePerfil } from '@/hooks/usePerfil';
 import { usePrioridade } from '@/hooks/usePrioridade';
 import { MoreDotIcon } from '@/icons';
 import { ChamadoService } from '@/service/chamado.service';
 import { Chamado } from '@/types/chamado.type';
 import { StatusRegistro } from '@/types/enum';
-import { diasAtras, formataDataParaExibir, formataHoraParaExibir } from '@/utils/fomata-data';
+import {
+  diasAtras,
+  formataDataParaExibir,
+  formataHoraParaExibir,
+} from '@/utils/fomata-data';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { Dropdown } from '../ui/dropdown/Dropdown';
@@ -29,13 +35,17 @@ export default function TicketList() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const totalPages = Math.ceil(tickets.length / itemsPerPage);
-  const [open, setOpen] = useState(false);
+  const [selectedChamado, setSelectedChamado] = useState<Chamado | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [chamados, setChamados] = useState<Chamado[]>([]);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
-  const triggerRefs = useRef<{ [key: string]: React.RefObject<HTMLButtonElement | null> }>({});
+  const triggerRefs = useRef<{
+    [key: string]: React.RefObject<HTMLButtonElement | null>;
+  }>({});
 
+  const { getById } = useChamado();
   const { selectPerfilById } = usePerfil();
-  const {selectPrioridadeById} = usePrioridade();
+  const { selectPrioridadeById } = usePrioridade();
 
   // Dados da página atual
   const paginatedData = tickets.slice(
@@ -49,7 +59,7 @@ export default function TicketList() {
       return chamado.movimentos[chamado.movimentos.length - 1];
     }
     return null;
-  }
+  };
 
   // Criar refs para cada botão de dropdown
   const getTriggerRef = (id: string) => {
@@ -63,9 +73,7 @@ export default function TicketList() {
     const fetchChamados = async () => {
       try {
         const response = await ChamadoService.getChamados();
-
         console.log('Chamadinho: ', response);
-
         setChamados(response);
       } catch (error) {
         console.error('Error fetching chamados:', error);
@@ -75,35 +83,49 @@ export default function TicketList() {
   }, []);
 
   const handleDelete = async (chamado: Chamado) => {
-      // Confirmação antes de excluir
-      const confirmDelete = window.confirm(
-        `Tem certeza que deseja excluir o chamado: "${chamado.titulo}"?\n\nEsta ação não pode ser desfeita.`
-      );
-  
-      if (!confirmDelete) {
-        return; // Usuário cancelou a exclusão
+    // Confirmação antes de excluir
+    const confirmDelete = window.confirm(
+      `Tem certeza que deseja excluir o chamado: "${chamado.titulo}"?\n\nEsta ação não pode ser desfeita.`
+    );
+
+    if (!confirmDelete) {
+      return; // Usuário cancelou a exclusão
+    }
+
+    try {
+      await ChamadoService.deleteChamado(chamado.id!);
+      // Fecha o dropdown se estiver aberto
+      setOpenDropdownId(null);
+
+      // Ajusta a página atual se necessário
+      const newTotalPages = Math.ceil((chamados.length - 1) / itemsPerPage);
+      if (currentPage > newTotalPages && newTotalPages > 0) {
+        setCurrentPage(newTotalPages);
       }
-  
-      try {
-        // await deleteTipo(tipo.id!);
-        await ChamadoService.deleteChamado(chamado.id!);
-        // Fecha o dropdown se estiver aberto
-        setOpenDropdownId(null);
-  
-        // Ajusta a página atual se necessário
-        const newTotalPages = Math.ceil((chamados.length - 1) / itemsPerPage);
-        if (currentPage > newTotalPages && newTotalPages > 0) {
-          setCurrentPage(newTotalPages);
-        }
-  
-        console.log('Tipo excluído com sucesso');
-      } catch (error) {
-        console.error('Erro ao excluir tipo:', error);
-        alert('Erro ao excluir o tipo. Tente novamente.');
-      }
-    };
+
+      console.log('Chamado excluído com sucesso');
+    } catch (error) {
+      console.error('Erro ao excluir chamado:', error);
+      alert('Erro ao excluir o chamado. Tente novamente.');
+    }
+  };
+
   const handleToggle = (id: string) => {
     setOpenDropdownId((prev) => (prev === id ? null : id));
+  };
+
+  const handleOpenModal = (chamado: Chamado) => {
+    setSelectedChamado(chamado);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedChamado(null);
+    setIsModalOpen(false);
+  };
+
+  const handleRowClick = (chamado: Chamado) => {
+    handleOpenModal(chamado);
   };
 
   return (
@@ -189,16 +211,19 @@ export default function TicketList() {
           </TableHeader>
 
           {/* Table Body */}
-
           <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
             {chamados.length > 0 &&
               chamados.map((chamado) => (
-                <TableRow key={chamado.id} className="">
+                <TableRow
+                  key={chamado.id}
+                  className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                  onClick={() => handleRowClick(chamado)}
+                >
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                     {chamado.protocolo || 'N/A'}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    {formataDataParaExibir(chamado.createdAt ||'') }
+                    {formataDataParaExibir(chamado.createdAt || '')}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                     {formataHoraParaExibir(chamado.createdAt || '')}
@@ -230,16 +255,24 @@ export default function TicketList() {
                     {selectPrioridadeById(chamado.prioridadeId)?.descricao}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    {ultimoMovimento(chamado)?.createdAt && formataDataParaExibir(ultimoMovimento(chamado)?.createdAt || '')}
+                    {ultimoMovimento(chamado)?.createdAt &&
+                      formataDataParaExibir(
+                        ultimoMovimento(chamado)?.createdAt || ''
+                      )}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    { diasAtras(formataDataParaExibir(chamado.createdAt || ''))}
+                    {diasAtras(formataDataParaExibir(chamado.createdAt || ''))}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    {selectPerfilById(ultimoMovimento(chamado)?.usuarioId || 0)?.descricao
+                    {
+                      selectPerfilById(ultimoMovimento(chamado)?.usuarioId || 0)
+                        ?.descricao
                     }
                   </TableCell>
-                  <TableCell className="text-theme-sm py-3 text-gr  ay-500 dark:text-gray-400">
+                  <TableCell
+                    className="text-theme-sm py-3 text-gray-500 dark:text-gray-400"
+                    onClick={(e) => e.stopPropagation()} // Previne o clique da linha no dropdown
+                  >
                     <div className="relative inline-block">
                       <button
                         ref={getTriggerRef(String(chamado.id))}
@@ -252,7 +285,6 @@ export default function TicketList() {
                         isOpen={openDropdownId === String(chamado.id)}
                         onClose={() => setOpenDropdownId(null)}
                         className="p-2"
-                        
                       >
                         <DropdownItem
                           tag="a"
@@ -288,6 +320,7 @@ export default function TicketList() {
           </TableBody>
         </Table>
       </div>
+
       <div className="mt-4 flex items-center justify-between">
         <Pagination
           currentPage={currentPage}
@@ -295,6 +328,19 @@ export default function TicketList() {
           onPageChange={setCurrentPage}
         />
       </div>
+
+      {/* Modal de Detalhes do Chamado */}
+      <ChamadoModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        chamado={selectedChamado}
+        ultimoMovimento={ultimoMovimento}
+        formataDataParaExibir={formataDataParaExibir}
+        formataHoraParaExibir={formataHoraParaExibir}
+        selectPrioridadeById={selectPrioridadeById}
+        selectPerfilById={selectPerfilById}
+        onEdit={(id: string) => router.push(`/editar-chamado/${id}`)}
+      />
     </div>
   );
 }

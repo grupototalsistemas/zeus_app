@@ -1,9 +1,6 @@
 'use client';
 
-import {
-  TicketFormBase,
-  TicketFormData,
-} from '@/components/form/ticket/TicketForm';
+import { TicketFormBase } from '@/components/form/ticket/TicketForm';
 import { ChamadoService } from '@/service/chamado.service';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -16,20 +13,19 @@ export default function EditTicketPage() {
     const fetchTicketFromAPI = async (id: string) => {
       // Simula uma chamada de API
       const response = await ChamadoService.getChamado(Number(id));
-      console.log(" response: ",response);
-      
+      console.log(' response: ', response);
+
       setTicket(response);
     };
 
     // Busca local por enquanto (substituir por API)
-  
-      fetchTicketFromAPI(id?.toString() || '0');
-    
-    
+
+    fetchTicketFromAPI(id?.toString() || '0');
   }, [id]);
 
-  const handleEdit = async (data: TicketFormData) => {
+  const handleEdit = async (data: any) => {
     console.log('Chamado atualizado:', data);
+
     const response = await ChamadoService.updateChamado(Number(id), data);
     console.log('Resposta da API:', response);
     // Aqui poderia chamar API PUT para salvar

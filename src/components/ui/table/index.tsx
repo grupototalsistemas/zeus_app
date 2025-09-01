@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { MouseEvent, ReactNode } from 'react';
 
 // Props for Table
 interface TableProps {
@@ -22,6 +22,7 @@ interface TableBodyProps {
 interface TableRowProps {
   children: ReactNode;
   className?: string;
+  onClick?: () => void; // ✅ Adicionando a propriedade onClick
 }
 
 // Props for TableCell
@@ -29,8 +30,9 @@ interface TableCellProps {
   children: ReactNode;
   isHeader?: boolean;
   className?: string;
-  colSpan?: number; // ✅ adicionando suporte
-  rowSpan?: number; // ✅ opcional também
+  colSpan?: number;
+  rowSpan?: number;
+  onClick?: (e: MouseEvent<HTMLTableCellElement>) => void;
 }
 
 // Table Component
@@ -46,8 +48,16 @@ const TableBody: React.FC<TableBodyProps> = ({ children, className }) => {
   return <tbody className={className}>{children}</tbody>;
 };
 
-const TableRow: React.FC<TableRowProps> = ({ children, className }) => {
-  return <tr className={className}>{children}</tr>;
+const TableRow: React.FC<TableRowProps> = ({
+  children,
+  className,
+  onClick,
+}) => {
+  return (
+    <tr className={className} onClick={onClick}>
+      {children}
+    </tr>
+  );
 };
 
 const TableCell: React.FC<TableCellProps> = ({
@@ -56,10 +66,16 @@ const TableCell: React.FC<TableCellProps> = ({
   className,
   colSpan,
   rowSpan,
+  onClick,
 }) => {
   const CellTag = isHeader ? 'th' : 'td';
   return (
-    <CellTag className={className} colSpan={colSpan} rowSpan={rowSpan}>
+    <CellTag
+      className={className}
+      colSpan={colSpan}
+      rowSpan={rowSpan}
+      onClick={onClick}
+    >
       {children}
     </CellTag>
   );

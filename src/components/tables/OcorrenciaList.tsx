@@ -2,8 +2,8 @@
 
 import { useOcorrencia } from '@/hooks/useOcorrencia';
 import { MoreDotIcon } from '@/icons';
+import { Ocorrencia } from '@/types/chamadoOcorrencia.type';
 import { StatusRegistro } from '@/types/enum';
-import { Ocorrencia } from '@/types/ocorrencia.type';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Badge from '../ui/badge/Badge';

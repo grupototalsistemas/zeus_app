@@ -2,7 +2,7 @@ import { Label } from '@/components/ui/Label';
 import { Button } from '@/components/ui/button';
 import { PessoaService } from '@/service/pessoa.service';
 import { StatusGenero, StatusRegistro } from '@/types/enum';
-import { Pessoa } from '@/types/pessoas.type';
+import { Pessoa } from '@/types/pessoa.type';
 import { useEffect, useState } from 'react';
 
 interface PessoaAutocompleteProps {
@@ -10,7 +10,10 @@ interface PessoaAutocompleteProps {
   disabled?: boolean;
 }
 
-export function PessoaAutocomplete({ onSelect, disabled }: PessoaAutocompleteProps) {
+export function PessoaAutocomplete({
+  onSelect,
+  disabled,
+}: PessoaAutocompleteProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [pessoas, setPessoas] = useState<Pessoa[]>([]);
   const [filteredPessoas, setFilteredPessoas] = useState<Pessoa[]>([]);
@@ -42,9 +45,10 @@ export function PessoaAutocomplete({ onSelect, disabled }: PessoaAutocompletePro
   // Filtra pessoas baseado no termo de busca
   useEffect(() => {
     if (searchTerm.length > 0) {
-      const filtered = pessoas.filter(pessoa =>
-        pessoa.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        pessoa.nomeSocial?.toLowerCase().includes(searchTerm.toLowerCase())
+      const filtered = pessoas.filter(
+        (pessoa) =>
+          pessoa.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          pessoa.nomeSocial?.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredPessoas(filtered);
       setShowResults(true);
@@ -75,7 +79,7 @@ export function PessoaAutocomplete({ onSelect, disabled }: PessoaAutocompletePro
       };
 
       const pessoaCriada = await PessoaService.createPessoa(novaPessoaData);
-      setPessoas(prev => [...prev, pessoaCriada]);
+      setPessoas((prev) => [...prev, pessoaCriada]);
       handleSelectPessoa(pessoaCriada);
       setIsCreatingPessoa(false);
     } catch (error) {
@@ -98,12 +102,12 @@ export function PessoaAutocomplete({ onSelect, disabled }: PessoaAutocompletePro
         />
 
         {showResults && filteredPessoas.length > 0 && (
-          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+          <div className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-gray-300 bg-white shadow-lg">
             {filteredPessoas.map((pessoa) => (
               <div
                 key={pessoa.id}
                 onClick={() => handleSelectPessoa(pessoa)}
-                className="p-2 hover:bg-gray-100 cursor-pointer"
+                className="cursor-pointer p-2 hover:bg-gray-100"
               >
                 <div>{pessoa.nomeSocial || pessoa.nome}</div>
                 {pessoa.nomeSocial && (
@@ -115,8 +119,8 @@ export function PessoaAutocomplete({ onSelect, disabled }: PessoaAutocompletePro
         )}
 
         {showResults && filteredPessoas.length === 0 && !isCreatingPessoa && (
-          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-4">
-            <p className="text-gray-600 mb-2">Nenhuma pessoa encontrada</p>
+          <div className="absolute z-10 mt-1 w-full rounded-md border border-gray-300 bg-white p-4 shadow-lg">
+            <p className="mb-2 text-gray-600">Nenhuma pessoa encontrada</p>
             <Button
               variant="secondary"
               onClick={() => setIsCreatingPessoa(true)}
@@ -127,18 +131,20 @@ export function PessoaAutocomplete({ onSelect, disabled }: PessoaAutocompletePro
         )}
 
         {isCreatingPessoa && (
-          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-4">
-            <h3 className="font-medium mb-4">Criar Nova Pessoa</h3>
+          <div className="absolute z-10 mt-1 w-full rounded-md border border-gray-300 bg-white p-4 shadow-lg">
+            <h3 className="mb-4 font-medium">Criar Nova Pessoa</h3>
 
             <div className="space-y-4">
               <div>
                 <Label>Função</Label>
                 <select
                   value={novaPessoa.tipoId || ''}
-                  onChange={(e) => setNovaPessoa(prev => ({
-                    ...prev,
-                    tipoId: parseInt(e.target.value)
-                  }))}
+                  onChange={(e) =>
+                    setNovaPessoa((prev) => ({
+                      ...prev,
+                      tipoId: parseInt(e.target.value),
+                    }))
+                  }
                   className="w-full rounded-md border border-gray-300 p-2"
                 >
                   <option value="">Selecione uma função</option>
@@ -150,10 +156,12 @@ export function PessoaAutocomplete({ onSelect, disabled }: PessoaAutocompletePro
                 <Label>Gênero</Label>
                 <select
                   value={novaPessoa.genero}
-                  onChange={(e) => setNovaPessoa(prev => ({
-                    ...prev,
-                    genero: e.target.value as StatusGenero
-                  }))}
+                  onChange={(e) =>
+                    setNovaPessoa((prev) => ({
+                      ...prev,
+                      genero: e.target.value as StatusGenero,
+                    }))
+                  }
                   className="w-full rounded-md border border-gray-300 p-2"
                 >
                   {Object.values(StatusGenero).map((genero) => (
@@ -171,9 +179,7 @@ export function PessoaAutocomplete({ onSelect, disabled }: PessoaAutocompletePro
                 >
                   Cancelar
                 </Button>
-                <Button onClick={handleCreatePessoa}>
-                  Criar Pessoa
-                </Button>
+                <Button onClick={handleCreatePessoa}>Criar Pessoa</Button>
               </div>
             </div>
           </div>

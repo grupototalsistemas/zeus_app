@@ -4,17 +4,16 @@ import { usePathname } from 'next/navigation';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSidebar } from '../context/SidebarContext';
 import {
-    BoxCubeIcon,
-    CalenderIcon,
-    ChevronDownIcon,
-    GridIcon,
-    GroupIcon,
-    HorizontaLDots,
-    ListIcon,
-    PieChartIcon,
-    PlugInIcon,
-    ShootingStarIcon,
-    UserCircleIcon,
+  BoxCubeIcon,
+  CalenderIcon,
+  ChevronDownIcon,
+  GridIcon,
+  HorizontaLDots,
+  ListIcon,
+  PieChartIcon,
+  PlugInIcon,
+  ShootingStarIcon,
+  UserCircleIcon,
 } from '../icons/index';
 
 type NavItem = {
@@ -42,33 +41,50 @@ const navItems: NavItem[] = [
         pro: false,
       },
       { name: 'Gerenciar ocorrencias', path: '/ocorrencia', pro: false },
-      { name: 'Gerenciar tipos de ocorrencias', path: '/tipo-ocorrencia', pro: false },
+      {
+        name: 'Gerenciar tipos de ocorrencias',
+        path: '/tipo-ocorrencia',
+        pro: false,
+      },
       { name: 'Gerenciar etapas de movimento', path: '/etapas', pro: false },
     ],
   },
   {
     icon: <UserCircleIcon />,
-    name: 'Usuarios',
+    name: 'Pessoas',
     subItems: [
-      { name: 'Criar usuario', path: '/criar-usuario', pro: false },
+      { name: 'Gerenciar Pessoas', path: '/criar-usuario', pro: false },
+      { name: 'Criar Usuarios', path: '/criar-usuario', pro: false },
       { name: 'Listar usuarios', path: '/listar-usuario', pro: false },
+      {
+        name: 'Gerenciar Perfis de Usuarios',
+        path: '/criar-usuario',
+        pro: false,
+      },
+      {
+        name: 'Gerenciar Funções de Pessoas',
+        path: '/criar-usuario',
+        pro: false,
+      },
     ],
   },
-
   {
     icon: <ShootingStarIcon />,
-    name: 'Perfis',
+    name: 'Empresas',
     subItems: [
-      { name: 'Criar perfil', path: '/criar-perfil', pro: false },
-      { name: 'Listar perfil', path: '/listar-perfil', pro: false },
-    ],
-  },
-  {
-    icon: <GroupIcon />,
-    name: 'Função',
-    subItems: [
-      { name: 'Criar função', path: '/criar-tipo', pro: false },
-      { name: 'Listar funções', path: '/listar-tipo', pro: false },
+      { name: 'Criar empresa', path: '/criar-empresa', pro: false },
+      { name: 'Listar empresas', path: '/listar-empresa', pro: false },
+      {
+        name: 'Gerenciar Categorias de Empresas',
+        path: '/listar-empresa',
+        pro: false,
+      },
+      { name: 'Gerenciar Sistemas', path: '/listar-empresa', pro: false },
+      {
+        name: 'Gerenciar Tipo de Empresa',
+        path: '/listar-empresa',
+        pro: false,
+      },
     ],
   },
 
