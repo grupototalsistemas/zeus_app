@@ -328,19 +328,16 @@ export default function TicketList() {
           onPageChange={setCurrentPage}
         />
       </div>
-
-      {/* Modal de Detalhes do Chamado */}
-      <ChamadoModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        chamado={selectedChamado}
-        ultimoMovimento={ultimoMovimento}
-        formataDataParaExibir={formataDataParaExibir}
-        formataHoraParaExibir={formataHoraParaExibir}
-        selectPrioridadeById={selectPrioridadeById}
-        selectPerfilById={selectPerfilById}
-        onEdit={(id: string) => router.push(`/editar-chamado/${id}`)}
-      />
+      {selectedChamado && (
+        <>
+          {/* Modal de Detalhes do Chamado */}
+          <ChamadoModal
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            chamado={selectedChamado}
+          />
+        </>
+      )}
     </div>
   );
 }

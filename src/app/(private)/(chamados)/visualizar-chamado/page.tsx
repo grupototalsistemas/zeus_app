@@ -1,109 +1,58 @@
-import React, { useState } from 'react';
-
-import Badge from '@/components/ui/badge/Badge';
-
+'use client';
 import Send from '@/assets/icons/send.svg';
 import Input from '@/components/form/input/InputField';
+import Badge from '@/components/ui/badge/Badge';
 import Button from '@/components/ui/button/Button';
+import Collapse from '@/components/ui/collapse';
 import { Modal } from '@/components/ui/modal';
+import { useChamado } from '@/hooks/useChamado';
 import { useMovimentoMensagem } from '@/hooks/useMovimentoMensagem';
+import { usePerfil } from '@/hooks/usePerfil';
+import { usePrioridade } from '@/hooks/usePrioridade';
 import { RootState } from '@/store/rootReducer';
 import { Chamado } from '@/types/chamado.type';
 import { ChamadoMovimentoMensagem } from '@/types/chamadoMovimentoMensagem.type';
 import { StatusRegistro } from '@/types/enum';
+import {
+  formataDataParaExibir,
+  formataHoraParaExibir,
+} from '@/utils/fomata-data';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 
 interface ChamadoModalProps {
   isOpen: boolean;
   onClose: () => void;
-  chamado: Chamado | null;
-  ultimoMovimento: (chamado: Chamado) => any;
-  formataDataParaExibir: (data: string) => string;
-  formataHoraParaExibir: (data: string) => string;
-  selectPrioridadeById: (id: number) => any;
-  selectPerfilById: (id: number) => any;
-  onEdit: (id: string) => void;
+  chamado: Chamado;
 }
 
-interface CollapseProps {
-  title: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-  count?: number;
-}
-
-const Collapse: React.FC<CollapseProps> = ({
-  title,
-  children,
-  defaultOpen = false,
-  count,
-}) => {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-
-  return (
-    <div className="rounded-lg border border-gray-200 dark:border-gray-700">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
-      >
-        <div className="flex items-center space-x-3">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-            {title}
-          </h3>
-          {count !== undefined && (
-            <span className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-300">
-              {count}
-            </span>
-          )}
-        </div>
-        <svg
-          className={`h-5 w-5 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
-      </button>
-
-      {isOpen && (
-        <div className="border-t border-gray-200 dark:border-gray-700">
-          {children}
-        </div>
-      )}
-    </div>
-  );
-};
-
-const ChamadoModal: React.FC<ChamadoModalProps> = ({
+export default function ViewTicketPage({
   isOpen,
   onClose,
   chamado,
-  ultimoMovimento,
-  formataDataParaExibir,
-  formataHoraParaExibir,
-  selectPrioridadeById,
-  selectPerfilById,
-  onEdit,
-}) => {
-  if (!chamado) return null;
-  const mensagens = chamado.movimentos?.flatMap((mov) => mov.mensagens) || [];
-  const anexos = chamado.movimentos?.flatMap((mov) => mov.anexos) || [];
-  const movimentos = chamado.movimentos || [];
+}: ChamadoModalProps) {
+  const mensagens = chamado?.movimentos?.flatMap((mov) => mov.mensagens) || [];
+  const anexos = chamado?.movimentos?.flatMap((mov) => mov.anexos) || [];
+  const movimentos = chamado?.movimentos || [];
   const { pessoaInfo } = useSelector((state: RootState) => state.pessoa);
   const { create } = useMovimentoMensagem();
+  const { getById } = useChamado();
+  const { selectPerfilById } = usePerfil();
+  const { selectPrioridadeById } = usePrioridade();
+  const ultimoMovimento = (chamado: Chamado) => {
+    if (chamado.movimentos && chamado.movimentos.length > 0) {
+      return chamado.movimentos[chamado.movimentos.length - 1];
+    }
+    return null;
+  };
   let mensagem: ChamadoMovimentoMensagem = {
     ativo: StatusRegistro.ATIVO,
-    movimentoId: ultimoMovimento(chamado)?.id || 0,
+    movimentoId: chamado ? ultimoMovimento(chamado)?.id || 0 : 0,
     usuarioEnvioId: Number(pessoaInfo?.id) || 0,
-    usuarioLeituraId: chamado.usuarioId || 0,
+    usuarioLeituraId: chamado?.usuarioId || 0,
     descricao: '',
   };
+
   const getFileIcon = (tipo: string) => {
     if (tipo.startsWith('image/')) {
       return (
@@ -173,10 +122,10 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
       <div className="flex flex-shrink-0 items-center justify-between border-b border-gray-200 p-6 dark:border-gray-700">
         <div>
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
-            Chamado #{chamado.protocolo || 'N/A'}
+            Chamado #{chamado?.protocolo || 'N/A'}
           </h2>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {chamado.titulo}
+            {chamado?.titulo}
           </p>
         </div>
       </div>
@@ -196,9 +145,9 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
                   <Badge
                     size="md"
                     color={
-                      chamado.ativo === StatusRegistro.ATIVO
+                      chamado?.ativo === StatusRegistro.ATIVO
                         ? 'success'
-                        : chamado.ativo === StatusRegistro.INATIVO
+                        : chamado?.ativo === StatusRegistro.INATIVO
                           ? 'warning'
                           : 'error'
                     }
@@ -211,8 +160,8 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
                     Prioridade
                   </p>
                   <span className="inline-flex rounded-full bg-orange-100 px-3 py-1 text-sm font-medium text-orange-800 dark:bg-orange-900/20 dark:text-orange-400">
-                    {selectPrioridadeById(chamado.prioridadeId)?.descricao ||
-                      'N/A'}
+                    {selectPrioridadeById(chamado?.prioridadeId || 0)
+                      ?.descricao || 'N/A'}
                   </span>
                 </div>
               </div>
@@ -224,8 +173,8 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
                     Criado em
                   </p>
                   <p className="text-gray-900 dark:text-white">
-                    {formataDataParaExibir(chamado.createdAt || '')} às{' '}
-                    {formataHoraParaExibir(chamado.createdAt || '')}
+                    {formataDataParaExibir(chamado?.createdAt || '')} às{' '}
+                    {formataHoraParaExibir(chamado?.createdAt || '')}
                   </p>
                 </div>
                 <div>
@@ -254,7 +203,7 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
                     Código
                   </p>
                   <p className="text-gray-900 dark:text-white">
-                    {chamado.id || 'N/A'}
+                    {chamado?.id || 'N/A'}
                   </p>
                 </div>
               </div>
@@ -270,7 +219,7 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
                       Sistema ID
                     </p>
                     <p className="text-gray-900 dark:text-white">
-                      {chamado.sistemaId || 'N/A'}
+                      {chamado?.sistemaId || 'N/A'}
                     </p>
                   </div>
                   <div>
@@ -278,7 +227,7 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
                       Empresa ID
                     </p>
                     <p className="text-gray-900 dark:text-white">
-                      {chamado.empresaId || 'N/A'}
+                      {chamado?.empresaId || 'N/A'}
                     </p>
                   </div>
                 </div>
@@ -291,7 +240,7 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
                 </p>
                 <div className="max-h-40 overflow-y-auto rounded-lg bg-gray-50 p-4 dark:bg-gray-900/50">
                   <p className="whitespace-pre-wrap text-gray-900 dark:text-white">
-                    {chamado.descricao}
+                    {chamado?.descricao}
                   </p>
                 </div>
               </div>
@@ -302,11 +251,7 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
           <div className="overflow-y-auto p-6 lg:w-1/2">
             <div className="space-y-4">
               {/* Mensagens */}
-              <Collapse
-                title="Mensagens"
-                count={mensagens.length}
-                defaultOpen={true}
-              >
+              <Collapse title="Mensagens" count={mensagens.length}>
                 <div className="max-h-80 space-y-4 overflow-y-auto p-4">
                   {mensagens.map((mensagem) => (
                     <div
@@ -436,15 +381,13 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
         >
           Fechar
         </button>
-        <button
-          onClick={() => onEdit(String(chamado.id))}
+        {/* <button
+          onClick={() => onEdit(String(chamado?.id || 0))}
           className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-300 focus:outline-none sm:w-auto dark:focus:ring-blue-500"
         >
           Editar Chamado
-        </button>
+        </button> */}
       </div>
     </Modal>
   );
-};
-
-export default ChamadoModal;
+}
