@@ -17,7 +17,7 @@ const eslintConfig = [
       prettier: (await import('eslint-plugin-prettier')).default,
     },
     rules: {
-      'prettier/prettier': 'error',
+  'prettier/prettier': ['error', { endOfLine: 'auto' }],
       // Adicionar regras específicas para resolver problemas de build
       '@typescript-eslint/no-unused-vars': [
         'warn',

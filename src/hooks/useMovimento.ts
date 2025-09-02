@@ -13,7 +13,8 @@ import {
   updateMovimento,
 } from '@/store/slices/movimentoSlice';
 import { AppDispatch } from '@/store/store';
-import { Movimento } from '@/types/movimento.type';
+import { ChamadoMovimento } from '@/types/chamadoMovimento.type';
+
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -44,14 +45,14 @@ export const useMovimento = () => {
   );
 
   const create = useCallback(
-    (data: Movimento) => {
+    (data: ChamadoMovimento) => {
       return dispatch(createMovimento(data));
     },
     [dispatch]
   );
 
   const update = useCallback(
-    (id: number, data: Movimento) => {
+    (id: number, data: ChamadoMovimento) => {
       return dispatch(updateMovimento({ id, data }));
     },
     [dispatch]

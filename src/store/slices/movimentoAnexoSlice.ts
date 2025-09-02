@@ -1,11 +1,11 @@
 import { MovimentoAnexoService } from '@/service/movimentoAnexo.service';
-import { MovimentoAnexo } from '@/types/movimentoAnexo.type';
+import { ChamadoMovimentoAnexo } from '@/types/chamadoMovimentoAnexo.type';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../rootReducer';
 
 interface MovimentoAnexoState {
-  movimentoAnexos: MovimentoAnexo[];
-  currentMovimentoAnexo: MovimentoAnexo | null;
+  movimentoAnexos: ChamadoMovimentoAnexo[];
+  currentMovimentoAnexo: ChamadoMovimentoAnexo | null;
   loading: boolean;
   error: string | null;
 }
@@ -43,14 +43,14 @@ export const fetchMovimentoAnexoById = createAsyncThunk(
 
 export const createMovimentoAnexo = createAsyncThunk(
   'movimentoAnexo/create',
-  async (data: MovimentoAnexo) => {
+  async (data: ChamadoMovimentoAnexo) => {
     return await MovimentoAnexoService.createMovimentoAnexo(data);
   }
 );
 
 export const updateMovimentoAnexo = createAsyncThunk(
   'movimentoAnexo/update',
-  async ({ id, data }: { id: number; data: MovimentoAnexo }) => {
+  async ({ id, data }: { id: number; data: ChamadoMovimentoAnexo }) => {
     return await MovimentoAnexoService.updateMovimentoAnexo(id, data);
   }
 );

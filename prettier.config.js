@@ -8,4 +8,5 @@ module.exports = {
   jsxSingleQuote: false,
   bracketSameLine: false,
   arrowParens: 'always',
+  endOfLine: 'lf',
 };

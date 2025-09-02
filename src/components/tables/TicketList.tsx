@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Badge from '../ui/badge/Badge';
 
-import ChamadoModal from '@/app/(private)/(chamados)/visualizar-chamado/page';
 import { useChamado } from '@/hooks/useChamado';
 import { usePerfil } from '@/hooks/usePerfil';
 import { usePrioridade } from '@/hooks/usePrioridade';
@@ -28,13 +27,11 @@ import {
   TableRow,
 } from '../ui/table';
 import Pagination from './Pagination';
-import { tickets } from './ticket.example';
 
 export default function TicketList() {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const totalPages = Math.ceil(tickets.length / itemsPerPage);
   const [selectedChamado, setSelectedChamado] = useState<Chamado | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [chamados, setChamados] = useState<Chamado[]>([]);
@@ -46,9 +43,10 @@ export default function TicketList() {
   const { getById } = useChamado();
   const { selectPerfilById } = usePerfil();
   const { selectPrioridadeById } = usePrioridade();
+  const totalPages = Math.ceil(chamados.length / itemsPerPage);
 
   // Dados da página atual
-  const paginatedData = tickets.slice(
+  const paginatedData = chamados.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -328,16 +326,15 @@ export default function TicketList() {
           onPageChange={setCurrentPage}
         />
       </div>
-      {selectedChamado && (
+      {/* {selectedChamado && selectedChamado.id && (
         <>
-          {/* Modal de Detalhes do Chamado */}
           <ChamadoModal
             isOpen={isModalOpen}
             onClose={handleCloseModal}
-            chamado={selectedChamado}
+            chamadoId={selectedChamado.id}
           />
         </>
-      )}
+      )} */}
     </div>
   );
 }

@@ -12,7 +12,7 @@ import {
   updateSistema,
 } from '@/store/slices/sistemaSlice';
 import { AppDispatch } from '@/store/store';
-import { Sistema } from '@/types/sistema.type';
+import { Sistema } from '@/types/sistemas.type';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 

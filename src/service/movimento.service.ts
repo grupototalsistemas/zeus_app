@@ -1,14 +1,14 @@
-import { Movimento } from '@/types/movimento.type';
+import { ChamadoMovimento } from '@/types/chamadoMovimento.type';
 import api from './api';
 
-const getMovimentos = async (): Promise<Movimento[]> => {
+const getMovimentos = async (): Promise<ChamadoMovimento[]> => {
   const response = await api.get('/movimentos');
   return response.data;
 };
 
 const getMovimentosByChamado = async (
   chamadoId: number
-): Promise<Movimento[]> => {
+): Promise<ChamadoMovimento[]> => {
   const response = await api.get(`/movimentos/chamado/${chamadoId}`);
   return response.data;
 };
@@ -18,12 +18,12 @@ const getMovimento = async (id: number) => {
   return response.data;
 };
 
-const createMovimento = async (data: Movimento) => {
+const createMovimento = async (data: ChamadoMovimento) => {
   const response = await api.post('/movimentos', data);
   return response.data;
 };
 
-const updateMovimento = async (id: number, data: Movimento) => {
+const updateMovimento = async (id: number, data: ChamadoMovimento) => {
   const response = await api.put(`/movimentos/${id}`, data);
   return response.data;
 };

@@ -1,9 +1,8 @@
-
 import { Empresa } from '@/types/empresa.type';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface EmpresaState {
-  empresas:Empresa[] 
+  empresas: Empresa[];
 }
 
 const initialState: EmpresaState = {
@@ -15,7 +14,7 @@ const EmpresaSlice = createSlice({
   initialState,
   reducers: {
     setEmpresas(state, action: PayloadAction<Empresa[]>) {
-        console.log('Setting empresas in state:', action.payload);
+      console.log('Setting empresas in state:', action.payload);
       state.empresas = action.payload;
     },
 

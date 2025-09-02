@@ -37,6 +37,7 @@
     "react-hook-form": "^7.61.1",
     "react-pick-color": "^2.0.0",
     "react-redux": "^9.2.0",
+    "redux-multi": "^0.1.12",
     "redux-persist": "^6.0.0",
     "swiper": "^11.2.0",
     "tailwind-merge": "^2.6.0",

@@ -9,7 +9,7 @@ export default function CreateUserPage() {
   const handleCreate = async (data: UserFormData) => {
     const usuario: PessoaUsuarioDTO = parseUsuario(data);
     console.log('Novo usuário criado (DTO):', usuario);
-    await PessoaService.createPessoaUsuario(usuario);
+    await PessoaService.createPessoaUsuario(usuario.pessoa);
   };
 
   const parseUsuario = (data: UserFormData): PessoaUsuarioDTO => {

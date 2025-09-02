@@ -6,7 +6,8 @@ import Switch from '@/components/form/switch/Switch';
 import Button from '@/components/ui/button/Button';
 import { selectEmpresas } from '@/store/slices/empresaSlice';
 import { StatusRegistro } from '@/types/enum';
-import { Tipo } from '@/types/tipo.type';
+import { PessoaTipo } from '@/types/pessoaTipo.type';
+
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -19,7 +20,7 @@ export interface TipoFormData {
 
 interface TipoFormBaseProps {
   mode: 'create' | 'edit';
-  initialData?: Tipo;
+  initialData?: PessoaTipo;
   onSubmit: (data: TipoFormData) => void;
   disabled?: boolean;
 }

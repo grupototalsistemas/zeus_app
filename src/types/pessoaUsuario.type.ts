@@ -1,4 +1,5 @@
 import { BaseEntity } from './base.type';
+import { StatusGenero } from './enum';
 import { Pessoa } from './pessoa.type';
 import { PerfilDTO } from './pessoaPerfil.type';
 
@@ -13,6 +14,14 @@ export interface PessoaUsuario extends BaseEntity {
 export interface PessoaUsuarioRegisterDTO extends BaseEntity {
   pessoa: Pessoa;
   perfil: PerfilDTO;
+  email: string;
+  login: string;
+  senha: string;
+}
+
+export interface PessoaUsuarioDTO {
+  pessoa: Pessoa;
+  perfilId: number;
   email: string;
   login: string;
   senha: string;

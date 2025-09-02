@@ -1,5 +1,5 @@
 import { Middleware } from "@reduxjs/toolkit";
-import multi from "redux-multi";
+import multi from 'redux-multi';
 // import totalMiddleware from "./totalMiddleware";
 
 // Logger opcional para debug

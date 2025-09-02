@@ -1,11 +1,12 @@
 import { MovimentoService } from '@/service/movimento.service';
-import { Movimento } from '@/types/movimento.type';
+
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../rootReducer';
+import { ChamadoMovimento } from '@/types/chamadoMovimento.type';
 
 interface MovimentoState {
-  movimentos: Movimento[];
-  currentMovimento: Movimento | null;
+  movimentos: ChamadoMovimento[];
+  currentMovimento: ChamadoMovimento | null;
   loading: boolean;
   error: string | null;
 }
@@ -41,14 +42,14 @@ export const fetchMovimentoById = createAsyncThunk(
 
 export const createMovimento = createAsyncThunk(
   'movimento/create',
-  async (data: Movimento) => {
+  async (data: ChamadoMovimento) => {
     return await MovimentoService.createMovimento(data);
   }
 );
 
 export const updateMovimento = createAsyncThunk(
   'movimento/update',
-  async ({ id, data }: { id: number; data: Movimento }) => {
+  async ({ id, data }: { id: number; data: ChamadoMovimento }) => {
     return await MovimentoService.updateMovimento(id, data);
   }
 );

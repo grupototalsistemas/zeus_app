@@ -1,11 +1,12 @@
 import { MovimentoMensagemService } from '@/service/movimentoMensagem.service';
-import { MovimentoMensagem } from '@/types/movimentoMensagem.type';
+
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../rootReducer';
+import { ChamadoMovimentoMensagem } from '@/types/chamadoMovimentoMensagem.type';
 
 interface MovimentoMensagemState {
-  movimentoMensagens: MovimentoMensagem[];
-  currentMovimentoMensagem: MovimentoMensagem | null;
+  movimentoMensagens: ChamadoMovimentoMensagem[];
+  currentMovimentoMensagem: ChamadoMovimentoMensagem | null;
   loading: boolean;
   error: string | null;
 }
@@ -43,14 +44,14 @@ export const fetchMovimentoMensagemById = createAsyncThunk(
 
 export const createMovimentoMensagem = createAsyncThunk(
   'movimentoMensagem/create',
-  async (data: MovimentoMensagem) => {
+  async (data: ChamadoMovimentoMensagem) => {
     return await MovimentoMensagemService.createMovimentoMensagem(data);
   }
 );
 
 export const updateMovimentoMensagem = createAsyncThunk(
   'movimentoMensagem/update',
-  async ({ id, data }: { id: number; data: MovimentoMensagem }) => {
+  async ({ id, data }: { id: number; data: ChamadoMovimentoMensagem }) => {
     return await MovimentoMensagemService.updateMovimentoMensagem(id, data);
   }
 );
