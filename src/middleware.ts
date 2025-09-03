@@ -5,7 +5,7 @@ export function middleware(request: NextRequest) {
   console.log('URL:', request.nextUrl.pathname);
   console.log('Cookies raw:', request.headers.get('cookie'));
 
-  const token = request.cookies.get('token');
+  const token = request.cookies.get('zeus_token');
   console.log('Token object:', token);
   console.log('Token value:', token?.value);
 
@@ -24,8 +24,8 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/listar-chamado',
-    '/dashboard',
+    '/listar-chamado/:path*',
+    '/dashboard/:path*',
     // Remova temporariamente as outras rotas para testar
   ],
 };
