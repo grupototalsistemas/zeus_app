@@ -24,8 +24,8 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/listar-chamado/:path*',
-    '/dashboard/:path*',
+    '/listar-chamado',
+    '/dashboard',
     // Remova temporariamente as outras rotas para testar
   ],
 };

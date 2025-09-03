@@ -2,7 +2,7 @@ import { ChamadoMovimentoMensagem } from '@/types/chamadoMovimentoMensagem.type'
 import api from './api';
 
 const getMovimentoMensagens = async (): Promise<ChamadoMovimentoMensagem[]> => {
-  const response = await api.get('/movimento-mensagens');
+  const response = await api.get('/chamados-movimentos-mensagens');
   return response.data;
 };
 
@@ -10,7 +10,7 @@ const getMovimentoMensagensByMovimento = async (
   movimentoId: number
 ): Promise<ChamadoMovimentoMensagem[]> => {
   const response = await api.get(
-    `/movimento-mensagens/movimento/${movimentoId}`
+    `/chamados-movimentos-mensagens/movimento/${movimentoId}`
   );
   return response.data;
 };
