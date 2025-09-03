@@ -1,22 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  console.log('ENTROU NO MIDDLEWARE');
-  const token = request.cookies.get('zeus_token')?.value;
+  console.log('=== MIDDLEWARE DEBUG ===');
+  console.log('URL:', request.nextUrl.pathname);
+  console.log('Cookies raw:', request.headers.get('cookie'));
 
-  console.log('URL:', request.url);
-  console.log('Token no middleware:', token ? 'EXISTS' : 'NOT FOUND');
-  console.log('All cookies:', request.cookies.getAll());
-  if (!token) {
+  const token = request.cookies.get('token');
+  console.log('Token object:', token);
+  console.log('Token value:', token?.value);
+
+  // Lista TODOS os cookies
+  const allCookies = request.cookies.getAll();
+  console.log('All cookies:', allCookies);
+
+  if (!token?.value) {
+    console.log('REDIRECIONANDO - Token não encontrado');
     return NextResponse.redirect(new URL('/signin', request.url));
   }
 
+  console.log('PERMITINDO - Token encontrado');
   return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    // Aplica em todas as rotas, exceto as públicas e arquivos estáticos
-    '/((?!signin|signup|reset-password|_next|static|favicon.ico|images|icons|public).*)',
+    '/listar-chamado/:path*',
+    '/dashboard/:path*',
+    // Remova temporariamente as outras rotas para testar
   ],
 };
+
+// export const config = {
+//   matcher: [
+//     // Aplica em todas as rotas, exceto as públicas e arquivos estáticos
+//     '/((?!signin|signup|reset-password|_next|static|favicon.ico|images|icons|public).*)',
+//   ],
+// };
