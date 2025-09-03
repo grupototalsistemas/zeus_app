@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export function middleware(request: NextRequest) {
   console.log('ENTROU NO MIDDLEWARE');
-  const token = request.cookies.get('token')?.value;
+  const token = request.cookies.get('zeus_token')?.value;
 
   console.log('URL:', request.url);
   console.log('Token no middleware:', token ? 'EXISTS' : 'NOT FOUND');
