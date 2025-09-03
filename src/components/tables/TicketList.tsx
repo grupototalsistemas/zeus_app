@@ -6,8 +6,10 @@ import Badge from '../ui/badge/Badge';
 import { useChamado } from '@/hooks/useChamado';
 import { usePerfil } from '@/hooks/usePerfil';
 import { usePrioridade } from '@/hooks/usePrioridade';
+import { useSistema } from '@/hooks/useSistema';
 import { MoreDotIcon } from '@/icons';
 import { ChamadoService } from '@/service/chamado.service';
+import { RootState } from '@/store/rootReducer';
 import { Chamado } from '@/types/chamado.type';
 import { StatusRegistro } from '@/types/enum';
 import {
@@ -17,6 +19,7 @@ import {
 } from '@/utils/fomata-data';
 import { useRouter } from 'next/navigation';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Dropdown } from '../ui/dropdown/Dropdown';
 import { DropdownItem } from '../ui/dropdown/DropdownItem';
 import {
@@ -34,15 +37,17 @@ export default function TicketList() {
   const itemsPerPage = 10;
   const [selectedChamado, setSelectedChamado] = useState<Chamado | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [chamados, setChamados] = useState<Chamado[]>([]);
+
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const triggerRefs = useRef<{
     [key: string]: React.RefObject<HTMLButtonElement | null>;
   }>({});
 
-  const { getById } = useChamado();
+  const { chamados, getAll } = useChamado();
   const { selectPerfilById } = usePerfil();
   const { selectPrioridadeById } = usePrioridade();
+  const { findById } = useSistema();
+  const empresas = useSelector((state: RootState) => state.empresa.empresas);
   const totalPages = Math.ceil(chamados.length / itemsPerPage);
 
   // Dados da página atual
@@ -55,8 +60,9 @@ export default function TicketList() {
   const ultimoMovimento = (chamado: Chamado) => {
     if (chamado.movimentos && chamado.movimentos.length > 0) {
       return chamado.movimentos[chamado.movimentos.length - 1];
+    } else {
+      return null;
     }
-    return null;
   };
 
   // Criar refs para cada botão de dropdown
@@ -68,16 +74,7 @@ export default function TicketList() {
   };
 
   useEffect(() => {
-    const fetchChamados = async () => {
-      try {
-        const response = await ChamadoService.getChamados();
-        console.log('Chamadinho: ', response);
-        setChamados(response);
-      } catch (error) {
-        console.error('Error fetching chamados:', error);
-      }
-    };
-    fetchChamados();
+    getAll();
   }, []);
 
   const handleDelete = async (chamado: Chamado) => {
@@ -126,6 +123,10 @@ export default function TicketList() {
     handleOpenModal(chamado);
   };
 
+  function selectEmpresasById(empresaId: number) {
+    return empresas.find((empresa) => empresa.id === Number(empresaId));
+  }
+
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pt-4 pb-3 sm:px-6 dark:border-gray-800 dark:bg-white/[0.03]">
       <div className="max-w-full overflow-x-auto">
@@ -161,7 +162,7 @@ export default function TicketList() {
                 isHeader
                 className="text-theme-xs border-r border-gray-100 px-3 py-3 text-start font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
               >
-                Serventia
+                Empresa
               </TableCell>
               <TableCell
                 isHeader
@@ -227,10 +228,10 @@ export default function TicketList() {
                     {formataHoraParaExibir(chamado.createdAt || '')}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    {chamado.sistemaId}
+                    {findById(chamado.sistemaId)?.nome}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    {chamado.empresaId}
+                    {selectEmpresasById(chamado.empresaId)?.nomeFantasia}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                     {chamado.id}
@@ -246,25 +247,25 @@ export default function TicketList() {
                             : 'error'
                       }
                     >
-                      {ultimoMovimento(chamado)?.etapa?.descricao || 'N/A'}
+                      {ultimoMovimento(chamado)?.etapa?.descricao ||
+                        chamado.ativo}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                     {selectPrioridadeById(chamado.prioridadeId)?.descricao}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    {ultimoMovimento(chamado)?.createdAt &&
-                      formataDataParaExibir(
-                        ultimoMovimento(chamado)?.createdAt || ''
-                      )}
+                    {ultimoMovimento(chamado)?.createdAt ||
+                      formataDataParaExibir(chamado.createdAt || '')}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                     {diasAtras(formataDataParaExibir(chamado.createdAt || ''))}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                     {
-                      selectPerfilById(ultimoMovimento(chamado)?.usuarioId || 0)
-                        ?.descricao
+                      selectPerfilById(
+                        ultimoMovimento(chamado)?.usuarioId || chamado.usuarioId
+                      )?.descricao
                     }
                   </TableCell>
                   <TableCell
