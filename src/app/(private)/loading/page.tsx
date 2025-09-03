@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function Loading() {
+  console.log('carregando...');
   const router = useRouter();
 
   useEffect(() => {

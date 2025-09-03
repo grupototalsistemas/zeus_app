@@ -38,7 +38,9 @@ export default function SignInForm() {
       const response = await AuthService.login(login, password);
       console.log('response: ', response);
       dispatch(setPessoa(response.user));
+      console.log('antes de ir pra rota');
       router.push('/loading'); // Redireciona para a tela de carregamento primeiro
+      console.log('passou pela rota?');
     } catch (err: any) {
       if (err.response?.data?.message) {
         setError(err.response.data.message);
