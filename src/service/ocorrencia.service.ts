@@ -8,7 +8,7 @@ const getOcorrencias = async (): Promise<Ocorrencia[]> => {
 };
 
 const getOcorrencia = async (id: number) => {
-  const response = await api.get(`/ocorrencia/${id}`);
+  const response = await api.get(`/chamado-ocorrencia/${id}`);
   return response.data;
 };
 
@@ -18,12 +18,12 @@ const createOcorrencia = async (data: Ocorrencia) => {
 };
 
 const updateOcorrencia = async (id: number, data: Ocorrencia) => {
-  const response = await api.put(`/ocorrencia/${id}`, data);
+  const response = await api.put(`/chamado-ocorrencia/${id}`, data);
   return response.data;
 };
 
 const deleteOcorrencia = async (id: number) => {
-  const response = await api.delete(`/ocorrencia/${id}`);
+  const response = await api.delete(`/chamado-ocorrencia/${id}`);
   return response.data;
 };
 

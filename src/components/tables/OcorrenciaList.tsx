@@ -33,7 +33,7 @@ export default function OcorrenciaList() {
 
   // Estados locais (apenas para UI)
   const [currentPage, setCurrentPage] = useState(1);
-  const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
 
   const itemsPerPage = 10;
   const totalPages = Math.ceil(ocorrencias.length / itemsPerPage);
@@ -88,7 +88,7 @@ export default function OcorrenciaList() {
     return () => clearInterval(interval);
   }, [fetchOcorrencias, ocorrencias.length, loading]);
 
-  const handleToggle = (id: number) => {
+  const handleToggle = (id: string) => {
     setOpenDropdownId(openDropdownId === id ? null : id);
   };
 
@@ -142,6 +142,12 @@ export default function OcorrenciaList() {
                 isHeader
                 className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
               >
+                Tipo de Ocorrencia
+              </TableCell>
+              <TableCell
+                isHeader
+                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+              >
                 Status
               </TableCell>
               <TableCell
@@ -157,6 +163,9 @@ export default function OcorrenciaList() {
               <TableRow key={ocorrencia.id}>
                 <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                   {ocorrencia.descricao}
+                </TableCell>
+                <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                  {ocorrencia.tipo.descricao}
                 </TableCell>
                 <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                   <Badge
@@ -175,7 +184,7 @@ export default function OcorrenciaList() {
                 <TableCell>
                   <div className="relative inline-block">
                     <button
-                      onClick={() => handleToggle(ocorrencia.id!)}
+                      onClick={() => handleToggle(String(ocorrencia.id!))}
                       className="dropdown-toggle"
                       disabled={loading}
                     >
@@ -183,13 +192,13 @@ export default function OcorrenciaList() {
                     </button>
 
                     <Dropdown
-                      isOpen={openDropdownId === ocorrencia.id}
+                      isOpen={openDropdownId === String(ocorrencia.id)}
                       onClose={() => setOpenDropdownId(null)}
                       className="w-40 p-2"
                     >
                       <DropdownItem
                         onClick={() =>
-                          router.push(`/editar-ocorrencia/${ocorrencia.id}`)
+                          router.push(`/ocorrencia/${ocorrencia.id}`)
                         }
                         className="flex w-full rounded-lg text-left font-normal text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
                       >

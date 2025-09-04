@@ -128,8 +128,8 @@ export const useOcorrencia = () => {
   }, [dispatch]);
 
   // Selecionar por Id e mostrar o selecionado
-  const selectOcorrenciaById = (id: number) => {
-    return ocorrencias.find((ot) => ot.id === id);
+  const selectOcorrenciaById = (id: string) => {
+    return ocorrencias.find((ot) => String(ot.id) === id);
   };
 
   return {

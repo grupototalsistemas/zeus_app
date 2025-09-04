@@ -9,10 +9,11 @@ import { selectOcorrenciaTipos } from '@/store/slices/ocorrenciaTipoSlice';
 import { Ocorrencia } from '@/types/chamadoOcorrencia.type';
 import { StatusRegistro } from '@/types/enum';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 export interface OcorrenciaFormData {
+  id?: number;
   empresaId: number;
   descricao: string;
   tipoId: number;
@@ -35,12 +36,26 @@ export function OcorrenciaFormBase({
   const empresas = useSelector(selectEmpresas);
   const tipos = useSelector(selectOcorrenciaTipos);
   const router = useRouter();
+  console.log('initial  data:', initialData);
   const [formData, setFormData] = useState<OcorrenciaFormData>({
+    id: initialData?.id,
     empresaId: initialData?.empresaId || 0,
     descricao: initialData?.descricao || '',
     ativo: initialData?.ativo || StatusRegistro.ATIVO,
     tipoId: initialData?.tipoId || 0,
   });
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        id: initialData.id,
+        empresaId: initialData.empresaId,
+        descricao: initialData.descricao,
+        ativo: initialData.ativo || StatusRegistro.ATIVO,
+        tipoId: initialData.tipoId,
+      });
+    }
+  }, [initialData]);
 
   const handleChange = (name: string, value: any) => {
     if (!disabled) {
