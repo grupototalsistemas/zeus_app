@@ -8,7 +8,6 @@ import { usePerfil } from '@/hooks/usePerfil';
 import { usePrioridade } from '@/hooks/usePrioridade';
 import { useSistema } from '@/hooks/useSistema';
 import { MoreDotIcon } from '@/icons';
-import { ChamadoService } from '@/service/chamado.service';
 import { RootState } from '@/store/rootReducer';
 import { Chamado } from '@/types/chamado.type';
 import { StatusRegistro } from '@/types/enum';
@@ -20,6 +19,7 @@ import {
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { useSelector } from 'react-redux';
+import ChamadoModal from '../modal/ChamadoModal';
 import { Dropdown } from '../ui/dropdown/Dropdown';
 import { DropdownItem } from '../ui/dropdown/DropdownItem';
 import {
@@ -43,7 +43,7 @@ export default function TicketList() {
     [key: string]: React.RefObject<HTMLButtonElement | null>;
   }>({});
 
-  const { chamados, getAll } = useChamado();
+  const { chamados, getAll, remove } = useChamado();
   const { selectPerfilById } = usePerfil();
   const { selectPrioridadeById } = usePrioridade();
   const { findById } = useSistema();
@@ -88,9 +88,12 @@ export default function TicketList() {
     }
 
     try {
-      await ChamadoService.deleteChamado(chamado.id!);
+      // await ChamadoService.deleteChamado(chamado.id!);
+      remove(chamado.id!);
       // Fecha o dropdown se estiver aberto
       setOpenDropdownId(null);
+      // Recarrega a tabela
+      getAll();
 
       // Ajusta a página atual se necessário
       const newTotalPages = Math.ceil((chamados.length - 1) / itemsPerPage);
@@ -255,8 +258,9 @@ export default function TicketList() {
                     {selectPrioridadeById(chamado.prioridadeId)?.descricao}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    {ultimoMovimento(chamado)?.createdAt ||
-                      formataDataParaExibir(chamado.createdAt || '')}
+                    {formataDataParaExibir(
+                      ultimoMovimento(chamado)?.createdAt || ''
+                    )}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                     {diasAtras(formataDataParaExibir(chamado.createdAt || ''))}
@@ -327,7 +331,7 @@ export default function TicketList() {
           onPageChange={setCurrentPage}
         />
       </div>
-      {/* {selectedChamado && selectedChamado.id && (
+      {selectedChamado && selectedChamado.id && (
         <>
           <ChamadoModal
             isOpen={isModalOpen}
@@ -335,7 +339,7 @@ export default function TicketList() {
             chamadoId={selectedChamado.id}
           />
         </>
-      )} */}
+      )}
     </div>
   );
 }

@@ -1,8 +1,8 @@
 import { MovimentoMensagemService } from '@/service/movimentoMensagem.service';
 
+import { ChamadoMovimentoMensagem } from '@/types/chamadoMovimentoMensagem.type';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../rootReducer';
-import { ChamadoMovimentoMensagem } from '@/types/chamadoMovimentoMensagem.type';
 
 interface MovimentoMensagemState {
   movimentoMensagens: ChamadoMovimentoMensagem[];
@@ -127,7 +127,8 @@ const movimentoMensagemSlice = createSlice({
       })
       .addCase(createMovimentoMensagem.fulfilled, (state, action) => {
         state.loading = false;
-        state.movimentoMensagens.push(action.payload);
+        state.movimentoMensagens = action.payload;
+        // state.movimentoMensagens.push(action.payload);
       })
       .addCase(createMovimentoMensagem.rejected, (state, action) => {
         state.loading = false;
