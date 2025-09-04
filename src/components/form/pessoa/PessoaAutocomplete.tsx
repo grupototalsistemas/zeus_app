@@ -15,12 +15,16 @@ interface PessoaAutocompleteProps {
   onSelect: (pessoa: Pessoa | null) => void;
   empresaId?: string;
   disabled?: boolean;
+  resetSelection?: boolean; // Nova prop
+  onResetComplete?: () => void;
 }
 
 export default function PessoaAutocomplete({
   onSelect,
   empresaId,
   disabled = false,
+  resetSelection = false,
+  onResetComplete,
 }: PessoaAutocompleteProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState<Pessoa[]>([]);
@@ -43,6 +47,17 @@ export default function PessoaAutocomplete({
   const pessoaTipos = useAppSelector(selectPessoasTiposFormatados);
   const debouncedSearch = useDebounce(searchTerm, 500);
 
+  useEffect(() => {
+    if (resetSelection) {
+      setSelectedPessoa(null);
+      setSearchTerm('');
+      onSelect(null);
+      if (onResetComplete) {
+        onResetComplete();
+      }
+    }
+  }, [resetSelection, onSelect, onResetComplete]);
+
   // Buscar pessoas quando o termo de pesquisa mudar
   useEffect(() => {
     if (selectedPessoa) return; // 🚀 Evita buscar novamente se já está selecionado
@@ -64,10 +79,8 @@ export default function PessoaAutocomplete({
 
       try {
         const response = await PessoaService.getPessoas();
-        const filtered = response.filter(
-          (pessoa) =>
-            pessoa.nome.toLowerCase().includes(debouncedSearch.toLowerCase()) &&
-            (!empresaId || pessoa.empresaId?.toString() === empresaId)
+        const filtered = response.filter((pessoa) =>
+          pessoa.nome.toLowerCase().includes(debouncedSearch.toLowerCase())
         );
         setResults(filtered);
         setShowResults(true);

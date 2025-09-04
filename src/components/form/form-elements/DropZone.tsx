@@ -1,14 +1,30 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import ComponentCard from '../../common/ComponentCard';
 
 interface DropzoneProps {
   onFilesChange: (files: File[]) => void;
+  resetFiles?: boolean;
+  onResetComplete?: () => void;
 }
 
-const DropzoneComponent: React.FC<DropzoneProps> = ({ onFilesChange }) => {
+const DropzoneComponent: React.FC<DropzoneProps> = ({
+  onFilesChange,
+  resetFiles = false,
+  onResetComplete,
+}) => {
   const [files, setFiles] = React.useState<File[]>([]);
+
+  useEffect(() => {
+    if (resetFiles) {
+      setFiles([]);
+      onFilesChange([]);
+      if (onResetComplete) {
+        onResetComplete();
+      }
+    }
+  }, [resetFiles, onFilesChange, onResetComplete]);
 
   const onDrop = (acceptedFiles: File[]) => {
     console.log('Files dropped:', acceptedFiles);

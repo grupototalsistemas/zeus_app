@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface Option {
-  value: string|number;
+  value: string | number;
   label: string;
 }
 
@@ -22,10 +22,15 @@ const Select: React.FC<SelectProps> = ({
 }) => {
   const [selectedValue, setSelectedValue] = useState<string>(value);
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
+  // Sincroniza o estado interno quando a prop value mudar
+  useEffect(() => {
     setSelectedValue(value);
-    onChange(value);
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newValue = e.target.value;
+    setSelectedValue(newValue);
+    onChange(newValue);
   };
 
   return (

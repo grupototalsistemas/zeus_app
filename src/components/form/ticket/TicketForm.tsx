@@ -64,6 +64,8 @@ export function TicketFormBase({
   const [sistemas, setSistemas] = useState<Option[]>([]);
   const [anexosFiles, setAnexosFiles] = useState<File[]>([]);
   const { pessoaInfo } = useSelector((state: RootState) => state.pessoa);
+  const [resetDropzone, setResetDropzone] = useState(false);
+  const [resetPessoa, setResetPessoa] = useState(false);
   // console.log('initial  data:', initialData);
   const {
     register,
@@ -181,7 +183,15 @@ export function TicketFormBase({
       setValue('prioridadeId', '');
       setValue('observacao', '');
       setAnexosFiles([]);
+      setResetDropzone(true);
     }
+  };
+
+  const handleDropzoneResetComplete = () => {
+    setResetDropzone(false);
+  };
+  const handlePessoaResetComplete = () => {
+    setResetPessoa(false);
   };
 
   return (
@@ -245,6 +255,8 @@ export function TicketFormBase({
               }}
               empresaId={watch('empresaId')}
               disabled={isSubmitting || !!watch('empresaId') === false}
+              resetSelection={resetPessoa}
+              onResetComplete={handlePessoaResetComplete}
             />
             {errors.pessoaId && (
               <p className="text-sm text-red-500">{errors.pessoaId.message}</p>
@@ -312,6 +324,8 @@ export function TicketFormBase({
             onFilesChange={(files) => {
               handleFileChange({ target: { files } } as any);
             }}
+            resetFiles={resetDropzone}
+            onResetComplete={handleDropzoneResetComplete}
           />
 
           <div>
