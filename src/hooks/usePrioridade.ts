@@ -146,8 +146,8 @@ export const usePrioridade = () => {
   }, [dispatch]);
 
   // Selecionar por Id
-  const selectPrioridadeById = (id: number) => {
-    return prioridades.find((p) => p.id === id);
+  const selectPrioridadeById = (id: string) => {
+    return prioridades.find((p) => String(p.id) === id);
   };
 
   return {

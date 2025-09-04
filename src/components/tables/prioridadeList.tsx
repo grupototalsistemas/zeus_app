@@ -4,6 +4,7 @@ import { usePrioridade } from '@/hooks/usePrioridade';
 import { MoreDotIcon } from '@/icons';
 import { Prioridade } from '@/types/chamadoPrioridade.type';
 import { StatusRegistro } from '@/types/enum';
+import { ColorSquare } from '@/utils/ColorSquare';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Badge from '../ui/badge/Badge';
@@ -141,6 +142,18 @@ export default function PrioridadeList() {
                 isHeader
                 className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
               >
+                Cor
+              </TableCell>
+              <TableCell
+                isHeader
+                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+              >
+                Tempo
+              </TableCell>
+              <TableCell
+                isHeader
+                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+              >
                 Status
               </TableCell>
               <TableCell
@@ -156,6 +169,12 @@ export default function PrioridadeList() {
               <TableRow key={prioridade.id}>
                 <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                   {prioridade.descricao}
+                </TableCell>
+                <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                  {ColorSquare({ color: prioridade.cor })}
+                </TableCell>
+                <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                  {prioridade.tempo} min
                 </TableCell>
                 <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                   <Badge
@@ -188,12 +207,13 @@ export default function PrioridadeList() {
                     >
                       <DropdownItem
                         onClick={() =>
-                          router.push(`/editar-prioridade/${prioridade.id}`)
+                          router.push(`/tempo-execucao/${prioridade.id}`)
                         }
                         className="flex w-full rounded-lg text-left font-normal text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
                       >
                         Editar
                       </DropdownItem>
+
                       <DropdownItem
                         onClick={() => handleDelete(prioridade)}
                         className="flex w-full rounded-lg text-left font-normal text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"

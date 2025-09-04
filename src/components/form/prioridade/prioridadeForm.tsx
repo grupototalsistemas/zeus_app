@@ -7,12 +7,13 @@ import Button from '@/components/ui/button/Button';
 import { selectEmpresas } from '@/store/slices/empresaSlice';
 import { Prioridade } from '@/types/chamadoPrioridade.type';
 import { StatusRegistro } from '@/types/enum';
+import ColorSlider from '@/utils/ColorSlider';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import ColorPicker from 'react-pick-color';
 import { useSelector } from 'react-redux';
 
 export interface PrioridadeFormData {
+  id?: number;
   descricao: string;
   empresaId: number;
   cor: string;
@@ -37,6 +38,7 @@ export function PrioridadeFormBase({
   const empresas = useSelector(selectEmpresas);
   const router = useRouter();
   const [formData, setFormData] = useState<PrioridadeFormData>({
+    id: initialData?.id || 0,
     empresaId: initialData?.empresaId || 0,
     descricao: initialData?.descricao || '',
     cor: initialData?.cor || '#fff',
@@ -113,20 +115,10 @@ export function PrioridadeFormBase({
           {/* Descrição */}
           <div>
             <Label>Escolha uma cor para representar a prioridade</Label>
-            {/* <input
-              type="text"
+            <ColorSlider
               value={formData.cor}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleChange('cor', e.target.value)
-              }
-              placeholder="Digite a cor da prioridade"
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-              required
+              onChange={(color) => handleChange('cor', color)}
               disabled={disabled}
-            /> */}
-            <ColorPicker
-              color={formData.cor}
-              onChange={(color) => handleChange('cor', color.hex)}
             />
           </div>
           <div>
