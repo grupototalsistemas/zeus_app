@@ -255,7 +255,10 @@ export default function TicketList() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    {selectPrioridadeById(chamado.prioridadeId)?.descricao}
+                    {
+                      selectPrioridadeById(String(chamado.prioridadeId))
+                        ?.descricao
+                    }
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                     {formataDataParaExibir(
