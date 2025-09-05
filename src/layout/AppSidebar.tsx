@@ -53,17 +53,17 @@ const navItems: NavItem[] = [
     icon: <UserCircleIcon />,
     name: 'Pessoas',
     subItems: [
-      { name: 'Gerenciar Pessoas', path: '/criar-usuario', pro: false },
+      { name: 'Gerenciar Pessoas', path: '/gerenciar-pessoa', pro: false },
       { name: 'Criar Usuarios', path: '/criar-usuario', pro: false },
       { name: 'Listar usuarios', path: '/listar-usuario', pro: false },
       {
         name: 'Gerenciar Perfis de Usuarios',
-        path: '/criar-usuario',
+        path: '/criar-perfil',
         pro: false,
       },
       {
         name: 'Gerenciar Funções de Pessoas',
-        path: '/criar-usuario',
+        path: '/gerenciar-funcoes',
         pro: false,
       },
     ],

@@ -5,6 +5,7 @@ import {
   PerfilFormBase,
   PerfilFormData,
 } from '@/components/form/perfil/PerfilForm';
+import PerfilList from '@/components/tables/PerfilList';
 import { usePerfil } from '@/hooks/usePerfil';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -51,6 +52,8 @@ export default function CreatePerfilPage() {
           onSubmit={handleCreate}
           disabled={loading || isSubmitting}
         />
+        <br />
+        <PerfilList />
       </div>
     </>
   );
