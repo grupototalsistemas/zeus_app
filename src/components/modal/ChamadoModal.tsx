@@ -176,8 +176,8 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
                     Prioridade
                   </p>
                   <span className="inline-flex rounded-full bg-orange-100 px-3 py-1 text-sm font-medium text-orange-800 dark:bg-orange-900/20 dark:text-orange-400">
-                    {selectPrioridadeById(chamado.prioridadeId)?.descricao ||
-                      'N/A'}
+                    {selectPrioridadeById(String(chamado.prioridadeId))
+                      ?.descricao || 'N/A'}
                   </span>
                 </div>
               </div>
