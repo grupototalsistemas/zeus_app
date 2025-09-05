@@ -165,7 +165,7 @@ export default function OcorrenciaList() {
                   {ocorrencia.descricao}
                 </TableCell>
                 <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                  {ocorrencia.tipo.descricao}
+                  {ocorrencia.tipo?.descricao}
                 </TableCell>
                 <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                   <Badge

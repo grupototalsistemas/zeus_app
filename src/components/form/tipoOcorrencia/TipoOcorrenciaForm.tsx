@@ -5,13 +5,14 @@ import Label from '@/components/form/Label';
 import Switch from '@/components/form/switch/Switch';
 import Button from '@/components/ui/button/Button';
 import { selectEmpresas } from '@/store/slices/empresaSlice';
-import { Ocorrencia } from '@/types/chamadoOcorrencia.type';
+import { OcorrenciaTipo } from '@/types/chamadoOcorrenciaTipo.type';
 import { StatusRegistro } from '@/types/enum';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 
 export interface TipoOcorrenciaFormData {
+  id?: number;
   empresaId: number;
   descricao: string;
   ativo: StatusRegistro;
@@ -19,7 +20,7 @@ export interface TipoOcorrenciaFormData {
 
 interface OcorrenciaFormBaseProps {
   mode: 'create' | 'edit';
-  initialData?: Ocorrencia;
+  initialData?: OcorrenciaTipo;
   onSubmit: (data: TipoOcorrenciaFormData) => void;
   disabled?: boolean;
 }
