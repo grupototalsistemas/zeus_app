@@ -1,6 +1,7 @@
 'use client';
 
-import { UserFormBase, UserFormData } from '@/components/form/user/UserForm';
+import { UserFormData } from '@/components/form/user/UserForm';
+import UserList from '@/components/tables/UserList';
 import { PessoaService } from '@/service/pessoa.service';
 import { StatusGenero, StatusRegistro } from '@/types/enum';
 import { PessoaUsuarioDTO } from '@/types/pessoaUsuario.type';
@@ -29,5 +30,9 @@ export default function CreateUserPage() {
     };
   };
 
-  return <UserFormBase mode="create" onSubmit={handleCreate} />;
+  return (
+    <>
+      <UserList />
+    </>
+  );
 }

@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import EmpresaAutocomplete from '../form/empresa/EmpresaAutoComplete';
 import Checkbox from '../form/input/Checkbox';
 import Select from '../form/Select';
 
@@ -41,7 +42,6 @@ export default function SignUpForm() {
       nomeSocial: '',
     },
     perfil: {
-      nome: 'MASTER',
       empresaId: empresa,
       descricao: 'MASTER',
     },
@@ -106,7 +106,7 @@ export default function SignUpForm() {
 
   useEffect(() => {
     if (empresas && empresas.length > 0) {
-      console.log('empresas: ', empresas);
+      // console.log('empresas: ', empresas);
       formataEmpresa(empresas);
     }
   }, [empresas]);
@@ -149,7 +149,7 @@ export default function SignUpForm() {
                 placeholder="(Opcional)"
                 value={formData.pessoa.nomeSocial}
                 onChange={(e) =>
-                  handleChange('pessoa.nome_social', e.target.value)
+                  handleChange('pessoa.nomeSocial', e.target.value)
                 }
               />
             </div>
@@ -180,7 +180,14 @@ export default function SignUpForm() {
           </div>
 
           <div>
-            <Label>Empresa</Label>
+            <EmpresaAutocomplete
+              onSelect={(empresa) => {
+                handleChange('pessoa.empresaId', empresa?.id || 0);
+                handleChange('perfil.empresaId', empresa?.id || 0);
+              }}
+            />
+
+            {/* <Label>Empresa</Label>
             <div className="relative">
               <Select
                 options={empresasFormatadas}
@@ -193,7 +200,7 @@ export default function SignUpForm() {
               <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">
                 <ChevronDownIcon />
               </span>
-            </div>
+            </div> */}
           </div>
 
           <div>
@@ -204,7 +211,7 @@ export default function SignUpForm() {
                 placeholder="Selecione"
                 onChange={(opt: any) => {
                   console.log('tipo pessoa: ', opt);
-                  handleChange('pessoa.id_pessoa_tipo', Number(opt));
+                  handleChange('pessoa.tipoId', Number(opt));
                 }}
               />
               <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">

@@ -1,7 +1,9 @@
 'use client';
+import { RootState } from '@/store/rootReducer';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useSidebar } from '../context/SidebarContext';
 import {
   BoxCubeIcon,
@@ -33,20 +35,28 @@ const navItems: NavItem[] = [
     icon: <GridIcon />,
     name: 'Chamados',
     subItems: [
-      { name: 'Criar Chamado', path: '/criar-chamado', pro: false },
+      { name: 'Gerenciar Chamado', path: '/gerenciar-chamado', pro: false },
       { name: 'Listar Chamados', path: '/listar-chamado', pro: false },
       {
         name: 'Gerenciar tempo de execução',
-        path: '/tempo-execucao',
+        path: '/gerenciar-prioridade',
         pro: false,
       },
-      { name: 'Gerenciar ocorrencias', path: '/ocorrencia', pro: false },
+      {
+        name: 'Gerenciar ocorrencias',
+        path: '/gerenciar-ocorrencia',
+        pro: false,
+      },
       {
         name: 'Gerenciar tipos de ocorrencias',
-        path: '/tipo-ocorrencia',
+        path: '/gerenciar-tipo-ocorrencia',
         pro: false,
       },
-      { name: 'Gerenciar etapas de movimento', path: '/etapas', pro: false },
+      {
+        name: 'Gerenciar etapas de movimento',
+        path: '/gerenciar-movimento-etapas',
+        pro: false,
+      },
     ],
   },
   {
@@ -54,16 +64,17 @@ const navItems: NavItem[] = [
     name: 'Pessoas',
     subItems: [
       { name: 'Gerenciar Pessoas', path: '/gerenciar-pessoa', pro: false },
-      { name: 'Criar Usuarios', path: '/criar-usuario', pro: false },
-      { name: 'Listar usuarios', path: '/listar-usuario', pro: false },
+      { name: 'Listar Pessoas', path: '/listar-pessoa', pro: false },
+      { name: 'Gerenciar Usuarios', path: '/gerenciar-usuarios', pro: false },
+      // { name: 'Listar usuarios', path: '/listar-usuario', pro: false },
       {
-        name: 'Gerenciar Perfis de Usuarios',
-        path: '/criar-perfil',
+        name: 'Gerenciar Perfis',
+        path: '/gerenciar-perfis',
         pro: false,
       },
       {
         name: 'Gerenciar Funções de Pessoas',
-        path: '/gerenciar-funcoes',
+        path: '/gerenciar-tipo',
         pro: false,
       },
     ],
@@ -72,17 +83,17 @@ const navItems: NavItem[] = [
     icon: <ShootingStarIcon />,
     name: 'Empresas',
     subItems: [
-      { name: 'Criar empresa', path: '/criar-empresa', pro: false },
-      { name: 'Listar empresas', path: '/listar-empresa', pro: false },
+      { name: 'Gerenciar empresa', path: '/gerenciar-empresa', pro: false },
+      { name: 'Listar empresas', path: '/listar-empresas', pro: false },
       {
         name: 'Gerenciar Categorias de Empresas',
-        path: '/listar-empresa',
+        path: '/gerenciar-categoria',
         pro: false,
       },
-      { name: 'Gerenciar Sistemas', path: '/listar-empresa', pro: false },
+      { name: 'Gerenciar Sistemas', path: '/gerenciar-sistema', pro: false },
       {
         name: 'Gerenciar Tipo de Empresa',
-        path: '/listar-empresa',
+        path: '/gerenciar-tipo-empresa',
         pro: false,
       },
     ],
@@ -144,6 +155,8 @@ const othersItems: NavItem[] = [
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const pessoa = useSelector((state: RootState) => state.pessoa);
+  const empresa = pessoa.pessoaInfo.email;
   const pathname = usePathname();
 
   const renderMenuItems = (navItems: NavItem[], menuType: 'main') => (
@@ -355,7 +368,10 @@ const AppSidebar: React.FC = () => {
         <Link href="/">
           {isExpanded || isHovered || isMobileOpen ? (
             <>
-              <h1 className="ml-2 text-4xl dark:text-white">Zeus</h1>
+              <div className="flex flex-row items-center gap-1 dark:text-white">
+                <h1 className="ml-2 text-4xl dark:text-white">Zeus</h1>
+                <h3 className="ml-2 text-sm dark:text-white">{empresa}</h3>
+              </div>
             </>
           ) : (
             <h1 className="ml-2 text-4xl dark:text-white">Z</h1>

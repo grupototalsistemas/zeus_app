@@ -9,6 +9,6 @@ export interface PerfilDTO extends BaseEntity {
   empresaId: number;
   email?: string;
   senha?: string;
-  nome: string;
+  nome?: string;
   descricao: string;
 }

@@ -1,6 +1,10 @@
 import { EmpresaTipoService } from '@/service/empresaTipo.service';
 import { EmpresaTipo } from '@/types/empresaTipo.type';
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSelector,
+  createSlice,
+} from '@reduxjs/toolkit';
 import { RootState } from '../rootReducer';
 
 interface EmpresaTipoState {
@@ -156,5 +160,13 @@ export const selectEmpresaTipoLoading = (state: RootState) =>
   state.empresa_tipo.loading;
 export const selectEmpresaTipoError = (state: RootState) =>
   state.empresa_tipo.error;
+export const selectTiposFormatados = createSelector(
+  [selectEmpresaTipos],
+  (tipos) =>
+    tipos.map((tipo) => ({
+      value: tipo.id || 0,
+      label: tipo.descricao,
+    }))
+);
 
 export default empresaTipoSlice.reducer;

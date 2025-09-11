@@ -14,6 +14,7 @@ import { selectEmpresasFormatadas } from '@/store/slices/empresaSlice';
 import { selectOcorrenciasFormatadas } from '@/store/slices/ocorrenciaSlice';
 import { selectPrioridadesFormatadas } from '@/store/slices/prioridadeSlice';
 import { RootState } from '@/store/store';
+import { Empresa } from '@/types/empresa.type';
 import { StatusRegistro } from '@/types/enum';
 import { Pessoa } from '@/types/pessoa.type';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,6 +22,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { z } from 'zod';
+import EmpresaAutocomplete from '../empresa/EmpresaAutoComplete';
 import DropzoneComponent from '../form-elements/DropZone';
 
 const ticketSchema = z.object({
@@ -66,6 +68,7 @@ export function TicketFormBase({
   const { pessoaInfo } = useSelector((state: RootState) => state.pessoa);
   const [resetDropzone, setResetDropzone] = useState(false);
   const [resetPessoa, setResetPessoa] = useState(false);
+  const [resetEmpresa, setResetEmpresa] = useState(false);
   // console.log('initial  data:', initialData);
   const {
     register,
@@ -193,6 +196,9 @@ export function TicketFormBase({
   const handlePessoaResetComplete = () => {
     setResetPessoa(false);
   };
+  const handleEmpresaResetComplete = () => {
+    setResetEmpresa(false);
+  };
 
   return (
     <>
@@ -207,8 +213,21 @@ export function TicketFormBase({
           {/* Identificação */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <Label>Empresa *</Label>
-              <Select
+              <EmpresaAutocomplete
+                onSelect={(empresa: Empresa | null) => {
+                  if (empresa) {
+                    setValue('empresaId', empresa.id?.toString() || '');
+                    trigger('empresaId');
+                  } else {
+                    setValue('empresaId', '');
+                  }
+                }}
+                // empresaId={watch('empresaId')}
+                disabled={isSubmitting}
+                resetSelection={resetEmpresa}
+                onResetComplete={handleEmpresaResetComplete}
+              />
+              {/* <Select
                 options={empresasFormatadas}
                 placeholder="Selecione a Empresa"
                 onChange={(opt: any) => {
@@ -216,7 +235,7 @@ export function TicketFormBase({
                   trigger('empresaId');
                 }}
                 value={watch('empresaId')}
-              />
+              /> */}
               {errors.empresaId && (
                 <p className="text-sm text-red-500">
                   {errors.empresaId.message}

@@ -13,10 +13,10 @@ export function middleware(request: NextRequest) {
   const allCookies = request.cookies.getAll();
   // console.log('All cookies:', allCookies);
 
-  // if (!token?.value) {
-  //   console.log('REDIRECIONANDO - Token não encontrado');
-  //   return NextResponse.redirect(new URL('/signin', request.url));
-  // }
+  if (!token?.value) {
+    console.log('REDIRECIONANDO - Token não encontrado');
+    return NextResponse.redirect(new URL('/signin', request.url));
+  }
 
   // console.log('PERMITINDO - Token encontrado');
   return NextResponse.next();

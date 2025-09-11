@@ -39,6 +39,16 @@ const deletePessoa = async (id: number) => {
   return response.data;
 };
 
+const getPessoasByEmpresa = async (empresaId: number) => {
+  const response = await api.get(`/pessoas/empresa/${empresaId}`);
+  return response.data;
+};
+
+const getPessoasByTipo = async (tipoId: number) => {
+  const response = await api.get(`/pessoas/tipo/${tipoId}`);
+  return response.data;
+};
+
 export const PessoaService = {
   getPessoas,
   getPessoa,
@@ -47,4 +57,6 @@ export const PessoaService = {
   deletePessoa,
   createPessoaUsuario,
   search,
+  getPessoasByEmpresa,
+  getPessoasByTipo,
 };

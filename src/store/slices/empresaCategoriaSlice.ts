@@ -1,6 +1,10 @@
 import { EmpresaCategoriaService } from '@/service/empresaCategoria.service';
 import { EmpresaCategoria } from '@/types/empresaCategoria.type';
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSelector,
+  createSlice,
+} from '@reduxjs/toolkit';
 import { RootState } from '../rootReducer';
 
 interface EmpresaCategoriaState {
@@ -159,5 +163,13 @@ export const selectEmpresaCategoriaLoading = (state: RootState) =>
   state.empresa_categoria.loading;
 export const selectEmpresaCategoriaError = (state: RootState) =>
   state.empresa_categoria.error;
+export const selectCategoriasFormatadas = createSelector(
+  [selectEmpresaCategorias],
+  (categorias) =>
+    categorias.map((categoria) => ({
+      value: categoria.id || 0,
+      label: categoria.descricao,
+    }))
+);
 
 export default empresaCategoriaSlice.reducer;

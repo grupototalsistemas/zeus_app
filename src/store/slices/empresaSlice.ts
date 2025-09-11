@@ -14,7 +14,7 @@ const EmpresaSlice = createSlice({
   initialState,
   reducers: {
     setEmpresas(state, action: PayloadAction<Empresa[]>) {
-      console.log('Setting empresas in state:', action.payload);
+      // console.log('Setting empresas in state:', action.payload);
       state.empresas = action.payload;
     },
 
@@ -27,8 +27,9 @@ const EmpresaSlice = createSlice({
 export const { setEmpresas, clearEmpresa } = EmpresaSlice.actions;
 
 // Seletores
-export const selectEmpresas = (state: { empresa: EmpresaState }) => state.empresa.empresas;
-export const selectEmpresasFormatadas = (state: { empresa: EmpresaState }) => 
+export const selectEmpresas = (state: { empresa: EmpresaState }) =>
+  state.empresa.empresas;
+export const selectEmpresasFormatadas = (state: { empresa: EmpresaState }) =>
   state.empresa.empresas.map((empresa) => ({
     value: empresa.id || 0,
     label: empresa.nomeFantasia,

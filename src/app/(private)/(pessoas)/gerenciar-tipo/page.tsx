@@ -2,6 +2,7 @@
 
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import { TipoFormBase, TipoFormData } from '@/components/form/tipo/TipoForm';
+import TipoList from '@/components/tables/TipoList';
 import { usePessoaTipo } from '@/hooks/usePessoaTipo';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -48,6 +49,8 @@ export default function CreateTipoPage() {
           onSubmit={handleCreate}
           disabled={loading || isSubmitting}
         />
+        <br />
+        <TipoList />
       </div>
     </>
   );

@@ -1,5 +1,5 @@
 import { Perfil } from '@/types/pessoaPerfil.type';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../rootReducer';
 
 interface PerfilState {
@@ -84,10 +84,11 @@ export const selectPerfilSelecionado = (state: RootState) =>
   state.pessoa_perfil.perfilSelecionado;
 export const selectLoading = (state: RootState) => state.pessoa_perfil.loading;
 export const selectError = (state: RootState) => state.pessoa_perfil.error;
-export const selectPerfisFormatados = (state: RootState) =>
-  state.pessoa_perfil.perfis.map((perfil) => ({
+export const selectPerfisFormatados = createSelector([selectPerfis], (perfis) =>
+  perfis.map((perfil) => ({
     value: perfil.id || 0,
     label: perfil.descricao,
-  }));
+  }))
+);
 
 export default PerfilSlice.reducer;

@@ -49,6 +49,16 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
   const { empresas } = useSelector((state: RootState) => state.empresa);
   const { create } = useMovimentoMensagem();
 
+  const [currentPanel, setCurrentPanel] = useState(0);
+
+  const goToPreviousPanel = () => {
+    setCurrentPanel((prev) => Math.max(0, prev - 1));
+  };
+
+  const goToNextPanel = () => {
+    setCurrentPanel((prev) => Math.min(1, prev + 1));
+  };
+
   const ultimoMovimento = (chamado: Chamado) => {
     if (chamado.movimentos && chamado.movimentos.length > 0) {
       return chamado.movimentos[chamado.movimentos.length - 1];
@@ -135,23 +145,25 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
       showCloseButton={true}
     >
       {/* Header Fixo */}
-      <div className="flex flex-shrink-0 items-center justify-between border-b border-gray-200 p-6 dark:border-gray-700">
-        <div>
-          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
-            Chamado #{chamado.protocolo || 'N/A'}
-          </h2>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {chamado.titulo}
-          </p>
+      <div className="sticky top-0 z-10 flex-shrink-0 border-b border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+              Chamado #{chamado?.protocolo || 'N/A'}
+            </h2>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              {chamado?.titulo}
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Conteúdo com Scroll */}
-      <div className="flex-1 overflow-hidden">
-        <div className="flex h-full flex-col lg:flex-row">
-          {/* Lado Esquerdo - Detalhes do Chamado */}
-          <div className="overflow-y-auto border-r border-b border-gray-200 p-6 lg:w-1/2 lg:border-r lg:border-b-0 dark:border-gray-700">
-            <div className="space-y-6">
+      <div className="flex-1 overflow-y-auto">
+        <div className="flex h-screen w-full overflow-x-auto overflow-y-auto md:flex-row lg:overflow-x-hidden">
+          <div className="flex h-full min-w-[768px] flex-col lg:min-w-0 lg:flex-row">
+            {/* Coluna Esquerda (scroll vertical interno) */}
+            <div className="max-h-full overflow-y-auto border-r border-b border-gray-200 p-6 lg:border-b-0 dark:border-gray-700">
               {/* Status e Prioridade */}
               <div className="flex flex-wrap gap-4">
                 <div>
@@ -261,7 +273,7 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
           </div>
 
           {/* Lado Direito - Mensagens, Histórico, Anexos */}
-          <div className="max-h-96 overflow-y-auto scroll-smooth px-6 pt-6 lg:w-1/2">
+          <div className="max-h-full overflow-y-auto px-6 pt-6 lg:w-1/2">
             <div className="space-y-4">
               {/* Mensagens */}
               <Collapse
@@ -391,7 +403,7 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
       </div>
 
       {/* Footer Fixo */}
-      <div className="flex flex-col justify-end space-y-2 border-t border-gray-200 p-4 sm:flex-row sm:space-y-0 sm:space-x-3 sm:p-6 dark:border-gray-700">
+      <div className="sticky bottom-0 z-10 flex-shrink-0 flex-col justify-end space-y-2 border-t border-gray-200 bg-white p-4 sm:flex-row sm:space-y-0 sm:space-x-3 sm:p-6 dark:border-gray-700 dark:bg-gray-800">
         <button
           onClick={onClose}
           className="w-full rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 focus:ring-2 focus:ring-gray-300 focus:outline-none sm:w-auto dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:focus:ring-gray-500"
