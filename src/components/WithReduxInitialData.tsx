@@ -1,13 +1,13 @@
 // src/components/WithReduxInitialData.tsx
 'use client';
 
+import { usePessoaTipo } from '@/hooks/usePessoaTipo';
 import { EmpresaService } from '@/service/empresa.service';
 import { RootState } from '@/store/rootReducer';
 import { setEmpresas } from '@/store/slices/empresaSlice';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
 
 // src/components/WithReduxInitialData.tsx
 // Pegar os dados iniciais necessários para a aplicação
@@ -20,7 +20,7 @@ export function WithReduxInitialData({
   const dispatch = useDispatch();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
-
+  const { fetchPessoasTipos } = usePessoaTipo();
   const empresas = useSelector((state: RootState) => state.empresa.empresas);
 
   useEffect(() => {
@@ -30,6 +30,7 @@ export function WithReduxInitialData({
           const response = await EmpresaService.getEmpresas();
           dispatch(setEmpresas(response));
         }
+        fetchPessoasTipos();
         setIsLoading(false);
       } catch (error) {
         console.error('Error fetching initial data:', error);

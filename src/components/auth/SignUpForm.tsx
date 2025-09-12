@@ -1,6 +1,7 @@
 'use client';
 import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
+import { usePessoaTipo } from '@/hooks/usePessoaTipo';
 import { useAppDispatch } from '@/hooks/useRedux';
 import { ChevronDownIcon, EyeCloseIcon, EyeIcon } from '@/icons';
 import { AuthService } from '@/service/auth.service';
@@ -15,13 +16,6 @@ import { useSelector } from 'react-redux';
 import EmpresaAutocomplete from '../form/empresa/EmpresaAutoComplete';
 import Checkbox from '../form/input/Checkbox';
 import Select from '../form/Select';
-
-const options_pessoas = [
-  { value: 0, label: 'Usuario' },
-  { value: 1, label: 'Escrevente' },
-  { value: 2, label: 'Notificador' },
-  { value: 3, label: 'Tabeliao' },
-];
 
 export default function SignUpForm() {
   const dispatch = useAppDispatch();
@@ -50,6 +44,8 @@ export default function SignUpForm() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  const { pessoasTiposFormatados } = usePessoaTipo();
 
   const handleChange = (path: string, value: any) => {
     setFormData((prev) => {
@@ -207,7 +203,7 @@ export default function SignUpForm() {
             <Label>O que você é dessa empresa</Label>
             <div className="relative">
               <Select
-                options={options_pessoas}
+                options={pessoasTiposFormatados}
                 placeholder="Selecione"
                 onChange={(opt: any) => {
                   console.log('tipo pessoa: ', opt);
