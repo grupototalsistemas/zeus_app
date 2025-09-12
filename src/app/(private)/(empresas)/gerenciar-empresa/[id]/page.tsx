@@ -1,37 +1,48 @@
 'use client';
 
-import { UserFormBase, UserFormData } from '@/components/form/user/UserForm';
-import { PessoaService } from '@/service/pessoa.service';
-import { StatusGenero, StatusRegistro } from '@/types/enum';
-import { PessoaUsuarioDTO } from '@/types/pessoaUsuario.type';
+import {
+  EmpresaFormBase,
+  EmpresaFormData,
+} from '@/components/form/empresa/EmpresaForm';
+import { EmpresaService } from '@/service/empresa.service';
+import { Empresa } from '@/types/empresa.type';
+import { StatusRegistro, StatusSiglaEstado } from '@/types/enum';
 
-export default function CreateUserPage() {
-  const handleCreate = async (data: UserFormData) => {
-    const usuario: PessoaUsuarioDTO = parseUsuario(data);
-    console.log('Novo usuário criado (DTO):', usuario);
-    await PessoaService.createPessoaUsuario(usuario.pessoa);
+export default function CreateEmpresaPage() {
+  const handleCreate = async (data: EmpresaFormData) => {
+    const empresa: Empresa = parseEmpresa(data);
+    console.log('Nova empresa criada (DTO):', empresa);
+    await EmpresaService.createEmpresa(empresa);
   };
 
-  const parseUsuario = (data: UserFormData): PessoaUsuarioDTO => {
+  const parseEmpresa = (data: EmpresaFormData): Empresa => {
     return {
-      login: data.login,
+      parentId: Number(data.parentId),
+      tipoId: Number(data.tipoId),
+      categoriaId: Number(data.categoriaId),
+      cnpj: data.cnpj,
+      codigo: data.codigo,
+      razaoSocial: data.razaoSocial,
+      nomeFantasia: data.nomeFantasia,
+      logradouro: data.logradouro,
+      endereco: data.endereco,
+      numero: data.numero,
+      complemento: data.complemento,
+      bairro: data.bairro,
+      cidade: data.cidade,
+      estado: data.estado as StatusSiglaEstado,
+      cep: data.cep,
+      observacao: data.observacao,
+      contato: data.contato,
       email: data.email,
-      senha: data.senha,
-      perfilId: Number(data.perfil),
-      pessoa: {
-        empresaId: Number(data.empresa),
-        tipoId: Number(data.funcao),
-        genero: data.genero as StatusGenero,
-        nome: data.nome,
-        nomeSocial: data.nome_social || '',
-        ativo: StatusRegistro.ATIVO,
-      },
+      motivo: '',
+      ativo: StatusRegistro.ATIVO,
     };
   };
 
   return (
     <>
-      <UserFormBase mode="create" onSubmit={handleCreate} />
+      <EmpresaFormBase mode="create" onSubmit={handleCreate} />
     </>
   );
 }

@@ -1,40 +1,33 @@
 'use client';
 
-import { UserFormBase, UserFormData } from '@/components/form/user/UserForm';
-import UserList from '@/components/tables/UserList';
-import { PessoaService } from '@/service/pessoa.service';
-import { StatusGenero, StatusRegistro } from '@/types/enum';
-import { PessoaUsuarioDTO } from '@/types/pessoaUsuario.type';
+import {
+  CategoriaEmpresaFormBase,
+  CategoriaEmpresaFormData,
+} from '@/components/form/categoria_empresa/CategoriaEmpresaForm';
+import CategoriaEmpresaList from '@/components/tables/CategoriaEmpresaList';
+import { EmpresaCategoriaService } from '@/service/empresaCategoria.service';
+import { EmpresaCategoria } from '@/types/empresaCategoria.type';
+import { StatusRegistro } from '@/types/enum';
 
-export default function CreateUserPage() {
-  const handleCreate = async (data: UserFormData) => {
-    const usuario: PessoaUsuarioDTO = parseUsuario(data);
-    console.log('Novo usuário criado (DTO):', usuario);
-    await PessoaService.createPessoaUsuario(usuario.pessoa);
+export default function CreateCategoriaEmpresaPage() {
+  const handleCreate = async (data: CategoriaEmpresaFormData) => {
+    const categoria: EmpresaCategoria = parseUsuario(data);
+    await EmpresaCategoriaService.createEmpresaCategoria(categoria);
   };
 
-  const parseUsuario = (data: UserFormData): PessoaUsuarioDTO => {
+  const parseUsuario = (data: CategoriaEmpresaFormData): EmpresaCategoria => {
     return {
-      login: data.login,
-      email: data.email,
-      senha: data.senha,
-      perfilId: Number(data.perfil),
-      pessoa: {
-        empresaId: Number(data.empresa),
-        tipoId: Number(data.funcao),
-        genero: data.genero as StatusGenero,
-        nome: data.nome,
-        nomeSocial: data.nome_social || '',
-        ativo: StatusRegistro.ATIVO,
-      },
+      empresaId: Number(data.empresaId),
+      descricao: data.descricao,
+      ativo: StatusRegistro.ATIVO,
     };
   };
 
   return (
     <>
-      <UserFormBase mode="edit" onSubmit={handleCreate} />
+      <CategoriaEmpresaFormBase mode="create" onSubmit={handleCreate} />
       <br />
-      <UserList />
+      <CategoriaEmpresaList />
     </>
   );
 }

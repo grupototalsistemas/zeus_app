@@ -5,7 +5,7 @@ import Label from '@/components/form/Label';
 import Switch from '@/components/form/switch/Switch';
 import Button from '@/components/ui/button/Button';
 import { selectEmpresas } from '@/store/slices/empresaSlice';
-import { Ocorrencia } from '@/types/chamadoOcorrencia.type';
+import { ChamadoMovimentoEtapa } from '@/types/chamadoMovimentoEtapa.type';
 import { StatusRegistro } from '@/types/enum';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -21,7 +21,7 @@ export interface EtapaMovimentoFormData {
 
 interface EtapaMovimentoFormBaseProps {
   mode: 'create' | 'edit';
-  initialData?: Ocorrencia;
+  initialData?: ChamadoMovimentoEtapa;
   onSubmit: (data: EtapaMovimentoFormData) => void;
   disabled?: boolean;
 }
