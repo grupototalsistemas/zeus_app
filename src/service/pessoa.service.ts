@@ -1,5 +1,6 @@
 import { Pessoa } from '@/types/pessoa.type';
 
+import { PessoaUsuario } from '@/types/pessoaUsuario.type';
 import api from './api';
 
 const getPessoas = async (): Promise<Pessoa[]> => {
@@ -24,7 +25,7 @@ const createPessoa = async (data: Pessoa) => {
   return response.data;
 };
 
-const createPessoaUsuario = async (data: Pessoa) => {
+const createPessoaUsuario = async (data: PessoaUsuario) => {
   const response = await api.post('/pessoa-usuario', data);
   return response.data;
 };
