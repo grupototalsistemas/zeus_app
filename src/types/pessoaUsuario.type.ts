@@ -1,11 +1,17 @@
 import { BaseEntity } from './base.type';
-import { StatusGenero } from './enum';
 import { Pessoa } from './pessoa.type';
 import { PerfilDTO } from './pessoaPerfil.type';
 
 export interface PessoaUsuario extends BaseEntity {
   pessoaId: number;
   perfilId: number;
+  email: string;
+  login: string;
+  senha?: string;
+}
+
+export interface PessoaUsuarioResponse extends BaseEntity {
+  perfil: PerfilDTO;
   email: string;
   login: string;
   senha?: string;
