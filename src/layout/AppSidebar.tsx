@@ -8,13 +8,13 @@ import { useSidebar } from '../context/SidebarContext';
 import {
   BoxCubeIcon,
   CalenderIcon,
+  Chamado,
   ChevronDownIcon,
-  GridIcon,
+  Empresa,
   HorizontaLDots,
   ListIcon,
   PieChartIcon,
   PlugInIcon,
-  ShootingStarIcon,
   UserCircleIcon,
 } from '../icons/index';
 
@@ -32,7 +32,7 @@ const navItems: NavItem[] = [
     path: '/dashboard',
   },
   {
-    icon: <GridIcon />,
+    icon: <Chamado />,
     name: 'Chamados',
     subItems: [
       { name: 'Gerenciar Chamado', path: '/gerenciar-chamado', pro: false },
@@ -80,7 +80,7 @@ const navItems: NavItem[] = [
     ],
   },
   {
-    icon: <ShootingStarIcon />,
+    icon: <Empresa />,
     name: 'Empresas',
     subItems: [
       { name: 'Gerenciar empresa', path: '/gerenciar-empresa', pro: false },
