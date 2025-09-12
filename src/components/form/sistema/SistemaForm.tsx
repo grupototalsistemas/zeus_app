@@ -5,39 +5,45 @@ import Label from '@/components/form/Label';
 import Switch from '@/components/form/switch/Switch';
 import Button from '@/components/ui/button/Button';
 import { selectEmpresas } from '@/store/slices/empresaSlice';
-import { Ocorrencia } from '@/types/chamadoOcorrencia.type';
 import { StatusRegistro } from '@/types/enum';
+import { Sistema } from '@/types/sistemas.type';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import EmpresaAutocomplete from '../empresa/EmpresaAutoComplete';
 import Input from '../input/InputField';
 
-export interface EtapaMovimentoFormData {
+export interface SistemaFormData {
+  id: number;
   empresaId: number;
   descricao: string;
+  nome: string;
   ativo: StatusRegistro;
+  motivo?: string;
 }
 
-interface EtapaMovimentoFormBaseProps {
+interface SistemaFormBaseProps {
   mode: 'create' | 'edit';
-  initialData?: Ocorrencia;
-  onSubmit: (data: EtapaMovimentoFormData) => void;
+  initialData?: Sistema;
+  onSubmit: (data: SistemaFormData) => void;
   disabled?: boolean;
 }
 
-export function EtapaMovimentoFormBase({
+export function SistemaFormBase({
   mode,
   initialData,
   onSubmit,
   disabled = false,
-}: EtapaMovimentoFormBaseProps) {
+}: SistemaFormBaseProps) {
   const empresas = useSelector(selectEmpresas);
   const router = useRouter();
-  const [formData, setFormData] = useState<EtapaMovimentoFormData>({
+  const [formData, setFormData] = useState<SistemaFormData>({
+    id: initialData?.id || 0,
     empresaId: initialData?.empresaId || 0,
     descricao: initialData?.descricao || '',
+    nome: initialData?.nome || '',
     ativo: initialData?.ativo || StatusRegistro.ATIVO,
+    motivo: initialData?.motivo || '',
   });
 
   const handleChange = (name: string, value: any) => {
@@ -63,31 +69,57 @@ export function EtapaMovimentoFormBase({
   };
 
   return (
-    <ComponentCard
-      title={`${mode === 'create' ? 'Criar' : 'Editar'} Tipo de Movimento`}
-    >
+    <ComponentCard title={`${mode === 'create' ? 'Criar' : 'Editar'} Sistema`}>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-2 gap-6">
           {/* Descrição */}
           <div>
-            <Label>Tipo de Movimento</Label>
+            <Label>Nome</Label>
+            <Input
+              type="text"
+              value={formData.nome}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                handleChange('nome', e.target.value)
+              }
+              placeholder="Informe um nome para o Sistema"
+              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+              disabled={disabled}
+            />
+          </div>
+          <div>
+            <Label>Descrição</Label>
             <Input
               type="text"
               value={formData.descricao}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 handleChange('descricao', e.target.value)
               }
-              placeholder="Informe um nome para o tipo de Movimento"
+              placeholder="Informe uma descrição para o Sistema"
               className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
               disabled={disabled}
             />
           </div>
           <div>
             <EmpresaAutocomplete
-              disabled={disabled}
-              empresaId={initialData?.empresaId.toString() || ''}
               onSelect={(empresa) =>
                 handleChange('empresaId', empresa?.id || 0)
+              }
+              disabled={disabled}
+              empresaId={initialData?.empresaId?.toString()}
+            />
+          </div>
+          <div>
+            <Label>Motivo</Label>
+            <Input
+              type="text"
+              placeholder={
+                mode === 'create'
+                  ? 'Informe um motivo para o Sistema'
+                  : 'Informe um motivo para alterar o Sistema'
+              }
+              value={formData.motivo}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                handleChange('motivo', e.target.value)
               }
             />
           </div>
@@ -118,9 +150,7 @@ export function EtapaMovimentoFormBase({
             Cancelar
           </Button>
           <Button disabled={disabled}>
-            {mode === 'create'
-              ? 'Criar Tipo de Movimento'
-              : 'Salvar Alterações'}
+            {mode === 'create' ? 'Criar Sistema' : 'Salvar Alterações'}
           </Button>
         </div>
       </form>

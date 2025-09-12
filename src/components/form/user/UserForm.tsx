@@ -5,6 +5,7 @@ import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
 import Select from '@/components/form/Select';
+import Button from '@/components/ui/button/Button';
 import { ChevronDownIcon, EyeCloseIcon, EyeIcon } from '@/icons';
 import { EmpresaService } from '@/service/empresa.service';
 import { selectPerfisFormatados } from '@/store/slices/perfilSlice';
@@ -14,7 +15,8 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { z } from 'zod';
-import Checkbox from '../input/Checkbox';
+import EmpresaAutocomplete from '../empresa/EmpresaAutoComplete';
+import PessoaAutocomplete from '../pessoa/PessoaAutocomplete';
 
 interface EmpresasSelect {
   value: number;
@@ -22,15 +24,12 @@ interface EmpresasSelect {
 }
 
 const userSchema = z.object({
-  nome: z.string().min(3, 'Nome é obrigatório'),
-  nome_social: z.string().optional(),
   login: z.string().min(3, 'Login é obrigatório'),
   email: z.string().email('Email inválido'),
   senha: z.string().min(6, 'Senha deve ter ao menos 6 caracteres'),
-  empresa: z.string().min(1, 'Empresa é obrigatória'),
-  genero: z.enum(['MASCULINO', 'FEMININO']),
-  funcao: z.string().min(1, 'Função é obrigatória'),
-  perfil: z.string().min(1, 'Perfil é obrigatório'),
+  pessoaId: z.string().min(1, 'Pessoa é obrigatória'),
+  perfilId: z.string().min(1, 'Perfil é obrigatório'),
+  empresaId: z.string().min(1, 'Empresa é obrigatória'),
 });
 
 export type UserFormData = z.infer<typeof userSchema>;
@@ -62,14 +61,11 @@ export function UserFormBase({
     resolver: zodResolver(userSchema),
     defaultValues: {
       login: initialData?.login ?? '',
-      nome: initialData?.nome ?? '',
-      nome_social: initialData?.nome_social ?? '',
+      empresaId: initialData?.empresaId ?? '',
       email: initialData?.email ?? '',
       senha: initialData?.senha ?? '',
-      empresa: initialData?.empresa ?? '',
-      funcao: initialData?.funcao ?? '',
-      perfil: initialData?.perfil ?? '',
-      genero: initialData?.genero ?? 'MASCULINO',
+      pessoaId: initialData?.pessoaId ?? '',
+      perfilId: initialData?.perfilId ?? '',
     },
   });
 
@@ -104,25 +100,19 @@ export function UserFormBase({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
-              <Label>Nome*</Label>
-              <Input
-                type="text"
-                placeholder="Informe seu nome"
-                value={formValues.nome}
-                onChange={(e) =>
-                  setValue('nome', e.target.value, { shouldValidate: true })
-                }
-                error={!!errors.nome}
-                hint={errors.nome?.message}
+              <EmpresaAutocomplete
+                onResetComplete={() => setValue('empresaId', '')}
+                onSelect={(empresa) => {
+                  setValue('empresaId', String(empresa?.id));
+                }}
               />
             </div>
             <div>
-              <Label>Nome Social</Label>
-              <Input
-                type="text"
-                placeholder="(Opcional)"
-                value={formValues.nome_social}
-                onChange={(e) => setValue('nome_social', e.target.value)}
+              <PessoaAutocomplete
+                onResetComplete={() => setValue('pessoaId', '')}
+                onSelect={(pessoa) => {
+                  setValue('pessoaId', String(pessoa?.id));
+                }}
               />
             </div>
           </div>
@@ -156,71 +146,19 @@ export function UserFormBase({
           </div>
 
           <div>
-            <Label>Empresa*</Label>
-            <div className="relative">
-              <Select
-                options={empresas}
-                placeholder="Selecione a empresa"
-                onChange={(opt: any) =>
-                  setValue('empresa', String(opt), { shouldValidate: true })
-                }
-              />
-              <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">
-                <ChevronDownIcon />
-              </span>
-            </div>
-            {errors.empresa && (
-              <p className="text-error-500 text-sm">{errors.empresa.message}</p>
-            )}
-          </div>
-
-          <div>
-            <Label>Função*</Label>
-            <div className="relative">
-              <Select
-                options={tipos}
-                placeholder="Selecione"
-                onChange={(opt: any) =>
-                  setValue('funcao', String(opt), { shouldValidate: true })
-                }
-              />
-              <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">
-                <ChevronDownIcon />
-              </span>
-            </div>
-          </div>
-
-          <div>
             <Label>Perfil*</Label>
             <div className="relative">
               <Select
                 options={perfis}
                 placeholder="Selecione"
                 onChange={(opt: any) =>
-                  setValue('perfil', String(opt), { shouldValidate: true })
+                  setValue('perfilId', String(opt), { shouldValidate: true })
                 }
               />
               <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">
                 <ChevronDownIcon />
               </span>
             </div>
-          </div>
-
-          <div className="flex flex-wrap gap-4">
-            <label className="flex items-center gap-2">
-              <Checkbox
-                checked={formValues.genero === 'MASCULINO'}
-                onChange={() => setValue('genero', 'MASCULINO')}
-              />
-              <span>Masculino</span>
-            </label>
-            <label className="flex items-center gap-2">
-              <Checkbox
-                checked={formValues.genero === 'FEMININO'}
-                onChange={() => setValue('genero', 'FEMININO')}
-              />
-              <span>Feminino</span>
-            </label>
           </div>
 
           <div>
@@ -245,12 +183,12 @@ export function UserFormBase({
             </div>
           </div>
 
-          <button
-            type="submit"
-            className="bg-brand-500 shadow-theme-xs hover:bg-brand-600 flex w-full items-center justify-center rounded-lg px-4 py-3 text-sm font-medium text-white transition disabled:opacity-50"
-          >
-            {mode === 'create' ? 'Cadastrar' : 'Salvar alterações'}
-          </button>
+          <div className="flex justify-end space-x-4">
+            <Button variant="outline">Cancelar</Button>
+            <Button>
+              {mode === 'create' ? 'Criar Usuario' : 'Salvar Alterações'}
+            </Button>
+          </div>
         </form>
       </ComponentCard>
     </>

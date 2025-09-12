@@ -4,6 +4,7 @@ import ComponentCard from '@/components/common/ComponentCard';
 import Label from '@/components/form/Label';
 import Switch from '@/components/form/switch/Switch';
 import Button from '@/components/ui/button/Button';
+import { useOcorrenciaTipo } from '@/hooks/useOcorrenciaTipo';
 import { selectEmpresas } from '@/store/slices/empresaSlice';
 import { selectOcorrenciaTipos } from '@/store/slices/ocorrenciaTipoSlice';
 import { Ocorrencia } from '@/types/chamadoOcorrencia.type';
@@ -11,6 +12,9 @@ import { StatusRegistro } from '@/types/enum';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import EmpresaAutocomplete from '../empresa/EmpresaAutoComplete';
+import Input from '../input/InputField';
+import Select from '../Select';
 
 export interface OcorrenciaFormData {
   id?: number;
@@ -36,6 +40,7 @@ export function OcorrenciaFormBase({
   const empresas = useSelector(selectEmpresas);
   const tipos = useSelector(selectOcorrenciaTipos);
   const router = useRouter();
+  const { obterOcorrenciasTiposFormatados } = useOcorrenciaTipo();
   console.log('initial  data:', initialData);
   const [formData, setFormData] = useState<OcorrenciaFormData>({
     id: initialData?.id,
@@ -88,7 +93,7 @@ export function OcorrenciaFormBase({
           {/* Descrição */}
           <div>
             <Label>Ocorrencia</Label>
-            <input
+            <Input
               type="text"
               value={formData.descricao}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -96,49 +101,26 @@ export function OcorrenciaFormBase({
               }
               placeholder="Informe um nome para a Ocorrencia"
               className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-              required
               disabled={disabled}
             />
           </div>
           <div>
-            <Label>Empresa</Label>
-            <select
-              value={formData.empresaId}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                handleChange('empresaId', Number(e.target.value))
-              }
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-              required
+            <EmpresaAutocomplete
+              empresaId={initialData?.empresaId.toString()}
+              onSelect={(empresa) => handleChange('empresaId', empresa?.id)}
               disabled={disabled}
-            >
-              <option value="">Selecione uma empresa</option>
-              {empresas.map((empresa) => (
-                <option key={empresa.id} value={empresa.id}>
-                  {empresa.nomeFantasia}
-                </option>
-              ))}
-            </select>
+            />
           </div>
         </div>
 
         <div>
           <Label>Tipo de Ocorrência</Label>
-          <select
-            value={formData.tipoId}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-              handleChange('tipoId', Number(e.target.value))
-            }
+          <Select
+            value={formData.tipoId.toString()}
+            onChange={(value) => handleChange('tipoId', Number(value))}
             className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-            required
-            disabled={disabled}
-          >
-            <option value="">Selecione um tipo de ocorrência</option>
-            {tipos.map((tipo) => (
-              <option key={tipo.id} value={tipo.id}>
-                {tipo.descricao}
-              </option>
-            ))}
-          </select>
+            options={obterOcorrenciasTiposFormatados()}
+          />
         </div>
 
         {/* Status */}

@@ -4,7 +4,7 @@ import {
   CategoriaEmpresaFormBase,
   CategoriaEmpresaFormData,
 } from '@/components/form/categoria_empresa/CategoriaEmpresaForm';
-import CategoriaEmpresaList from '@/components/tables/CategoriaEmpresa';
+import CategoriaEmpresaList from '@/components/tables/CategoriaEmpresaList';
 import { EmpresaCategoriaService } from '@/service/empresaCategoria.service';
 import { EmpresaCategoria } from '@/types/empresaCategoria.type';
 import { StatusRegistro } from '@/types/enum';

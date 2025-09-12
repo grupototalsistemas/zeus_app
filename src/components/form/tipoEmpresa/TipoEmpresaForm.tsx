@@ -5,15 +5,16 @@ import Label from '@/components/form/Label';
 import Switch from '@/components/form/switch/Switch';
 import Button from '@/components/ui/button/Button';
 import { selectEmpresas } from '@/store/slices/empresaSlice';
-import { Prioridade } from '@/types/chamadoPrioridade.type';
+import { EmpresaTipo } from '@/types/empresaTipo.type';
 import { StatusRegistro } from '@/types/enum';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import EmpresaAutocomplete from '../empresa/EmpresaAutoComplete';
+import Input from '../input/InputField';
 
 export interface TipoEmpresaFormData {
-  id?: number;
+  id: number;
   descricao: string;
   empresaId: number;
   ativo: StatusRegistro;
@@ -22,7 +23,7 @@ export interface TipoEmpresaFormData {
 
 interface TipoEmpresaFormBaseProps {
   mode: 'create' | 'edit';
-  initialData?: Prioridade;
+  initialData?: EmpresaTipo;
   onSubmit: (data: TipoEmpresaFormData) => void;
   disabled?: boolean;
 }
@@ -56,12 +57,13 @@ export function TipoEmpresaFormBase({
     e.preventDefault();
     if (!disabled) {
       onSubmit(formData);
+      router.replace('/gerenciar-tipo-empresa');
     }
   };
 
   const handleCancel = () => {
     if (!disabled) {
-      router.back();
+      router.replace('/gerenciar-tipo-empresa');
     }
   };
 
@@ -74,15 +76,13 @@ export function TipoEmpresaFormBase({
           {/* Descrição */}
           <div>
             <Label>Informe um nome para o tipo de empresa</Label>
-            <input
+            <Input
               type="text"
               value={formData.descricao}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 handleChange('descricao', e.target.value)
               }
               placeholder="Digite o tipo de empresa"
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-              required
               disabled={disabled}
             />
           </div>
@@ -92,6 +92,7 @@ export function TipoEmpresaFormBase({
                 handleChange('empresaId', empresa?.id || 0)
               }
               disabled={disabled}
+              empresaId={initialData?.empresaId.toString()}
             />
             {/* <Label>Empresa</Label>
             <select

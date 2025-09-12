@@ -1,40 +1,48 @@
 'use client';
 
-import { UserFormBase, UserFormData } from '@/components/form/user/UserForm';
-import UserList from '@/components/tables/UserList';
-import { PessoaService } from '@/service/pessoa.service';
-import { StatusGenero, StatusRegistro } from '@/types/enum';
-import { PessoaUsuarioDTO } from '@/types/pessoaUsuario.type';
+import PageBreadcrumb from '@/components/common/PageBreadCrumb';
+import {
+  TipoEmpresaFormBase,
+  TipoEmpresaFormData,
+} from '@/components/form/tipoEmpresa/TipoEmpresaForm';
 
-export default function CreateUserPage() {
-  const handleCreate = async (data: UserFormData) => {
-    const usuario: PessoaUsuarioDTO = parseUsuario(data);
-    console.log('Novo usuário criado (DTO):', usuario);
-    await PessoaService.createPessoaUsuario(usuario.pessoa);
+import TipoEmpresaList from '@/components/tables/TipoEmpresaList';
+import { useEmpresaTipo } from '@/hooks/useEmpresaTipo';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+
+export default function TipoEmpresaEdit() {
+  const router = useRouter();
+  const { update, getById, currentEmpresaTipo } = useEmpresaTipo();
+  const { id } = useParams();
+
+  const handleSubmit = async (data: TipoEmpresaFormData) => {
+    //retirando o id
+    const { id, motivo, ...rest } = data;
+    update(id, rest);
+    router.replace('/gerenciar-tipo-empresa');
   };
 
-  const parseUsuario = (data: UserFormData): PessoaUsuarioDTO => {
-    return {
-      login: data.login,
-      email: data.email,
-      senha: data.senha,
-      perfilId: Number(data.perfil),
-      pessoa: {
-        empresaId: Number(data.empresa),
-        tipoId: Number(data.funcao),
-        genero: data.genero as StatusGenero,
-        nome: data.nome,
-        nomeSocial: data.nome_social || '',
-        ativo: StatusRegistro.ATIVO,
-      },
-    };
-  };
+  useEffect(() => {
+    if (id) {
+      getById(Number(id));
+    }
+  }, []);
 
   return (
     <>
-      <UserFormBase mode="create" onSubmit={handleCreate} />
+      <PageBreadcrumb pageTitle="Tipos de Empresas" pageBefore="Empresas" />
+      {currentEmpresaTipo && (
+        <TipoEmpresaFormBase
+          mode="edit"
+          onSubmit={handleSubmit}
+          initialData={currentEmpresaTipo}
+        />
+      )}
+
       <br />
-      <UserList />
+
+      <TipoEmpresaList />
     </>
   );
 }

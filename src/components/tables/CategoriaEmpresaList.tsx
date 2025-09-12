@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDownIcon, ChevronUpIcon, MoreDotIcon } from '@/icons';
+import { MoreDotIcon } from '@/icons';
 
 import { useEmpresaCategoria } from '@/hooks/useEmpresaCategoria';
 import { EmpresaCategoria } from '@/types/empresaCategoria.type';
@@ -31,6 +31,7 @@ export default function CategoriaEmpresaList() {
 
   useEffect(() => {
     empresaCategorias.length === 0 && getAll();
+    console.log(empresaCategorias);
   }, []);
 
   const totalPages = Math.ceil(empresaCategorias.length / itemsPerPage);
@@ -77,12 +78,7 @@ export default function CategoriaEmpresaList() {
         <Table>
           <TableHeader className="border-b border-gray-100 dark:border-gray-800">
             <TableRow>
-              <TableCell
-                isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
-              >
-                {''}
-              </TableCell>
+              {/* <TableCell className="w-8">{''}</TableCell> */}
               <TableCell
                 isHeader
                 className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
@@ -115,7 +111,7 @@ export default function CategoriaEmpresaList() {
               paginatedData.map((categoria) => (
                 <>
                   <TableRow key={categoria.id}>
-                    <TableCell className="w-8">
+                    {/* <TableCell className="w-8">
                       <button
                         onClick={() => handleToggleExpand(String(categoria.id))}
                         className="p-1 text-gray-500 hover:text-gray-800"
@@ -126,7 +122,8 @@ export default function CategoriaEmpresaList() {
                           <ChevronDownIcon size={18} />
                         )}
                       </button>
-                    </TableCell>
+                    </TableCell> */}
+
                     <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                       {categoria.descricao}
                     </TableCell>
@@ -185,7 +182,7 @@ export default function CategoriaEmpresaList() {
                   colSpan={6}
                   className="text-theme-sm flex items-center justify-center py-10 text-gray-500 dark:text-gray-400"
                 >
-                  Nenhum usuário encontrado
+                  Nenhum categoria encontrada
                 </TableCell>
               </TableRow>
             )}

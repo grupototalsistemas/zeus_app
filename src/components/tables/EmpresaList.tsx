@@ -150,7 +150,7 @@ export default function EmpresaList() {
           </TableHeader>
           <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
             {paginatedData.length > 0 &&
-              paginatedData.map((empresa) => {
+              paginatedData.map((empresa: Empresa) => {
                 const statusInfo = getStatusBadge(empresa);
                 return (
                   <>

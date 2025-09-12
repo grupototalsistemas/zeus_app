@@ -1,40 +1,51 @@
 'use client';
 
-import { UserFormBase, UserFormData } from '@/components/form/user/UserForm';
-import UserList from '@/components/tables/UserList';
-import { PessoaService } from '@/service/pessoa.service';
-import { StatusGenero, StatusRegistro } from '@/types/enum';
-import { PessoaUsuarioDTO } from '@/types/pessoaUsuario.type';
+import {
+  SistemaFormBase,
+  SistemaFormData,
+} from '@/components/form/sistema/SistemaForm';
+import SistemaList from '@/components/tables/SistemaList';
+import { useSistema } from '@/hooks/useSistema';
+import { StatusRegistro } from '@/types/enum';
+import { Sistema } from '@/types/sistemas.type';
+import { useParams } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function CreateUserPage() {
-  const handleCreate = async (data: UserFormData) => {
-    const usuario: PessoaUsuarioDTO = parseUsuario(data);
-    console.log('Novo usuário criado (DTO):', usuario);
-    await PessoaService.createPessoaUsuario(usuario.pessoa);
+  const { id } = useParams();
+  const { update, getById, currentSistema } = useSistema();
+  const handleUpdate = async (data: SistemaFormData) => {
+    const sistema: Sistema = parseSistema(data);
+    // console.log('Novo usuário criado (DTO):', sistema);
+    update(data.id || 0, sistema);
   };
 
-  const parseUsuario = (data: UserFormData): PessoaUsuarioDTO => {
+  useEffect(() => {
+    if (id) {
+      getById(Number(id));
+    }
+  }, []);
+
+  const parseSistema = (data: SistemaFormData): Sistema => {
     return {
-      login: data.login,
-      email: data.email,
-      senha: data.senha,
-      perfilId: Number(data.perfil),
-      pessoa: {
-        empresaId: Number(data.empresa),
-        tipoId: Number(data.funcao),
-        genero: data.genero as StatusGenero,
-        nome: data.nome,
-        nomeSocial: data.nome_social || '',
-        ativo: StatusRegistro.ATIVO,
-      },
+      empresaId: Number(data.empresaId),
+      descricao: data.descricao,
+      nome: data.nome,
+      ativo: StatusRegistro.ATIVO,
     };
   };
 
   return (
     <>
-      <UserFormBase mode="create" onSubmit={handleCreate} />
+      {currentSistema && (
+        <SistemaFormBase
+          mode="edit"
+          onSubmit={handleUpdate}
+          initialData={currentSistema}
+        />
+      )}
       <br />
-      <UserList />
+      <SistemaList />
     </>
   );
 }

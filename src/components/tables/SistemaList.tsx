@@ -1,9 +1,9 @@
 'use client';
 
-import { useEmpresaTipo } from '@/hooks/useEmpresaTipo';
+import { useSistema } from '@/hooks/useSistema';
 import { MoreDotIcon } from '@/icons';
-import { EmpresaTipo } from '@/types/empresaTipo.type';
 import { StatusRegistro } from '@/types/enum';
+import { Sistema } from '@/types/sistemas.type';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Badge from '../ui/badge/Badge';
@@ -18,29 +18,28 @@ import {
 } from '../ui/table';
 import Pagination from './Pagination';
 
-export default function TipoEmpresaList() {
+export default function SistemaList() {
   const router = useRouter();
 
-  // Hook customizado com todas as operações de tipoEmpresa
-  const { empresaTipos, loading, error, remove, update, getAll, resetError } =
-    useEmpresaTipo();
+  // Hook customizado com todas as operações de sistema
+  const { sistemas, loading, error, getAll, remove, resetError } = useSistema();
 
   // Estados locais (apenas para UI)
   const [currentPage, setCurrentPage] = useState(1);
   const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
 
   const itemsPerPage = 10;
-  const totalPages = Math.ceil(empresaTipos.length / itemsPerPage);
+  const totalPages = Math.ceil(sistemas.length / itemsPerPage);
 
-  const paginatedData = empresaTipos.slice(
+  const paginatedData = sistemas.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
-  const handleDelete = async (tipoEmpresa: EmpresaTipo) => {
+  const handleDelete = async (sistema: Sistema) => {
     // Confirmação antes de excluir
     const confirmDelete = window.confirm(
-      `Tem certeza que deseja excluir o tipoEmpresa "${tipoEmpresa.descricao}"?\n\nEsta ação não pode ser desfeita.`
+      `Tem certeza que deseja excluir o sistema "${sistema.nome}"?\n\nEsta ação não pode ser desfeita.`
     );
 
     if (!confirmDelete) {
@@ -48,25 +47,27 @@ export default function TipoEmpresaList() {
     }
 
     try {
-      await remove(tipoEmpresa.id!);
+      await remove(sistema.id!);
 
       // Fecha o dropdown se estiver aberto
       setOpenDropdownId(null);
 
       // Ajusta a página atual se necessário
-      const newTotalPages = Math.ceil((empresaTipos.length - 1) / itemsPerPage);
+      const newTotalPages = Math.ceil((sistemas.length - 1) / itemsPerPage);
       if (currentPage > newTotalPages && newTotalPages > 0) {
         setCurrentPage(newTotalPages);
       }
+
+      console.log('Prioridade excluído com sucesso');
     } catch (error) {
-      console.error('Erro ao excluir tipoEmpresa:', error);
-      alert('Erro ao excluir o tipoEmpresa. Tente novamente.');
+      console.error('Erro ao excluir sistema:', error);
+      alert('Erro ao excluir o sistema. Tente novamente.');
     }
   };
 
   useEffect(() => {
-    // Só carrega se não há empresaTipos no store ou se houver erro
-    if (empresaTipos.length === 0 && !loading) {
+    // Só carrega se não há sistemas no store ou se houver erro
+    if (sistemas.length === 0 && !loading) {
       getAll();
     }
 
@@ -77,18 +78,18 @@ export default function TipoEmpresaList() {
     }, 15000);
 
     return () => clearInterval(interval);
-  }, [getAll, empresaTipos.length, loading]);
+  }, [getAll, sistemas.length, loading]);
 
   const handleToggle = (id: number) => {
     setOpenDropdownId(openDropdownId === id ? null : id);
   };
 
-  if (loading && empresaTipos.length === 0) {
+  if (loading && sistemas.length === 0) {
     return (
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pt-4 pb-3 sm:px-6 dark:border-gray-800 dark:bg-white/[0.03]">
         <div className="flex items-center justify-center py-10">
           <div className="text-gray-500 dark:text-gray-400">
-            Carregando empresaTipos...
+            Carregando sistemas...
           </div>
         </div>
       </div>
@@ -124,6 +125,12 @@ export default function TipoEmpresaList() {
                 isHeader
                 className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
               >
+                Nome
+              </TableCell>
+              <TableCell
+                isHeader
+                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+              >
                 Descrição
               </TableCell>
 
@@ -142,22 +149,25 @@ export default function TipoEmpresaList() {
             </TableRow>
           </TableHeader>
           <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {paginatedData.map((tipoEmpresa) => (
-              <TableRow key={tipoEmpresa.id}>
+            {paginatedData.map((sistema) => (
+              <TableRow key={sistema.id}>
                 <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                  {tipoEmpresa.descricao}
+                  {sistema.nome}
+                </TableCell>
+                <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                  {sistema.descricao}
                 </TableCell>
 
                 <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                   <Badge
                     size="sm"
                     color={
-                      tipoEmpresa.ativo === StatusRegistro.ATIVO
+                      sistema.ativo === StatusRegistro.ATIVO
                         ? 'success'
                         : 'error'
                     }
                   >
-                    {tipoEmpresa.ativo === StatusRegistro.ATIVO
+                    {sistema.ativo === StatusRegistro.ATIVO
                       ? 'Ativo'
                       : 'Inativo'}
                   </Badge>
@@ -165,7 +175,7 @@ export default function TipoEmpresaList() {
                 <TableCell>
                   <div className="relative inline-block">
                     <button
-                      onClick={() => handleToggle(tipoEmpresa.id!)}
+                      onClick={() => handleToggle(sistema.id!)}
                       className="dropdown-toggle"
                       disabled={loading}
                     >
@@ -173,15 +183,13 @@ export default function TipoEmpresaList() {
                     </button>
 
                     <Dropdown
-                      isOpen={openDropdownId === tipoEmpresa.id}
+                      isOpen={openDropdownId === sistema.id}
                       onClose={() => setOpenDropdownId(null)}
                       className="w-40 p-2"
                     >
                       <DropdownItem
                         onClick={() =>
-                          router.push(
-                            `/gerenciar-tipo-empresa/${tipoEmpresa.id}`
-                          )
+                          router.push(`/gerenciar-sistema/${sistema.id}`)
                         }
                         className="flex w-full rounded-lg text-left font-normal text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
                       >
@@ -189,7 +197,7 @@ export default function TipoEmpresaList() {
                       </DropdownItem>
 
                       <DropdownItem
-                        onClick={() => handleDelete(tipoEmpresa)}
+                        onClick={() => handleDelete(sistema)}
                         className="flex w-full rounded-lg text-left font-normal text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
                       >
                         Deletar
@@ -199,7 +207,7 @@ export default function TipoEmpresaList() {
                 </TableCell>
               </TableRow>
             ))}
-            {empresaTipos.length === 0 && !loading && (
+            {sistemas.length === 0 && !loading && (
               <TableRow>
                 <TableCell
                   {...{ colSpan: 3 }}
@@ -213,7 +221,7 @@ export default function TipoEmpresaList() {
         </Table>
       </div>
 
-      {empresaTipos.length > 0 && (
+      {sistemas.length > 0 && (
         <div className="mt-4 flex items-center justify-between">
           <Pagination
             currentPage={currentPage}

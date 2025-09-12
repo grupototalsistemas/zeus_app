@@ -11,6 +11,8 @@ import ColorSlider from '@/utils/ColorSlider';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import EmpresaAutocomplete from '../empresa/EmpresaAutoComplete';
+import Input from '../input/InputField';
 
 export interface PrioridadeFormData {
   id?: number;
@@ -78,7 +80,7 @@ export function PrioridadeFormBase({
           {/* Descrição */}
           <div>
             <Label>Informe um nome para o tempo de execução</Label>
-            <input
+            <Input
               type="text"
               value={formData.descricao}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -86,28 +88,15 @@ export function PrioridadeFormBase({
               }
               placeholder="Digite a descrição da função"
               className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-              required
               disabled={disabled}
             />
           </div>
           <div>
-            <Label>Empresa</Label>
-            <select
-              value={formData.empresaId}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                handleChange('empresaId', Number(e.target.value))
-              }
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-              required
+            <EmpresaAutocomplete
+              empresaId={initialData?.empresaId.toString() || ''}
+              onSelect={(empresaId) => handleChange('empresaId', empresaId)}
               disabled={disabled}
-            >
-              <option value="">Selecione uma empresa</option>
-              {empresas.map((empresa) => (
-                <option key={empresa.id} value={empresa.id}>
-                  {empresa.nomeFantasia}
-                </option>
-              ))}
-            </select>
+            />
           </div>
         </div>
 
@@ -124,7 +113,7 @@ export function PrioridadeFormBase({
           <div>
             <Label>Informe o tempo limite em minutos</Label>
             <div className="mt-1">
-              <input
+              <Input
                 type="number"
                 min="1"
                 value={formData.tempo || ''}
@@ -133,7 +122,6 @@ export function PrioridadeFormBase({
                 }}
                 placeholder="Digite o tempo em minutos"
                 className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-                required
                 disabled={disabled}
               />
               <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">

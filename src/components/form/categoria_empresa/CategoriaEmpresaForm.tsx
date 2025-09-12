@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import EmpresaAutocomplete from '../empresa/EmpresaAutoComplete';
+import Input from '../input/InputField';
 
 export interface CategoriaEmpresaFormData {
   id?: number;
@@ -71,15 +72,13 @@ export function CategoriaEmpresaFormBase({
           {/* Descrição */}
           <div>
             <Label>Categoria de Empresas</Label>
-            <input
+            <Input
               type="text"
               value={formData.descricao}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 handleChange('descricao', e.target.value)
               }
               placeholder="Informe um nome para categoria de empresas"
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-              required
               disabled={disabled}
             />
           </div>
@@ -138,7 +137,7 @@ export function CategoriaEmpresaFormBase({
           </Button>
           <Button disabled={disabled}>
             {mode === 'create'
-              ? 'Criar Tipo de Ocorrência'
+              ? 'Criar Categroria de Empresa'
               : 'Salvar Alterações'}
           </Button>
         </div>

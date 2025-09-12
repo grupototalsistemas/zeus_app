@@ -3,30 +3,22 @@
 import { UserFormBase, UserFormData } from '@/components/form/user/UserForm';
 import UserList from '@/components/tables/UserList';
 import { PessoaService } from '@/service/pessoa.service';
-import { StatusGenero, StatusRegistro } from '@/types/enum';
-import { PessoaUsuarioDTO } from '@/types/pessoaUsuario.type';
+import { PessoaUsuario } from '@/types/pessoaUsuario.type';
 
 export default function CreateUserPage() {
   const handleCreate = async (data: UserFormData) => {
-    const usuario: PessoaUsuarioDTO = parseUsuario(data);
+    const usuario: PessoaUsuario = parseUsuario(data);
     console.log('Novo usuário criado (DTO):', usuario);
-    await PessoaService.createPessoaUsuario(usuario.pessoa);
+    await PessoaService.createPessoaUsuario(usuario);
   };
 
-  const parseUsuario = (data: UserFormData): PessoaUsuarioDTO => {
+  const parseUsuario = (data: UserFormData): PessoaUsuario => {
     return {
       login: data.login,
       email: data.email,
       senha: data.senha,
-      perfilId: Number(data.perfil),
-      pessoa: {
-        empresaId: Number(data.empresa),
-        tipoId: Number(data.funcao),
-        genero: data.genero as StatusGenero,
-        nome: data.nome,
-        nomeSocial: data.nome_social || '',
-        ativo: StatusRegistro.ATIVO,
-      },
+      perfilId: Number(data.perfilId),
+      pessoaId: Number(data.pessoaId),
     };
   };
 

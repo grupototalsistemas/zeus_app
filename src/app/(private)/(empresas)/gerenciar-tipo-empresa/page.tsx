@@ -15,7 +15,9 @@ export default function TipoEmpresa() {
   const { create } = useEmpresaTipo();
 
   const handleSubmit = async (data: TipoEmpresaFormData) => {
-    create(data);
+    //retirando o id
+    const { id, motivo, ...rest } = data;
+    create(rest);
     router.push('/gerenciar-tipo-empresa');
   };
 

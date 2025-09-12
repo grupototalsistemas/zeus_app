@@ -13,7 +13,7 @@ import Input from '../input/InputField';
 
 interface EmpresaAutocompleteProps {
   onSelect: (empresa: Empresa | null) => void;
-  empresa_nome?: string;
+  empresaId?: string;
   disabled?: boolean;
   resetSelection?: boolean; // Nova prop
   onResetComplete?: () => void;
@@ -21,7 +21,7 @@ interface EmpresaAutocompleteProps {
 
 export default function EmpresaAutocomplete({
   onSelect,
-  empresa_nome,
+  empresaId,
   disabled = false,
   resetSelection = false,
   onResetComplete,
@@ -48,6 +48,17 @@ export default function EmpresaAutocomplete({
 
   const empresaTipos = useAppSelector(selectTiposFormatados);
   const debouncedSearch = useDebounce(searchTerm, 500);
+
+  useEffect(() => {
+    if (empresaId) {
+      const empresa = empresas.find((emp) => emp.id === Number(empresaId));
+      if (empresa) {
+        setSelectedEmpresa(empresa);
+        setSearchTerm(empresa.nomeFantasia);
+        onSelect(empresa);
+      }
+    }
+  }, [empresaId]);
 
   // Effect para resetar a seleção quando resetSelection mudar
   useEffect(() => {

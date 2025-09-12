@@ -11,6 +11,8 @@ import { PessoaTipo } from '@/types/pessoaTipo.type';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import EmpresaAutocomplete from '../empresa/EmpresaAutoComplete';
+import Input from '../input/InputField';
 
 export interface TipoFormData {
   empresaId: number;
@@ -68,36 +70,22 @@ export function TipoFormBase({
           {/* Descrição */}
           <div>
             <Label>Descrição da Função</Label>
-            <input
+            <Input
               type="text"
               value={formData.descricao}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 handleChange('descricao', e.target.value)
               }
               placeholder="Digite a descrição da função"
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-              required
               disabled={disabled}
             />
           </div>
           <div>
-            <Label>Empresa</Label>
-            <select
-              value={formData.empresaId}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                handleChange('empresaId', Number(e.target.value))
-              }
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-              required
+            <EmpresaAutocomplete
+              onSelect={(empresa) => handleChange('empresaId', empresa?.id)}
+              empresaId={initialData?.empresaId.toString()}
               disabled={disabled}
-            >
-              <option value="">Selecione uma empresa</option>
-              {empresas.map((empresa) => (
-                <option key={empresa.id} value={empresa.id}>
-                  {empresa.nomeFantasia}
-                </option>
-              ))}
-            </select>
+            />
           </div>
         </div>
 

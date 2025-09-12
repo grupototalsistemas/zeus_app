@@ -23,14 +23,8 @@ export default function EtapaMovimentoList() {
   const router = useRouter();
 
   // Hook customizado com todas as operações de movimento
-  const {
-    etapas,
-    loading,
-    error,
-    fetchEtapas,
-    deleteEtapa,
-    clearError,
-  } = useEtapaMovimento();
+  const { etapas, loading, error, fetchEtapas, deleteEtapa, clearError } =
+    useEtapaMovimento();
 
   // Estados locais (apenas para UI)
   const [currentPage, setCurrentPage] = useState(1);
@@ -75,19 +69,8 @@ export default function EtapaMovimentoList() {
 
   useEffect(() => {
     // Só carrega se não há movimentos no store ou se houver erro
-    if (etapas.length === 0 && !loading) {
-      fetchEtapas();
-    }
-
-    // Temporizador para buscar ocorrências a cada 15 segundos
-    const interval = setInterval(() => {
-      if (!loading) {
-        fetchEtapas();
-      }
-    }, 15000);
-
-    return () => clearInterval(interval);
-  }, [fetchEtapas, etapas.length, loading]);
+    etapas.length === 0 && fetchEtapas();
+  }, [etapas.length]);
 
   const handleToggle = (id: number) => {
     setOpenDropdownId(openDropdownId === id ? null : id);

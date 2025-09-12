@@ -5,15 +5,18 @@ import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
 import Select from '@/components/form/Select';
-import { ChevronDownIcon, EyeCloseIcon, EyeIcon } from '@/icons';
+import Button from '@/components/ui/button/Button';
+import { ChevronDownIcon } from '@/icons';
 import { EmpresaService } from '@/service/empresa.service';
 import { selectPerfisFormatados } from '@/store/slices/perfilSlice';
 import { selectPessoasTiposFormatados } from '@/store/slices/pessoaTipoSlice';
+import { Empresa } from '@/types/empresa.type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { z } from 'zod';
+import EmpresaAutocomplete from '../empresa/EmpresaAutoComplete';
 import Checkbox from '../input/Checkbox';
 
 interface EmpresasSelect {
@@ -22,14 +25,10 @@ interface EmpresasSelect {
 }
 
 const pessoaSchema = z.object({
-  login: z.string().min(3, 'Login é obrigatório'),
   nome: z.string().min(3, 'Nome é obrigatório'),
-  nome_social: z.string().optional(),
-  email: z.string().email('Email inválido'),
-  senha: z.string().min(6, 'Senha deve ter ao menos 6 caracteres'),
-  empresa: z.string().min(1, 'Empresa é obrigatória'),
-  funcao: z.string().min(1, 'Função é obrigatória'),
-  perfil: z.string().min(1, 'Perfil é obrigatório'),
+  nomeSocial: z.string().optional(),
+  empresaId: z.string().min(1, 'Empresa é obrigatória'),
+  tipoId: z.string().min(1, 'Função é obrigatória'),
   genero: z.enum(['MASCULINO', 'FEMININO']),
 });
 
@@ -61,14 +60,11 @@ export function PessoaFormBase({
   } = useForm<PessoaFormData>({
     resolver: zodResolver(pessoaSchema),
     defaultValues: {
-      login: initialData?.login ?? '',
       nome: initialData?.nome ?? '',
-      nome_social: initialData?.nome_social ?? '',
-      email: initialData?.email ?? '',
-      senha: initialData?.senha ?? '',
-      empresa: initialData?.empresa ?? '',
-      funcao: initialData?.funcao ?? '',
-      perfil: initialData?.perfil ?? '',
+      nomeSocial: initialData?.nomeSocial ?? '',
+      empresaId: initialData?.empresaId ?? '',
+      tipoId: initialData?.tipoId ?? '',
+      genero: initialData?.genero ?? 'MASCULINO',
     },
   });
 
@@ -120,56 +116,31 @@ export function PessoaFormBase({
               <Input
                 type="text"
                 placeholder="(Opcional)"
-                value={formValues.nome_social}
-                onChange={(e) => setValue('nome_social', e.target.value)}
+                value={formValues.nomeSocial}
+                onChange={(e) => setValue('nomeSocial', e.target.value)}
               />
             </div>
           </div>
 
           <div>
-            <Label>Login*</Label>
-            <Input
-              type="text"
-              placeholder="Crie um login"
-              value={formValues.login}
-              onChange={(e) =>
-                setValue('login', e.target.value, { shouldValidate: true })
+            <EmpresaAutocomplete
+              // resetSelection={mode === 'edit'}
+              onResetComplete={() =>
+                setValue('empresaId', '', { shouldValidate: true })
               }
-              error={!!errors.login}
-              hint={errors.login?.message}
-            />
-          </div>
-
-          <div>
-            <Label>Email*</Label>
-            <Input
-              type="email"
-              placeholder="Digite seu email"
-              value={formValues.email}
-              onChange={(e) =>
-                setValue('email', e.target.value, { shouldValidate: true })
-              }
-              error={!!errors.email}
-              hint={errors.email?.message}
-            />
-          </div>
-
-          <div>
-            <Label>Empresa*</Label>
-            <div className="relative">
-              <Select
-                options={empresas}
-                placeholder="Selecione a empresa"
-                onChange={(opt: any) =>
-                  setValue('empresa', String(opt), { shouldValidate: true })
+              onSelect={(empresa: Empresa | null) => {
+                if (empresa) {
+                  setValue('empresaId', String(empresa.id), {
+                    shouldValidate: true,
+                  });
                 }
-              />
-              <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">
-                <ChevronDownIcon />
-              </span>
-            </div>
-            {errors.empresa && (
-              <p className="text-error-500 text-sm">{errors.empresa.message}</p>
+              }}
+            />
+
+            {errors.empresaId && (
+              <p className="text-error-500 text-sm">
+                {errors.empresaId.message}
+              </p>
             )}
           </div>
 
@@ -180,23 +151,7 @@ export function PessoaFormBase({
                 options={tipos}
                 placeholder="Selecione"
                 onChange={(opt: any) =>
-                  setValue('funcao', String(opt), { shouldValidate: true })
-                }
-              />
-              <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">
-                <ChevronDownIcon />
-              </span>
-            </div>
-          </div>
-
-          <div>
-            <Label>Perfil*</Label>
-            <div className="relative">
-              <Select
-                options={perfis}
-                placeholder="Selecione"
-                onChange={(opt: any) =>
-                  setValue('perfil', String(opt), { shouldValidate: true })
+                  setValue('tipoId', String(opt), { shouldValidate: true })
                 }
               />
               <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">
@@ -222,34 +177,12 @@ export function PessoaFormBase({
             </label>
           </div>
 
-          <div>
-            <Label>Senha*</Label>
-            <div className="relative">
-              <Input
-                placeholder="Crie uma senha"
-                type={showPassword ? 'text' : 'password'}
-                value={formValues.senha}
-                onChange={(e) =>
-                  setValue('senha', e.target.value, { shouldValidate: true })
-                }
-                error={!!errors.senha}
-                hint={errors.senha?.message}
-              />
-              <span
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute top-1/2 right-4 cursor-pointer"
-              >
-                {showPassword ? <EyeIcon /> : <EyeCloseIcon />}
-              </span>
-            </div>
+          <div className="flex justify-end space-x-4">
+            <Button variant="outline">Cancelar</Button>
+            <Button>
+              {mode === 'create' ? 'Criar Pessoa' : 'Salvar Alterações'}
+            </Button>
           </div>
-
-          <button
-            type="submit"
-            className="bg-brand-500 shadow-theme-xs hover:bg-brand-600 flex w-full items-center justify-center rounded-lg px-4 py-3 text-sm font-medium text-white transition disabled:opacity-50"
-          >
-            {mode === 'create' ? 'Cadastrar' : 'Salvar alterações'}
-          </button>
         </form>
       </ComponentCard>
     </>

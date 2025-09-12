@@ -1,40 +1,36 @@
 'use client';
 
-import { UserFormBase, UserFormData } from '@/components/form/user/UserForm';
-import UserList from '@/components/tables/UserList';
-import { PessoaService } from '@/service/pessoa.service';
-import { StatusGenero, StatusRegistro } from '@/types/enum';
-import { PessoaUsuarioDTO } from '@/types/pessoaUsuario.type';
+import {
+  SistemaFormBase,
+  SistemaFormData,
+} from '@/components/form/sistema/SistemaForm';
+import SistemaList from '@/components/tables/SistemaList';
+import { useSistema } from '@/hooks/useSistema';
+import { StatusRegistro } from '@/types/enum';
+import { Sistema } from '@/types/sistemas.type';
 
 export default function CreateUserPage() {
-  const handleCreate = async (data: UserFormData) => {
-    const usuario: PessoaUsuarioDTO = parseUsuario(data);
-    console.log('Novo usuário criado (DTO):', usuario);
-    await PessoaService.createPessoaUsuario(usuario.pessoa);
+  const { create } = useSistema();
+  const handleCreate = async (data: SistemaFormData) => {
+    const sistema: Sistema = parseUsuario(data);
+    create(sistema);
   };
 
-  const parseUsuario = (data: UserFormData): PessoaUsuarioDTO => {
+  const parseUsuario = (data: SistemaFormData): Sistema => {
     return {
-      login: data.login,
-      email: data.email,
-      senha: data.senha,
-      perfilId: Number(data.perfil),
-      pessoa: {
-        empresaId: Number(data.empresa),
-        tipoId: Number(data.funcao),
-        genero: data.genero as StatusGenero,
-        nome: data.nome,
-        nomeSocial: data.nome_social || '',
-        ativo: StatusRegistro.ATIVO,
-      },
+      empresaId: Number(data.empresaId),
+      descricao: data.descricao,
+      motivo: data.motivo,
+      nome: data.nome,
+      ativo: StatusRegistro.ATIVO,
     };
   };
 
   return (
     <>
-      <UserFormBase mode="create" onSubmit={handleCreate} />
+      <SistemaFormBase mode="create" onSubmit={handleCreate} />
       <br />
-      <UserList />
+      <SistemaList />
     </>
   );
 }
