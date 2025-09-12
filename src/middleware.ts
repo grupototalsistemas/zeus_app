@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import Alert from './components/ui/alert/Alert';
 
 export function middleware(request: NextRequest) {
   // console.log('=== MIDDLEWARE DEBUG ===');
@@ -11,12 +12,17 @@ export function middleware(request: NextRequest) {
 
   // Lista TODOS os cookies
   const allCookies = request.cookies.getAll();
+  Alert({
+    variant: 'info',
+    title: 'Cookies',
+    message: JSON.stringify(allCookies),
+  });
   // console.log('All cookies:', allCookies);
 
-  if (!token?.value) {
-    console.log('REDIRECIONANDO - Token não encontrado');
-    return NextResponse.redirect(new URL('/signin', request.url));
-  }
+  // if (!token?.value) {
+  //   console.log('REDIRECIONANDO - Token não encontrado');
+  //   return NextResponse.redirect(new URL('/signin', request.url));
+  // }
 
   // console.log('PERMITINDO - Token encontrado');
   return NextResponse.next();
