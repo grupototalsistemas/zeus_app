@@ -1,5 +1,5 @@
 import { PessoaTipo } from '@/types/pessoaTipo.type';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../rootReducer';
 
 interface PessoaTipoState {
@@ -77,21 +77,30 @@ export const {
   clearPessoaTipo,
 } = PessoaTipoSlice.actions;
 
-// Seletores
+// Base selectors
 export const selectPessoasTipos = (state: RootState) =>
   state.pessoa_tipo.pessoaTipos;
 export const selectPessoaTipoSelecionado = (state: RootState) =>
   state.pessoa_tipo.pessoatipoSelecionado;
 export const selectLoading = (state: RootState) => state.pessoa_tipo.loading;
 export const selectError = (state: RootState) => state.pessoa_tipo.error;
-export const selectPessoasTiposFormatados = (state: RootState) =>
-  state.pessoa_tipo.pessoaTipos?.map((pessoaTipo: PessoaTipo) => ({
-    value: pessoaTipo.id || 0,
-    label: pessoaTipo.descricao,
-  }));
-export const selectPessoasTiposAtivos = (state: RootState) =>
-  state.pessoa_tipo.pessoaTipos?.filter(
-    (pessoaTipo: PessoaTipo) => pessoaTipo.ativo === 'ATIVO'
-  );
+
+// Memoized selectors
+export const selectPessoasTiposFormatados = createSelector(
+  [selectPessoasTipos],
+  (pessoaTipos) =>
+    pessoaTipos?.map((pessoaTipo: PessoaTipo) => ({
+      value: pessoaTipo.id || 0,
+      label: pessoaTipo.descricao,
+    })) || []
+);
+
+export const selectPessoasTiposAtivos = createSelector(
+  [selectPessoasTipos],
+  (pessoaTipos) =>
+    pessoaTipos?.filter(
+      (pessoaTipo: PessoaTipo) => pessoaTipo.ativo === 'ATIVO'
+    ) || []
+);
 
 export default PessoaTipoSlice.reducer;

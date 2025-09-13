@@ -38,7 +38,7 @@ export const usePessoaTipo = () => {
       dispatch(setError(null));
 
       const response = await PessoaTipoService.getPessoasTipos();
-      console.log('PessoasTipos buscados:', response);
+      // console.log('PessoasTipos buscados:', response);
       dispatch(setPessoasTipos(response));
     } catch (error) {
       console.error('Erro ao buscar pessoasTipos:', error);

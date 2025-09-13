@@ -116,12 +116,12 @@ export default function SignInForm() {
                     Me manter conectado
                   </span>
                 </div> */}
-                <Link
+                {/* <Link
                   href="/reset-password"
                   className="text-brand-500 hover:text-brand-600 dark:text-brand-400 text-sm"
                 >
                   Esqueceu a senha?
-                </Link>
+                </Link> */}
               </div>
               <div>
                 <Button className="w-full" size="sm" disabled={loading}>
