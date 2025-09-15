@@ -4,11 +4,6 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import LoadingScreen from './LoadingScreen';
-
-// Types
-
-// Services
-
 // Actions do Redux
 import { useChamado } from '@/hooks/useChamado';
 import { useEmpresaCategoria } from '@/hooks/useEmpresaCategoria';

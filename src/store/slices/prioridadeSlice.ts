@@ -1,5 +1,5 @@
 import { Prioridade } from '@/types/chamadoPrioridade.type';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../rootReducer';
 
 interface PrioridadeState {
@@ -85,14 +85,18 @@ export const selectPrioridadeSelecionada = (state: RootState) =>
 export const selectLoading = (state: RootState) =>
   state.chamado_prioridade.loading;
 export const selectError = (state: RootState) => state.chamado_prioridade.error;
-export const selectPrioridadesFormatadas = (state: RootState) =>
-  state.chamado_prioridade.prioridades.map((prioridade) => ({
-    value: prioridade.id || 0,
-    label: prioridade.descricao,
-  }));
-export const selectPrioridadesAtivas = (state: RootState) =>
-  state.chamado_prioridade.prioridades.filter(
-    (prioridade) => prioridade.ativo === 'ATIVO'
-  );
+export const selectPrioridadesFormatadas = createSelector(
+  [selectPrioridades],
+  (prioridade) =>
+    prioridade.map((prioridade: Prioridade) => ({
+      value: prioridade.id || 0,
+      label: prioridade.descricao,
+    })) || []
+);
+export const selectPrioridadesAtivas = createSelector(
+  [selectPrioridades],
+  (prioridades) =>
+    prioridades.filter((prioridade) => prioridade.ativo === 'ATIVO')
+);
 
 export default PrioridadeSlice.reducer;

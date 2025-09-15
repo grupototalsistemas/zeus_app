@@ -73,7 +73,7 @@ export default function SignInForm() {
             </div>
           )}
 
-          <form onSubmit={handlesign}>
+          <form onSubmit={handlesign} autoComplete="off" noValidate>
             <div className="space-y-6">
               <div>
                 <Label>

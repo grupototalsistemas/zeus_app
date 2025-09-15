@@ -29,6 +29,17 @@ export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
+      immutableCheck:
+        process.env.NODE_ENV === 'production'
+          ? false
+          : {
+              warnAfter: 64, // aumenta limite antes do warning
+              ignoredPaths: [
+                // adicione aqui caminhos grandes do state se necessário
+                'empresa.empresas',
+                'chamado_ocorrencia.ocorrencias',
+              ],
+            },
       serializableCheck: {
         // Ignora ações do redux-persist que possuem funções e não são serializáveis
         ignoredActions: [

@@ -3,7 +3,7 @@ import api from './api';
 
 const getPessoasTipos = async (): Promise<PessoaTipo[]> => {
   const response = await api.get('pessoa-tipos');
-  console.log(response.data);
+  // console.log(response.data);
   return response.data;
 };
 
