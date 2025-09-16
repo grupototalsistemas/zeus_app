@@ -38,4 +38,8 @@ export const selectEmpresasFormatadas = createSelector(
     }))
 );
 
+export const selectEmpresaById =
+  (id: number) => (state: { empresa: EmpresaState }) =>
+    state.empresa.empresas.find((empresa) => empresa.id === id);
+
 export default EmpresaSlice.reducer;

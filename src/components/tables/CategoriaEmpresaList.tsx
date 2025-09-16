@@ -5,6 +5,7 @@ import { MoreDotIcon } from '@/icons';
 import { useEmpresaCategoria } from '@/hooks/useEmpresaCategoria';
 import { EmpresaCategoria } from '@/types/empresaCategoria.type';
 import { StatusRegistro } from '@/types/enum';
+import { selectEmpresasById } from '@/utils/empresa.utils';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Badge from '../ui/badge/Badge';
@@ -31,7 +32,6 @@ export default function CategoriaEmpresaList() {
 
   useEffect(() => {
     empresaCategorias.length === 0 && getAll();
-    console.log(empresaCategorias);
   }, []);
 
   const totalPages = Math.ceil(empresaCategorias.length / itemsPerPage);
@@ -110,7 +110,7 @@ export default function CategoriaEmpresaList() {
             {paginatedData.length > 0 &&
               paginatedData.map((categoria) => (
                 <>
-                  <TableRow key={categoria.id}>
+                  <TableRow key={categoria.id || categoria.descricao}>
                     {/* <TableCell className="w-8">
                       <button
                         onClick={() => handleToggleExpand(String(categoria.id))}
@@ -129,7 +129,7 @@ export default function CategoriaEmpresaList() {
                     </TableCell>
 
                     <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                      {categoria.empresaId}
+                      {selectEmpresasById(categoria.empresaId)?.nomeFantasia}
                     </TableCell>
                     <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                       <Badge

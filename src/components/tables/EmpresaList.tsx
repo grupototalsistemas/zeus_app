@@ -154,7 +154,7 @@ export default function EmpresaList() {
                 const statusInfo = getStatusBadge(empresa);
                 return (
                   <>
-                    <TableRow key={empresa.id}>
+                    <TableRow key={empresa.id || empresa.cnpj}>
                       <TableCell className="w-8">
                         <button
                           onClick={() =>
