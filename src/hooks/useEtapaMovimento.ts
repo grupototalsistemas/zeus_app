@@ -1,3 +1,4 @@
+import { RootState } from '@/store/rootReducer';
 import {
   clearError,
   clearEtapaAtual,
@@ -5,11 +6,15 @@ import {
   deleteEtapa,
   fetchEtapa,
   fetchEtapas,
+  selectErrorEtapa,
+  selectEtapaAtual,
+  selectEtapas,
+  selectEtapasAtivas,
+  selectEtapasFormatadas,
+  selectLoadingEtapa,
   updateEtapa,
 } from '@/store/slices/etapaMovimento.slice';
 import { ChamadoMovimentoEtapa } from '@/types/chamadoMovimentoEtapa.type';
-
-import { RootState } from '@/store/rootReducer';
 import { ThunkDispatch } from '@reduxjs/toolkit';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,10 +22,13 @@ import { useDispatch, useSelector } from 'react-redux';
 export const useEtapaMovimento = () => {
   const dispatch = useDispatch<ThunkDispatch<RootState, unknown, any>>();
 
-  // Seletores do estado do Redux
-  const { etapas, etapaAtual, loading, error } = useSelector(
-    (state: RootState) => state.chamado_etapa_movimento
-  );
+  // Seletores
+  const etapas = useSelector(selectEtapas);
+  const etapasFormatadas = useSelector(selectEtapasFormatadas);
+  const etapasAtivas = useSelector(selectEtapasAtivas);
+  const etapaAtual = useSelector(selectEtapaAtual);
+  const loading = useSelector(selectLoadingEtapa);
+  const error = useSelector(selectErrorEtapa);
 
   // Ações assíncronas
   const handleFetchEtapas = useCallback(async () => {
@@ -34,8 +42,7 @@ export const useEtapaMovimento = () => {
   const handleCreateEtapa = useCallback(
     async (etapa: Partial<ChamadoMovimentoEtapa>) => {
       try {
-        const result = await dispatch(createEtapa(etapa)).unwrap();
-        return result;
+        return await dispatch(createEtapa(etapa)).unwrap();
       } catch (error) {
         console.error('Erro ao criar etapa:', error);
         throw error;
@@ -47,8 +54,7 @@ export const useEtapaMovimento = () => {
   const handleEditEtapa = useCallback(
     async (id: number, data: Partial<ChamadoMovimentoEtapa>) => {
       try {
-        const result = await dispatch(updateEtapa({ id, data })).unwrap();
-        return result;
+        return await dispatch(updateEtapa({ id, data })).unwrap();
       } catch (error) {
         console.error('Erro ao editar etapa:', error);
         throw error;
@@ -72,8 +78,7 @@ export const useEtapaMovimento = () => {
   const handleFetchEtapaById = useCallback(
     async (id: number) => {
       try {
-        const result = await dispatch(fetchEtapa(id)).unwrap();
-        return result;
+        return await dispatch(fetchEtapa(id)).unwrap();
       } catch (error) {
         console.error('Erro ao buscar etapa por ID:', error);
         throw error;
@@ -91,28 +96,22 @@ export const useEtapaMovimento = () => {
     dispatch(clearError());
   }, [dispatch]);
 
-  // Selecionar por Id e mostrar o selecionado
-  const selectEtapaById = (id: number) => {
-    return etapas.find((e: ChamadoMovimentoEtapa) => e.id === id);
-  };
-
   return {
     // Estado
     etapas,
+    etapasFormatadas, // pronto para Select
+    etapasAtivas,
     etapaAtual,
     loading,
     error,
 
-    // Ações assíncronas
+    // Ações
     fetchEtapas: handleFetchEtapas,
     createEtapa: handleCreateEtapa,
     updateEtapa: handleEditEtapa,
     deleteEtapa: handleDeleteEtapa,
     fetchEtapaById: handleFetchEtapaById,
-
-    // Ações síncronas
     clearEtapaAtual: handleClearEtapaAtual,
     clearError: handleClearError,
-    selectEtapaById,
   };
 };

@@ -1,7 +1,6 @@
 import { SidebarProvider } from '@/context/SidebarContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 // caminho do componente que você criou
-import { WithReduxInitialData } from '@/components/WithReduxInitialData';
 import { ReduxProvider } from '@/store/ReduxProvider';
 import { Outfit } from 'next/font/google';
 import './globals.css';
@@ -20,9 +19,7 @@ export default function RootLayout({
       <body className={`${outfit.className} dark:bg-gray-900`}>
         <ReduxProvider>
           <ThemeProvider>
-            <SidebarProvider>
-              <WithReduxInitialData>{children}</WithReduxInitialData>
-            </SidebarProvider>
+            <SidebarProvider>{children}</SidebarProvider>
           </ThemeProvider>
         </ReduxProvider>
       </body>

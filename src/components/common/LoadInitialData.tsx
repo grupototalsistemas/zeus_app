@@ -14,6 +14,7 @@ import { useMovimentoMensagem } from '@/hooks/useMovimentoMensagem';
 import { useOcorrencia } from '@/hooks/useOcorrencia';
 import { useOcorrenciaTipo } from '@/hooks/useOcorrenciaTipo';
 import { usePerfil } from '@/hooks/usePerfil';
+import { usePessoa } from '@/hooks/usePessoa';
 import { usePessoaTipo } from '@/hooks/usePessoaTipo';
 import { usePessoaUsuario } from '@/hooks/usePessoaUsuario';
 import { usePrioridade } from '@/hooks/usePrioridade';
@@ -38,6 +39,7 @@ export default function LoadInitialData({ children }: LoadInitialDataProps) {
   const { buscarOcorrenciasTipos } = useOcorrenciaTipo();
 
   const { getAll: getAllPessoaUsuarios } = usePessoaUsuario();
+  const { fetchPessoas } = usePessoa();
   const { fetchPessoasTipos } = usePessoaTipo();
   const { fetchPerfis } = usePerfil();
 
@@ -56,6 +58,7 @@ export default function LoadInitialData({ children }: LoadInitialDataProps) {
         await fetchPrioridades();
         fetchOcorrencias();
         fetchPessoasTipos();
+        fetchPessoas();
         fetchEtapas();
         getAllChamados();
         getAllMovimentoMensagens();

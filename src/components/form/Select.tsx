@@ -22,6 +22,7 @@ const CustomSelect: React.FC<SelectProps> = ({
 }) => {
   const [selectedValue, setSelectedValue] = useState<string>(value);
   const [isOpen, setIsOpen] = useState(false);
+  const [openUp, setOpenUp] = useState(false); // novo estado
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -39,6 +40,17 @@ const CustomSelect: React.FC<SelectProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const handleToggle = () => {
+    if (!isOpen && ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      const dropdownHeight = Math.min(options.length * 40, 240); // altura estimada (40px/item máx 240px)
+      setOpenUp(spaceBelow < dropdownHeight && spaceAbove > spaceBelow);
+    }
+    setIsOpen((prev) => !prev);
+  };
+
   const handleSelect = (newValue: string) => {
     setSelectedValue(newValue);
     onChange(newValue);
@@ -55,7 +67,7 @@ const CustomSelect: React.FC<SelectProps> = ({
         className={`h-11 w-full rounded-lg border border-gray-300 bg-white px-4 pr-10 text-left text-sm shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 ${
           selectedValue ? 'text-gray-800 dark:text-white/90' : 'text-gray-400'
         }`}
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={handleToggle}
       >
         {selectedOption ? selectedOption.label : placeholder}
 
@@ -79,7 +91,11 @@ const CustomSelect: React.FC<SelectProps> = ({
 
       {/* Dropdown */}
       {isOpen && (
-        <ul className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800">
+        <ul
+          className={`absolute z-50 max-h-60 w-full overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800 ${
+            openUp ? 'bottom-full mb-1' : 'mt-1'
+          }`}
+        >
           {options.map((option) => (
             <li
               key={option.value}

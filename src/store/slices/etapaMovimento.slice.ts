@@ -1,6 +1,11 @@
 import { EtapaMovimentoService } from '@/service/etapaMovimento.service';
 import { ChamadoMovimentoEtapa } from '@/types/chamadoMovimentoEtapa.type';
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSelector,
+  createSlice,
+} from '@reduxjs/toolkit';
+import { RootState } from '../rootReducer';
 
 interface EtapaMovimentoState {
   etapas: ChamadoMovimentoEtapa[];
@@ -149,6 +154,28 @@ const etapaMovimentoSlice = createSlice({
       });
   },
 });
+
+// Seletores básicos
+export const selectEtapas = (state: RootState) =>
+  state.chamado_etapa_movimento.etapas;
+export const selectEtapaAtual = (state: RootState) =>
+  state.chamado_etapa_movimento.etapaAtual;
+export const selectLoadingEtapa = (state: RootState) =>
+  state.chamado_etapa_movimento.loading;
+export const selectErrorEtapa = (state: RootState) =>
+  state.chamado_etapa_movimento.error;
+
+// Seletores formatados para usar em Select
+export const selectEtapasFormatadas = createSelector([selectEtapas], (etapas) =>
+  etapas.map((etapa) => ({
+    value: etapa.id || 0,
+    label: etapa.descricao, // ajuste se o campo de exibição for outro
+  }))
+);
+
+export const selectEtapasAtivas = createSelector([selectEtapas], (etapas) =>
+  etapas.filter((etapa) => etapa.ativo === 'ATIVO')
+);
 
 export const { clearEtapaAtual, clearError } = etapaMovimentoSlice.actions;
 

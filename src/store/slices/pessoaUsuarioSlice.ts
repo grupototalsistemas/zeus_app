@@ -1,6 +1,10 @@
 import { PessoaUsuarioService } from '@/service/pessoaUsuario.service';
 import { PessoaUsuario } from '@/types/pessoaUsuario.type';
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSelector,
+  createSlice,
+} from '@reduxjs/toolkit';
 import { RootState } from '../rootReducer';
 
 interface PessoaUsuarioState {
@@ -175,5 +179,15 @@ export const selectPessoaUsuarioLoading = (state: RootState) =>
   state.pessoa_usuario.loading;
 export const selectPessoaUsuarioError = (state: RootState) =>
   state.pessoa_usuario.error;
+// Selectors formatados (para compatibilidade)
+
+export const selectPessoaUsuariosFormatados = createSelector(
+  [selectPessoaUsuarios],
+  (pessoaUsuario: PessoaUsuario[]) =>
+    pessoaUsuario.map((prioridade: PessoaUsuario) => ({
+      value: prioridade.id || 0,
+      label: prioridade.login,
+    })) || []
+);
 
 export default pessoaUsuarioSlice.reducer;

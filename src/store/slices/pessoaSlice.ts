@@ -2,7 +2,12 @@ import { PessoaService } from '@/service/pessoa.service';
 import { StatusGenero } from '@/types/enum';
 import { Pessoa } from '@/types/pessoa.type';
 import { loginResponse } from '@/types/pessoaUsuario.type';
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSelector,
+  createSlice,
+  PayloadAction,
+} from '@reduxjs/toolkit';
 import { RootState } from '../rootReducer';
 
 export interface CreatePessoaDto {
@@ -322,11 +327,15 @@ export const selectPessoaLoading = (state: RootState) => state.pessoa.loading;
 export const selectPessoaError = (state: RootState) => state.pessoa.error;
 
 // Selectors formatados (para compatibilidade)
-export const selectPessoasFormatadas = (state: RootState) =>
-  state.pessoa.pessoas.map((pessoa) => ({
-    value: pessoa.id,
-    label: pessoa.nomeSocial || pessoa.nome,
-  }));
+
+export const selectPessoasFormatadas = createSelector(
+  [selectPessoas],
+  (pessoas: Pessoa[] = []) =>
+    pessoas.map((pessoa) => ({
+      value: pessoa.id || 0,
+      label: pessoa.nomeSocial || pessoa.nome,
+    }))
+);
 
 // Selector para filtrar por empresa
 export const selectPessoasByEmpresa =

@@ -10,6 +10,7 @@ import {
   selectPessoaUsuarioError,
   selectPessoaUsuarioLoading,
   selectPessoaUsuarios,
+  selectPessoaUsuariosFormatados,
   updatePessoaUsuario,
 } from '@/store/slices/pessoaUsuarioSlice';
 import { AppDispatch } from '@/store/store';
@@ -23,6 +24,7 @@ export const usePessoaUsuario = () => {
   const pessoaUsuarios = useSelector(selectPessoaUsuarios);
   const currentPessoaUsuario = useSelector(selectCurrentPessoaUsuario);
   const loading = useSelector(selectPessoaUsuarioLoading);
+  const selectUsuarioFormatados = useSelector(selectPessoaUsuariosFormatados);
   const error = useSelector(selectPessoaUsuarioError);
 
   const getAll = useCallback(() => {
@@ -78,6 +80,8 @@ export const usePessoaUsuario = () => {
     currentPessoaUsuario,
     loading,
     error,
+
+    selectUsuarioFormatados,
 
     // Actions
     getAll,

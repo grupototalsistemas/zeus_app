@@ -1,8 +1,10 @@
 'use client';
 
 import { useChamado } from '@/hooks/useChamado';
+import { useEtapaMovimento } from '@/hooks/useEtapaMovimento';
 import { useMovimentoMensagem } from '@/hooks/useMovimentoMensagem';
 import { usePerfil } from '@/hooks/usePerfil';
+import { usePessoa } from '@/hooks/usePessoa';
 import { usePrioridade } from '@/hooks/usePrioridade';
 import { useSistema } from '@/hooks/useSistema';
 import { RootState } from '@/store/rootReducer';
@@ -36,6 +38,9 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
   chamadoId,
 }) => {
   const { chamados, getAll } = useChamado();
+  const { prioridadesFormatadas } = usePrioridade();
+  const { pessoasFormatadas } = usePessoa();
+  const { etapasFormatadas } = useEtapaMovimento();
 
   const chamado = chamados.find((c) => c.id === chamadoId);
   if (!chamado) return null;
@@ -161,7 +166,7 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
       {/* Conteúdo com Scroll */}
       <div className="flex h-full w-full flex-col overflow-x-auto overflow-y-auto pb-4 md:grid md:grid-cols-2">
         {/* Coluna Esquerda (scroll vertical interno) */}
-        <div className="h-3/4 overflow-y-auto border-r border-b border-gray-200 p-6 lg:border-b-0 dark:border-gray-700">
+        <div className="scrollbar-hide h-3/4 overflow-y-auto border-r border-b border-gray-200 p-6 lg:border-b-0 dark:border-gray-700">
           {/* Status e Prioridade */}
           <div className="flex flex-wrap gap-4 md:grid md:grid-cols-2 md:pb-4">
             <div>
@@ -270,14 +275,14 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
         </div>
 
         {/* Lado Direito - Mensagens, Histórico, Anexos */}
-        <div className="h-6/9 space-y-4 overflow-y-auto px-6 pt-6">
+        <div className="scrollbar-hide h-6/9 space-y-4 overflow-y-auto px-6 pt-6">
           {/* Mensagens */}
           <Collapse
             title="Mensagens"
             count={mensagens.length}
             defaultOpen={true}
           >
-            <div className="max-h-80 space-y-4 overflow-y-auto p-4">
+            <div className="scrollbar-stable h-6/9 space-y-4 px-6 pt-6">
               {mensagens.map((mensagem) => (
                 <div
                   key={mensagem?.id}
@@ -403,27 +408,24 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
             Opções Rapidas:{' '}
           </Label>
           <Select
-            className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-300 focus:outline-none sm:w-auto dark:focus:ring-blue-500"
+            className="w-full text-sm font-light text-white transition-colors sm:w-auto dark:focus:ring-blue-700"
             onChange={(value) => console.log(value)}
-            options={[
-              { value: 'opcao1', label: 'Opção 1' },
-              { value: 'opcao2', label: 'Opção 2' },
-              { value: 'opcao3', label: 'Opção 3' },
-            ]}
+            options={prioridadesFormatadas}
+            placeholder="Alterar Prioridade"
           />
 
-          <Button
-            className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-300 focus:outline-none sm:w-auto dark:focus:ring-blue-500"
-            onClick={onClose}
-          >
-            Alterar Responsavel
-          </Button>
-          <Button
-            className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-300 focus:outline-none sm:w-auto dark:focus:ring-blue-500"
-            onClick={onClose}
-          >
-            Alterar Status
-          </Button>
+          <Select
+            className="w-full text-sm font-light text-white transition-colors sm:w-auto dark:focus:ring-blue-700"
+            onChange={(value) => console.log(value)}
+            options={pessoasFormatadas}
+            placeholder="Alterar Responsavel"
+          />
+          <Select
+            className="w-full text-sm font-light text-white transition-colors sm:w-auto dark:focus:ring-blue-700"
+            onChange={(value) => console.log(value)}
+            options={etapasFormatadas}
+            placeholder="Alterar Status"
+          />
         </div>
         <div className="flex w-full flex-col gap-3 md:flex-row-reverse">
           <button
