@@ -1,58 +1,73 @@
-export const formataData = (data: string): string => {
-  const [dia, mes, ano] = data.split('/');
-  return `${ano}-${mes}-${dia}`;
-}
+// utils/formatar-data.ts
 
-export const formataDataHora = (data: string, hora: string): string => {
-  const [dia, mes, ano] = data.split('/');
-  return `${ano}-${mes}-${dia}T${hora}`;
-}
+type FormatOptions = 'data' | 'hora' | 'dataHora';
 
-export const formataDataHoraParaExibir = (data: string): string => {
-  const [ano, mes, dia] = data.split('T')[0].split('-');
-  const [hora, minuto] = data.split('T')[1].split(':');
-  return `${dia}/${mes}/${ano}\n ${hora}:${minuto}`;
-}
+function parseDateString(data: string): Date {
+  if (!data) return new Date('');
 
-export const formataDataParaExibir = (data: string): string => {
-  //precisa retirar a hora se tiver
-  if (data.includes('T')) {
-    data = data.split('T')[0];
+  // ISO: yyyy-MM-dd ou yyyy-MM-ddTHH:mm
+  if (/^\d{4}-\d{2}-\d{2}/.test(data)) {
+    return new Date(data);
   }
-  const [ano, mes, dia] = data.split('-');
-  return `${dia}/${mes}/${ano}`;
-}
 
-export const formataHoraParaExibir = (hora: string): string => {
-  // precisa retirar a data se tiver
-  if (hora.includes('T')) {
-    hora = hora.split('T')[1];
+  // BR: dd/MM/yyyy
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(data)) {
+    const [dia, mes, ano] = data.split('/');
+    return new Date(Number(ano), Number(mes) - 1, Number(dia));
   }
-  const [horaPart, minuto] = hora.split(':');
-  return `${horaPart}:${minuto}`;
+
+  return new Date('');
 }
 
-export const dataAgora = (): string => {
-  const hoje = new Date();
-  const dia = String(hoje.getDate()).padStart(2, '0');
-    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-    const ano = hoje.getFullYear();
-    return `${dia}/${mes}/${ano}`;
+export function formatarData(
+  data: string | Date,
+  tipo: FormatOptions = 'dataHora'
+): string {
+  const d = data instanceof Date ? data : parseDateString(data);
+
+  if (isNaN(d.getTime())) return ''; // evita crash em datas inválidas
+
+  switch (tipo) {
+    case 'data':
+      return new Intl.DateTimeFormat('pt-BR', {
+        dateStyle: 'short',
+        timeZone: 'America/Sao_Paulo',
+      }).format(d);
+
+    case 'hora':
+      return new Intl.DateTimeFormat('pt-BR', {
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'America/Sao_Paulo',
+      }).format(d);
+
+    case 'dataHora':
+    default:
+      return new Intl.DateTimeFormat('pt-BR', {
+        dateStyle: 'short',
+        timeStyle: 'short',
+        timeZone: 'America/Sao_Paulo',
+      }).format(d);
+  }
 }
 
-export const horaAgora = (): string => {
-  const hoje = new Date();
-  const hora = String(hoje.getHours()).padStart(2, '0');
-  const minuto = String(hoje.getMinutes()).padStart(2, '0');
-  return `${hora}:${minuto}`;
+// 🔹 Data de agora
+export function dataAgora(): string {
+  return formatarData(new Date(), 'data');
 }
 
-// recebe a data e conta quantos dias se passaram até hoje
-export const diasAtras = (data: string): number => {
-  const [dia, mes, ano] = data.split('/');
-  const dataPassada = new Date(Number(ano), Number(mes) - 1, Number(dia));
+// 🔹 Hora de agora
+export function horaAgora(): string {
+  return formatarData(new Date(), 'hora');
+}
+
+// 🔹 Quantos dias se passaram até hoje (dd/MM/yyyy ou ISO → número)
+export function diasAtras(data: string): number {
+  const d = parseDateString(data);
+  if (isNaN(d.getTime())) return 0;
+
   const hoje = new Date();
-  const diffTime = Math.abs(hoje.getTime() - dataPassada.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays;
+  const diffTime = hoje.getTime() - d.getTime();
+
+  return Math.floor(diffTime / (1000 * 60 * 60 * 24));
 }

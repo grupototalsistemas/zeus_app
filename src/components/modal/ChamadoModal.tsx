@@ -11,10 +11,8 @@ import { RootState } from '@/store/rootReducer';
 import { Chamado } from '@/types/chamado.type';
 import { ChamadoMovimentoMensagem } from '@/types/chamadoMovimentoMensagem.type';
 import { StatusRegistro } from '@/types/enum';
-import {
-  formataDataParaExibir,
-  formataHoraParaExibir,
-} from '@/utils/fomata-data';
+
+import { formatarData } from '@/utils/fomata-data';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import Send from '../../../public/images/icons/send.svg';
@@ -218,8 +216,8 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
                 Criado em
               </p>
               <p className="text-gray-900 dark:text-white">
-                {formataDataParaExibir(chamado.createdAt || '')} às{' '}
-                {formataHoraParaExibir(chamado.createdAt || '')}
+                {formatarData(chamado.createdAt || '', 'data')} às{' '}
+                {formatarData(chamado.createdAt || '', 'hora')}
               </p>
             </div>
             <div>
@@ -228,8 +226,9 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
               </p>
               <p className="text-gray-900 dark:text-white">
                 {ultimoMovimento(chamado)?.createdAt
-                  ? formataDataParaExibir(
-                      ultimoMovimento(chamado)?.createdAt || ''
+                  ? formatarData(
+                      ultimoMovimento(chamado)?.createdAt || '',
+                      'data'
                     )
                   : 'N/A'}
               </p>
@@ -307,8 +306,8 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
                       {mensagem?.usuarioEnvioId}
                     </span>
                     <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {formataDataParaExibir(mensagem?.createdAt || '')} às{' '}
-                      {formataHoraParaExibir(mensagem?.createdAt || '')}
+                      {formatarData(mensagem?.createdAt || '', 'data')} às{' '}
+                      {formatarData(mensagem?.createdAt || '', 'hora')}
                     </span>
                   </div>
                   <p className="text-sm text-gray-700 dark:text-gray-300">
@@ -352,8 +351,8 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
                           {item.descricaoAcao}
                         </p>
                         <span className="text-xs text-gray-500 dark:text-gray-400">
-                          {formataDataParaExibir(item.createdAt || '')}{' '}
-                          {formataHoraParaExibir(item.createdAt || '')}
+                          {formatarData(item.createdAt || '', 'data')}{' '}
+                          {formatarData(item.createdAt || '', 'hora')}
                         </span>
                       </div>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -388,7 +387,7 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
                       {anexo?.ativo} • {anexo?.usuarioId} •{' '}
-                      {formataDataParaExibir(anexo?.createdAt || '')}
+                      {formatarData(anexo?.createdAt || '', 'data')}
                     </p>
                   </div>
                   <div className="flex-shrink-0">

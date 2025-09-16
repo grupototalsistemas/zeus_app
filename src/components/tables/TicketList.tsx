@@ -11,11 +11,8 @@ import { MoreDotIcon } from '@/icons';
 import { RootState } from '@/store/rootReducer';
 import { Chamado } from '@/types/chamado.type';
 import { StatusRegistro } from '@/types/enum';
-import {
-  diasAtras,
-  formataDataParaExibir,
-  formataHoraParaExibir,
-} from '@/utils/fomata-data';
+
+import { diasAtras, formatarData } from '@/utils/fomata-data';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { useSelector } from 'react-redux';
@@ -139,73 +136,73 @@ export default function TicketList() {
             <TableRow>
               <TableCell
                 isHeader
-                className="text-theme-xs border-r border-gray-100 py-3 text-start font-medium text-gray-500 md:border-none dark:border-gray-800 dark:text-gray-400"
+                className="text-theme-xs border-r border-gray-100 py-3 text-center font-medium text-gray-500 md:border-none dark:border-gray-800 dark:text-gray-400"
               >
                 Protocolo
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-start font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
+                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-center font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
               >
                 Entrada
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-start font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
+                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-center font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
               >
                 Hora
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs dark:text-gray-40 border-r border-gray-100 px-3 py-3 text-start font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800"
+                className="text-theme-xs dark:text-gray-40 border-r border-gray-100 px-3 py-3 text-center font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800"
               >
                 Sistema
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-start font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
+                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-center font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
               >
                 Empresa
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-start font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
+                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-center font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
               >
                 Codigo
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-start font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
+                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-center font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
               >
                 Status
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-start font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
+                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-center font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
               >
                 Prazo
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-start font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
+                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-center font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
               >
                 Ultima Atualização
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-start font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
+                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-center font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
               >
                 Dias
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-start font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
+                className="text-theme-xs border-r border-gray-100 px-3 py-3 text-center font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
               >
                 Responsavel
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs px-3 py-3 text-start font-medium text-gray-500 md:px-0 dark:text-gray-400"
+                className="text-theme-xs px-3 py-3 text-center font-medium text-gray-500 md:px-0 dark:text-gray-400"
               >
                 Ações
               </TableCell>
@@ -225,10 +222,10 @@ export default function TicketList() {
                     {chamado.protocolo || 'N/A'}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    {formataDataParaExibir(chamado.createdAt || '')}
+                    {formatarData(chamado.createdAt || '', 'data') || 'N/A'}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    {formataHoraParaExibir(chamado.createdAt || '')}
+                    {formatarData(chamado.createdAt || '', 'hora')}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                     {findById(chamado.sistemaId)?.nome}
@@ -261,12 +258,13 @@ export default function TicketList() {
                     }
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    {formataDataParaExibir(
-                      ultimoMovimento(chamado)?.createdAt || ''
+                    {formatarData(
+                      ultimoMovimento(chamado)?.createdAt || '',
+                      'data'
                     )}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    {diasAtras(formataDataParaExibir(chamado.createdAt || ''))}
+                    {diasAtras(formatarData(chamado.createdAt || '', 'data'))}
                   </TableCell>
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                     {
