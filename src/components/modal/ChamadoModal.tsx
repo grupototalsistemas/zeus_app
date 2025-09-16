@@ -37,7 +37,7 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
   onClose,
   chamadoId,
 }) => {
-  const { chamados, getAll } = useChamado();
+  const { chamados, getAll, update } = useChamado();
   const { prioridadesFormatadas } = usePrioridade();
   const { pessoasFormatadas } = usePessoa();
   const { etapasFormatadas } = useEtapaMovimento();
@@ -64,6 +64,20 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
 
   const goToNextPanel = () => {
     setCurrentPanel((prev) => Math.min(1, prev + 1));
+  };
+
+  const handleAtualizarChamadoRapido = async (partePraAtualizar: any) => {
+    try {
+      if (chamado.id) {
+        update(chamado.id, {
+          ...partePraAtualizar,
+        }).then(() => {
+          getAll();
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar chamado:', error);
+    }
   };
 
   const ultimoMovimento = (chamado: Chamado) => {
@@ -409,20 +423,34 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
           </Label>
           <Select
             className="w-full text-sm font-light text-white transition-colors sm:w-auto dark:focus:ring-blue-700"
-            onChange={(value) => console.log(value)}
+            // onChange={(value) => handleAtualizarChamadoRapido({prioridadeId: Number(value)})}
+            onChange={(value) =>
+              handleAtualizarChamadoRapido({
+                prioridadeId: Number(value),
+              })
+            }
             options={prioridadesFormatadas}
             placeholder="Alterar Prioridade"
           />
 
           <Select
             className="w-full text-sm font-light text-white transition-colors sm:w-auto dark:focus:ring-blue-700"
-            onChange={(value) => console.log(value)}
+            onChange={(value) =>
+              handleAtualizarChamadoRapido({
+                usuarioId: Number(value),
+              })
+            }
             options={pessoasFormatadas}
             placeholder="Alterar Responsavel"
           />
           <Select
             className="w-full text-sm font-light text-white transition-colors sm:w-auto dark:focus:ring-blue-700"
-            onChange={(value) => console.log(value)}
+            onChange={(value) => {
+              const aux_chamado = { ...chamado };
+              const mov = aux_chamado.movimentos || [];
+              mov[mov.length - 1].etapaId = Number(value);
+              handleAtualizarChamadoRapido({ movimentos: mov });
+            }}
             options={etapasFormatadas}
             placeholder="Alterar Status"
           />
