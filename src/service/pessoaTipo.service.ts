@@ -30,7 +30,7 @@ const deletePessoaTipo = async (id: number) => {
 const getPessoasTiposPorEmpresa = async (
   idEmpresa: number
 ): Promise<PessoaTipo[]> => {
-  const response = await api.get(`/empresa/${idEmpresa}/tipos`);
+  const response = await api.get(`/pessoa-tipos/empresa/${idEmpresa}`);
   return response.data;
 };
 

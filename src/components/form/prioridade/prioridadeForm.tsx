@@ -94,7 +94,9 @@ export function PrioridadeFormBase({
           <div>
             <EmpresaAutocomplete
               empresaId={initialData?.empresaId.toString() || ''}
-              onSelect={(empresaId) => handleChange('empresaId', empresaId)}
+              onSelect={(empresa) =>
+                handleChange('empresaId', empresa?.id || 0)
+              }
               disabled={disabled}
             />
           </div>

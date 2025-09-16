@@ -32,7 +32,7 @@ const navItems: NavItem[] = [
     path: '/dashboard',
   },
   {
-    icon: <Chamado />,
+    icon: <Chamado className="opacity-50" />,
     name: 'Chamados',
     subItems: [
       { name: 'Gerenciar Chamado', path: '/gerenciar-chamado', pro: false },
@@ -80,7 +80,7 @@ const navItems: NavItem[] = [
     ],
   },
   {
-    icon: <Empresa />,
+    icon: <Empresa className="opacity-50" />,
     name: 'Empresas',
     subItems: [
       { name: 'Gerenciar empresa', path: '/gerenciar-empresa', pro: false },
@@ -156,7 +156,7 @@ const othersItems: NavItem[] = [
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pessoa = useSelector((state: RootState) => state.pessoa);
-  const empresa = pessoa.pessoaInfo.email;
+  const empresa = pessoa.pessoaLogada?.empresaId;
   const pathname = usePathname();
 
   const renderMenuItems = (navItems: NavItem[], menuType: 'main') => (
