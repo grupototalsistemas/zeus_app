@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import Badge from '../ui/badge/Badge';
 
 import { useChamado } from '@/hooks/useChamado';
-import { usePerfil } from '@/hooks/usePerfil';
 import { usePrioridade } from '@/hooks/usePrioridade';
 import { useSistema } from '@/hooks/useSistema';
 import { MoreDotIcon } from '@/icons';
@@ -12,6 +11,7 @@ import { RootState } from '@/store/rootReducer';
 import { Chamado } from '@/types/chamado.type';
 import { StatusRegistro } from '@/types/enum';
 
+import { usePessoa } from '@/hooks/usePessoa';
 import { diasAtras, formatarData } from '@/utils/fomata-data';
 import { useRouter } from 'next/navigation';
 import React from 'react';
@@ -41,7 +41,7 @@ export default function TicketList() {
   }>({});
 
   const { chamados, getAll, remove } = useChamado();
-  const { selectPerfilById } = usePerfil();
+  const { selectPessoaById } = usePessoa();
   const { selectPrioridadeById } = usePrioridade();
   const { findById } = useSistema();
   const empresas = useSelector((state: RootState) => state.empresa.empresas);
@@ -174,7 +174,7 @@ export default function TicketList() {
                 isHeader
                 className="text-theme-xs border-r border-gray-100 px-3 py-3 text-center font-medium text-gray-500 md:border-none md:px-0 dark:border-gray-800 dark:text-gray-400"
               >
-                Status
+                Etapa
               </TableCell>
               <TableCell
                 isHeader
@@ -218,25 +218,25 @@ export default function TicketList() {
                   className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50"
                   onClick={() => handleRowClick(chamado)}
                 >
-                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                  <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
                     {chamado.protocolo || 'N/A'}
                   </TableCell>
-                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                  <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
                     {formatarData(chamado.createdAt || '', 'data') || 'N/A'}
                   </TableCell>
-                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                  <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
                     {formatarData(chamado.createdAt || '', 'hora')}
                   </TableCell>
-                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                  <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
                     {findById(chamado.sistemaId)?.nome}
                   </TableCell>
-                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                  <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
                     {selectEmpresasById(chamado.empresaId)?.nomeFantasia}
                   </TableCell>
-                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                  <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
                     {chamado.id}
                   </TableCell>
-                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                  <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
                     <Badge
                       size="sm"
                       color={
@@ -251,30 +251,34 @@ export default function TicketList() {
                         chamado.ativo}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                  <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
                     {
                       selectPrioridadeById(String(chamado.prioridadeId))
                         ?.descricao
                     }
                   </TableCell>
-                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                  <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
                     {formatarData(
-                      ultimoMovimento(chamado)?.createdAt || '',
+                      ultimoMovimento(chamado)?.createdAt ||
+                        chamado.createdAt ||
+                        '',
                       'data'
                     )}
                   </TableCell>
-                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                  <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
                     {diasAtras(formatarData(chamado.createdAt || '', 'data'))}
                   </TableCell>
-                  <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                    {
-                      selectPerfilById(
+                  <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
+                    {selectPessoaById(
+                      ultimoMovimento(chamado)?.usuarioId || chamado.usuarioId
+                    )?.nomeSocial ||
+                      selectPessoaById(
                         ultimoMovimento(chamado)?.usuarioId || chamado.usuarioId
-                      )?.descricao
-                    }
+                      )?.nome ||
+                      'N/A'}
                   </TableCell>
                   <TableCell
-                    className="text-theme-sm py-3 text-gray-500 dark:text-gray-400"
+                    className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400"
                     onClick={(e) => e.stopPropagation()} // Previne o clique da linha no dropdown
                   >
                     <div className="relative inline-block">

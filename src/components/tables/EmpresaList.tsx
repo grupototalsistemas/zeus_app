@@ -124,25 +124,25 @@ export default function EmpresaList() {
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+                className="text-theme-xs py-3 text-center font-medium text-gray-500 dark:text-gray-400"
               >
                 CNPJ
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+                className="text-theme-xs py-3 text-center font-medium text-gray-500 dark:text-gray-400"
               >
                 Cidade/Estado
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+                className="text-theme-xs py-3 text-center font-medium text-gray-500 dark:text-gray-400"
               >
                 Status
               </TableCell>
               <TableCell
                 isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+                className="text-theme-xs py-3 text-center font-medium text-gray-500 dark:text-gray-400"
               >
                 Ações
               </TableCell>
@@ -181,15 +181,15 @@ export default function EmpresaList() {
                           )}
                         </div>
                       </TableCell>
-                      <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                      <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
                         {formatCNPJ(empresa.cnpj)}
                       </TableCell>
-                      <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                      <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
                         {empresa.cidade && empresa.estado
                           ? `${empresa.cidade}/${empresa.estado}`
                           : empresa.cidade || empresa.estado || '-'}
                       </TableCell>
-                      <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                      <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
                         <Badge size="sm" color={statusInfo.color as any}>
                           {statusInfo.text}
                         </Badge>

@@ -72,7 +72,7 @@ export function TipoEmpresaFormBase({
       title={`${mode === 'create' ? 'Criar' : 'Editar'} Tipo de Empresa`}
     >
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-2 gap-6">
+        <div className="flex flex-col gap-6 md:grid md:grid-cols-2">
           {/* Descrição */}
           <div>
             <Label>Informe um nome para o tipo de empresa</Label>
@@ -94,23 +94,6 @@ export function TipoEmpresaFormBase({
               disabled={disabled}
               empresaId={initialData?.empresaId.toString()}
             />
-            {/* <Label>Empresa</Label>
-            <select
-              value={formData.empresaId}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                handleChange('empresaId', Number(e.target.value))
-              }
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-              required
-              disabled={disabled}
-            >
-              <option value="">Selecione uma empresa</option>
-              {empresas.map((empresa) => (
-                <option key={empresa.id} value={empresa.id}>
-                  {empresa.nomeFantasia}
-                </option>
-              ))}
-            </select> */}
           </div>
         </div>
 

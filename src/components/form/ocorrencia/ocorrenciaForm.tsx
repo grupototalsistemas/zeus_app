@@ -89,7 +89,7 @@ export function OcorrenciaFormBase({
       title={`${mode === 'create' ? 'Criar' : 'Editar'} Ocorrencia`}
     >
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-2 gap-6">
+        <div className="flex flex-col gap-6 md:grid md:grid-cols-2">
           {/* Descrição */}
           <div>
             <Label>Ocorrencia</Label>
@@ -119,7 +119,6 @@ export function OcorrenciaFormBase({
             value={formData.tipoId.toString()}
             placeholder="Selecione um tipo de ocorrencia"
             onChange={(value) => handleChange('tipoId', Number(value))}
-            className="mt-1 block w-full rounded-md border border-gray-300 bg-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
             options={obterOcorrenciasTiposFormatados()}
           />
         </div>

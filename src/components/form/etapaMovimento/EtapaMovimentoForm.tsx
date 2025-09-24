@@ -67,7 +67,7 @@ export function EtapaMovimentoFormBase({
       title={`${mode === 'create' ? 'Criar' : 'Editar'} Tipo de Movimento`}
     >
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-2 gap-6">
+        <div className="flex flex-col gap-6 md:grid md:grid-cols-2">
           {/* Descrição */}
           <div>
             <Label>Tipo de Movimento</Label>

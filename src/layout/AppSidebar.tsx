@@ -27,12 +27,12 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   {
-    icon: <CalenderIcon />,
+    icon: <CalenderIcon className="text-gray-900 dark:text-white" />,
     name: 'Dashboard',
     path: '/dashboard',
   },
   {
-    icon: <Chamado className="opacity-50" />,
+    icon: <Chamado className="text-gray-900 dark:text-white" />,
     name: 'Chamados',
     subItems: [
       { name: 'Gerenciar Chamado', path: '/gerenciar-chamado', pro: false },
@@ -60,13 +60,12 @@ const navItems: NavItem[] = [
     ],
   },
   {
-    icon: <UserCircleIcon />,
+    icon: <UserCircleIcon className="text-gray-900 dark:text-white" />,
     name: 'Pessoas',
     subItems: [
       { name: 'Gerenciar Pessoas', path: '/gerenciar-pessoa', pro: false },
       { name: 'Listar Pessoas', path: '/listar-pessoa', pro: false },
       { name: 'Gerenciar Usuarios', path: '/gerenciar-usuarios', pro: false },
-      // { name: 'Listar usuarios', path: '/listar-usuario', pro: false },
       {
         name: 'Gerenciar Perfis',
         path: '/gerenciar-perfis',
@@ -80,7 +79,7 @@ const navItems: NavItem[] = [
     ],
   },
   {
-    icon: <Empresa className="opacity-50" />,
+    icon: <Empresa className="text-gray-900 dark:text-white" />,
     name: 'Empresas',
     subItems: [
       { name: 'Gerenciar empresa', path: '/gerenciar-empresa', pro: false },
@@ -101,30 +100,17 @@ const navItems: NavItem[] = [
 
   {
     name: 'Configurações',
-    icon: <ListIcon />,
+    icon: <ListIcon className="text-gray-900 dark:text-white" />,
     subItems: [
       { name: 'Configurações gerais', path: '/config', pro: false },
       { name: 'Suporte Interno', path: '/suport', pro: false },
     ],
   },
-  // {
-  //   name: 'Tables',
-  //   icon: <TableIcon />,
-  //   subItems: [{ name: 'Basic Tables', path: '/basic-tables', pro: false }],
-  // },
-  // {
-  //   name: 'Pages',
-  //   icon: <PageIcon />,
-  //   subItems: [
-  //     { name: 'Blank Page', path: '/blank', pro: false },
-  //     { name: '404 Error', path: '/error-404', pro: false },
-  //   ],
-  // },
 ];
 
 const othersItems: NavItem[] = [
   {
-    icon: <PieChartIcon />,
+    icon: <PieChartIcon className="text-gray-900 dark:text-white" />,
     name: 'Charts',
     subItems: [
       { name: 'Line Chart', path: '/line-chart', pro: false },
@@ -132,7 +118,7 @@ const othersItems: NavItem[] = [
     ],
   },
   {
-    icon: <BoxCubeIcon />,
+    icon: <BoxCubeIcon className="text-gray-900 dark:text-white" />,
     name: 'UI Elements',
     subItems: [
       { name: 'Alerts', path: '/alerts', pro: false },
@@ -144,7 +130,7 @@ const othersItems: NavItem[] = [
     ],
   },
   {
-    icon: <PlugInIcon />,
+    icon: <PlugInIcon className="text-gray-900 dark:text-white" />,
     name: 'Authentication',
     subItems: [
       { name: 'Sign In', path: '/signin', pro: false },
@@ -154,10 +140,24 @@ const othersItems: NavItem[] = [
 ];
 
 const AppSidebar: React.FC = () => {
-  const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const {
+    isExpanded,
+    isMobileOpen,
+    isHovered,
+    setIsHovered,
+    toggleMobileSidebar,
+  } = useSidebar();
   const pessoa = useSelector((state: RootState) => state.pessoa);
   const empresa = pessoa.pessoaLogada?.empresaId;
   const pathname = usePathname();
+
+  // Função para fechar sidebar em mobile após clique
+  const handleMobileNavigation = useCallback(() => {
+    if (isMobileOpen && window.innerWidth < 1024) {
+      // lg breakpoint
+      toggleMobileSidebar();
+    }
+  }, [isMobileOpen, toggleMobileSidebar]);
 
   const renderMenuItems = (navItems: NavItem[], menuType: 'main') => (
     <ul className="flex flex-col gap-4">
@@ -190,7 +190,7 @@ const AppSidebar: React.FC = () => {
               )}
               {(isExpanded || isHovered || isMobileOpen) && (
                 <ChevronDownIcon
-                  className={`ml-auto h-5 w-5 transition-transform duration-200 ${
+                  className={`ml-auto h-5 w-5 text-gray-900 transition-transform duration-200 dark:text-white ${
                     openSubmenu?.type === menuType &&
                     openSubmenu?.index === index
                       ? 'text-brand-500 rotate-180'
@@ -203,6 +203,7 @@ const AppSidebar: React.FC = () => {
             nav.path && (
               <Link
                 href={nav.path}
+                onClick={handleMobileNavigation} // Fecha sidebar em mobile
                 className={`menu-item group ${
                   isActive(nav.path) ? 'menu-item-active' : 'menu-item-inactive'
                 }`}
@@ -240,6 +241,7 @@ const AppSidebar: React.FC = () => {
                   <li key={subItem.name}>
                     <Link
                       href={subItem.path}
+                      onClick={handleMobileNavigation} // Fecha sidebar em mobile
                       className={`menu-dropdown-item ${
                         isActive(subItem.path)
                           ? 'menu-dropdown-item-active'
@@ -291,15 +293,12 @@ const AppSidebar: React.FC = () => {
   );
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  // const isActive = (path: string) => path === pathname;
   const isActive = useCallback((path: string) => path === pathname, [pathname]);
 
   useEffect(() => {
     // Check if the current path matches any submenu item
     let submenuMatched = false;
-    // ['main', 'others'].forEach((menuType) => {
     ['main'].forEach((menuType) => {
-      // const items = menuType === 'main' ? navItems : othersItems;
       const items = navItems;
       items.forEach((nav, index) => {
         if (nav.subItems) {
@@ -365,7 +364,7 @@ const AppSidebar: React.FC = () => {
           !isExpanded && !isHovered ? 'lg:justify-center' : 'justify-start'
         }`}
       >
-        <Link href="/">
+        <Link href="/" onClick={handleMobileNavigation}>
           {isExpanded || isHovered || isMobileOpen ? (
             <>
               <div className="flex flex-row items-center gap-1 dark:text-white">
@@ -392,7 +391,7 @@ const AppSidebar: React.FC = () => {
                 {isExpanded || isHovered || isMobileOpen ? (
                   'Menu'
                 ) : (
-                  <HorizontaLDots />
+                  <HorizontaLDots className="text-gray-900 dark:text-white" />
                 )}
               </h2>
               {renderMenuItems(navItems, 'main')}
@@ -408,13 +407,13 @@ const AppSidebar: React.FC = () => {
               >
                 {isExpanded ||
                   isHovered ||
-                  (isMobileOpen && <HorizontaLDots />)}
+                  (isMobileOpen && (
+                    <HorizontaLDots className="text-gray-900 dark:text-white" />
+                  ))}
               </h2>
-              {/* {renderMenuItems(othersItems, 'others')} */}
             </div>
           </div>
         </nav>
-        {/* {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null} */}
       </div>
     </aside>
   );

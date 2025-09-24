@@ -66,7 +66,7 @@ export function TipoFormBase({
   return (
     <ComponentCard title={`${mode === 'create' ? 'Criar' : 'Editar'} Função`}>
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-2 gap-6">
+        <div className="flex flex-col gap-6 md:grid md:grid-cols-2">
           {/* Descrição */}
           <div>
             <Label>Descrição da Função</Label>

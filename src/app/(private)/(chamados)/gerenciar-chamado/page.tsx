@@ -32,11 +32,10 @@ export default function CreateTicketPage() {
       // Criar o chamado com movimento inicial se há anexos
       const chamadoComMovimento: CreateChamadoDto = {
         ...chamadoSemAnexos,
-        // Se há anexos, criar movimento inicial para anexá-los
         movimento:
           anexos && anexos.length > 0
             ? {
-                etapaId: 1, // ID da etapa inicial - você pode ajustar conforme sua lógica
+                etapaId: 1,
                 usuarioId: Number(data.usuarioId),
                 descricaoAcao: 'Chamado criado com anexos',
                 observacaoTec: 'Movimento inicial para upload de anexos',
@@ -44,7 +43,7 @@ export default function CreateTicketPage() {
             : undefined,
       };
 
-      // Criar chamado usando o service atualizado
+      // Criar chamado usando o service
       const response = await ChamadoService.createChamado({
         ...chamadoComMovimento,
         anexos,
@@ -53,27 +52,21 @@ export default function CreateTicketPage() {
       console.log('Chamado criado com sucesso:', response);
       setSuccess(true);
 
-      // Limpar formulário após sucesso
+      //  A limpeza dos campos acontece automaticamente no TicketFormBase
+      // quando onSubmit é resolvido com sucesso
+
+      // Limpar mensagem de sucesso após 3 segundos
       setTimeout(() => {
         setSuccess(false);
-        // Aqui você pode redirecionar para a lista de chamados
-        // window.location.href = '/chamados';
       }, 3000);
     } catch (error) {
-      console.error('Erro ao criar chamado:', error);
-
+      //  Em caso de erro, os campos NÃO são limpos
       let errorMessage = 'Erro desconhecido ao criar chamado';
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      } else if (typeof error === 'string') {
-        errorMessage = error;
-      } else if (error && typeof error === 'object' && 'response' in error) {
-        // Erro do axios
+      if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as any;
-        errorMessage =
-          axiosError.response?.data?.message ||
-          axiosError.message ||
-          'Erro ao criar chamado';
+        console.error('Erro axios:', axiosError);
+        console.error('Erro response:', axiosError.response?.data?.message);
+        errorMessage = axiosError.response?.data?.message;
       }
 
       setError(errorMessage);

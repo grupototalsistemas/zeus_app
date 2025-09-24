@@ -1,6 +1,7 @@
 'use client';
 
 import ComponentCard from '@/components/common/ComponentCard';
+import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import Label from '@/components/form/Label';
 import Switch from '@/components/form/switch/Switch';
 import Button from '@/components/ui/button/Button';
@@ -64,84 +65,77 @@ export function CategoriaEmpresaFormBase({
   };
 
   return (
-    <ComponentCard
-      title={`${mode === 'create' ? 'Criar' : 'Editar'} Categoria de Empresa`}
-    >
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-2 gap-6">
-          {/* Descrição */}
-          <div>
-            <Label>Categoria de Empresas</Label>
-            <Input
-              type="text"
-              value={formData.descricao}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                handleChange('descricao', e.target.value)
+    <>
+      <PageBreadcrumb
+        pageTitle="Categorias de Empresas"
+        pageBefore="Empresas"
+      />
+      <ComponentCard
+        title={`${mode === 'create' ? 'Criar' : 'Editar'} Categoria de Empresa`}
+      >
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="flex flex-col gap-6 md:grid md:grid-cols-2">
+            {/* Descrição */}
+            <div>
+              <Label>Categoria de Empresas</Label>
+              <Input
+                type="text"
+                value={formData.descricao}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleChange('descricao', e.target.value)
+                }
+                placeholder="Informe um nome para categoria de empresas"
+                disabled={disabled}
+              />
+            </div>
+            <div>
+              <EmpresaAutocomplete
+                onSelect={(empresa) =>
+                  handleChange('empresaId', empresa?.id || 0)
+                }
+                disabled={disabled}
+                // resetSelection={mode === 'create'}
+                onResetComplete={() => handleChange('empresaId', 0)}
+              />
+            </div>
+          </div>
+
+          {/* Status */}
+          <div className="flex items-center gap-2">
+            <Label>Status</Label>
+            <Switch
+              defaultChecked={formData.ativo === StatusRegistro.ATIVO}
+              onChange={(checked) =>
+                handleChange(
+                  'ativo',
+                  checked ? StatusRegistro.ATIVO : StatusRegistro.INATIVO
+                )
               }
-              placeholder="Informe um nome para categoria de empresas"
+              color={formData.ativo === StatusRegistro.ATIVO ? 'blue' : 'gray'}
+              label={
+                formData.ativo === StatusRegistro.ATIVO ? 'Ativo' : 'Inativo'
+              }
               disabled={disabled}
             />
           </div>
-          <div>
-            <EmpresaAutocomplete
-              onSelect={(empresa) =>
-                handleChange('empresaId', empresa?.id || 0)
-              }
+
+          {/* Botões */}
+          <div className="flex justify-end space-x-4">
+            <Button
+              onClick={handleCancel}
               disabled={disabled}
-              // resetSelection={mode === 'create'}
-              onResetComplete={() => handleChange('empresaId', 0)}
-            />
-            {/* <Label>Empresa</Label>
-            <select
-              value={formData.empresaId}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                handleChange('empresaId', Number(e.target.value))
-              }
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-              required
-              disabled={disabled}
+              variant="outline"
             >
-              <option value="">Selecione uma empresa</option>
-              {empresas.map((empresa) => (
-                <option key={empresa.id} value={empresa.id}>
-                  {empresa.nomeFantasia}
-                </option>
-              ))}
-            </select> */}
+              Cancelar
+            </Button>
+            <Button disabled={disabled}>
+              {mode === 'create'
+                ? 'Criar Categroria de Empresa'
+                : 'Salvar Alterações'}
+            </Button>
           </div>
-        </div>
-
-        {/* Status */}
-        <div className="flex items-center gap-2">
-          <Label>Status</Label>
-          <Switch
-            defaultChecked={formData.ativo === StatusRegistro.ATIVO}
-            onChange={(checked) =>
-              handleChange(
-                'ativo',
-                checked ? StatusRegistro.ATIVO : StatusRegistro.INATIVO
-              )
-            }
-            color={formData.ativo === StatusRegistro.ATIVO ? 'blue' : 'gray'}
-            label={
-              formData.ativo === StatusRegistro.ATIVO ? 'Ativo' : 'Inativo'
-            }
-            disabled={disabled}
-          />
-        </div>
-
-        {/* Botões */}
-        <div className="flex justify-end space-x-4">
-          <Button onClick={handleCancel} disabled={disabled} variant="outline">
-            Cancelar
-          </Button>
-          <Button disabled={disabled}>
-            {mode === 'create'
-              ? 'Criar Categroria de Empresa'
-              : 'Salvar Alterações'}
-          </Button>
-        </div>
-      </form>
-    </ComponentCard>
+        </form>
+      </ComponentCard>
+    </>
   );
 }

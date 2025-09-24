@@ -171,6 +171,13 @@ export const usePessoa = () => {
     [dispatch]
   );
 
+  const selectPessoaById = useCallback(
+    (id: number) => {
+      return pessoas.find((pessoa) => pessoa.id === id);
+    },
+    [pessoas]
+  );
+
   // --- Retorno do Hook ---
   return {
     // Estado
@@ -182,6 +189,7 @@ export const usePessoa = () => {
     loading,
     error,
     isLoggedIn,
+    selectPessoaById,
 
     // Async Actions
     fetchPessoas: handleFetchPessoas,

@@ -74,6 +74,13 @@ export const usePessoaUsuario = () => {
     return dispatch(clearError());
   }, [dispatch]);
 
+  const selectUsuarioById = useCallback(
+    (id: number) => {
+      return pessoaUsuarios.find((pessoaUsuario) => pessoaUsuario.id === id);
+    },
+    [pessoaUsuarios]
+  );
+
   return {
     // State
     pessoaUsuarios,
@@ -82,7 +89,7 @@ export const usePessoaUsuario = () => {
     error,
 
     selectUsuarioFormatados,
-
+    selectUsuarioById,
     // Actions
     getAll,
     getById,

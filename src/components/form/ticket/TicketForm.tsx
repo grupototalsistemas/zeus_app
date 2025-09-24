@@ -8,9 +8,7 @@ import Label from '@/components/form/Label';
 import PessoaAutocomplete from '@/components/form/pessoa/PessoaAutocomplete';
 import Select from '@/components/form/Select';
 import Button from '@/components/ui/button/Button';
-import { useAppSelector } from '@/hooks/useRedux';
-import { SistemaService } from '@/service/sistemas.service';
-import { selectEmpresasFormatadas } from '@/store/slices/empresaSlice';
+import { useEmpresaSistema } from '@/hooks/useEmpresaSistema';
 import { selectOcorrenciasFormatadas } from '@/store/slices/ocorrenciaSlice';
 import { selectPrioridadesFormatadas } from '@/store/slices/prioridadeSlice';
 import { RootState } from '@/store/store';
@@ -60,9 +58,9 @@ export function TicketFormBase({
   initialData,
   onSubmit,
 }: TicketFormBaseProps) {
-  const empresasFormatadas = useAppSelector(selectEmpresasFormatadas);
   const ocorrencias = useSelector(selectOcorrenciasFormatadas);
   const prioridades = useSelector(selectPrioridadesFormatadas);
+  const { getByEmpresaFormatados } = useEmpresaSistema();
   const [sistemas, setSistemas] = useState<Option[]>([]);
   const [anexosFiles, setAnexosFiles] = useState<File[]>([]);
   const { pessoaInfo } = useSelector((state: RootState) => state.pessoa);
@@ -96,17 +94,18 @@ export function TicketFormBase({
   });
 
   useEffect(() => {
-    async function fetchSistemas() {
-      const sistemasFromApi = await SistemaService.getSistemas();
-      console.log('Sistemas carregados:', sistemasFromApi);
-      const sistemasFormatados = sistemasFromApi.map((sistema) => ({
-        value: sistema.id || 0,
-        label: sistema.descricao,
-      }));
-      setSistemas(sistemasFormatados);
+    console.log('empresaId: ');
+    const empresaId = watch('empresaId');
+    if (empresaId) {
+      pegarSitemas(empresaId);
     }
-    fetchSistemas();
-  }, []);
+  }, [watch('empresaId')]);
+
+  const pegarSitemas = async (id_empresa: string) => {
+    const sistemas = await getByEmpresaFormatados(id_empresa);
+    console.log('sistemas: ', sistemas);
+    setSistemas(sistemas);
+  };
 
   // Atualiza valores no modo edit
   useEffect(() => {
@@ -154,39 +153,59 @@ export function TicketFormBase({
     }
   }, [errors]);
 
-  const handleFormSubmit = (data: TicketFormData) => {
+  const handleFormSubmit = async (data: TicketFormData) => {
     const formDataWithFiles = {
       ...data,
       anexos: anexosFiles,
     };
-    onSubmit(formDataWithFiles);
-    if (mode === 'create') {
-      reset(
-        {
-          empresaId: '',
-          sistemaId: '',
-          ocorrenciaId: '',
-          titulo: '',
-          descricao: '',
-          prioridadeId: '',
-          observacao: '',
-          pessoaId: '',
-          usuarioId: '',
-          ativo: StatusRegistro.ATIVO,
-          protocolo: Date.now().toString(),
-        },
-        { keepValues: false }
-      );
-      setValue('empresaId', '');
-      setValue('sistemaId', '');
-      setValue('pessoaId', '');
-      setValue('ocorrenciaId', '');
-      setValue('titulo', '');
-      setValue('descricao', '');
-      setValue('prioridadeId', '');
-      setValue('observacao', '');
-      setAnexosFiles([]);
-      setResetDropzone(true);
+
+    try {
+      await onSubmit(formDataWithFiles);
+
+      // Só limpa os campos se for modo CREATE e não houve erro
+      if (mode === 'create') {
+        // Resetar o formulário
+        reset(
+          {
+            empresaId: '',
+            sistemaId: '',
+            ocorrenciaId: '',
+            titulo: '',
+            descricao: '',
+            prioridadeId: '',
+            observacao: '',
+            pessoaId: pessoaInfo?.id || '',
+            usuarioId: pessoaInfo?.id || '',
+            ativo: StatusRegistro.ATIVO,
+            protocolo: Date.now().toString(),
+          },
+          { keepValues: false }
+        );
+
+        // Resetar valores específicos
+        setValue('empresaId', '');
+        setValue('sistemaId', '');
+        setValue('pessoaId', '');
+        setValue('ocorrenciaId', '');
+        setValue('titulo', '');
+        setValue('descricao', '');
+        setValue('prioridadeId', '');
+        setValue('observacao', '');
+
+        // Limpar anexos
+        setAnexosFiles([]);
+
+        // Resetar componentes autocomplete
+        setResetDropzone(true);
+        setResetPessoa(true);
+        setResetEmpresa(true);
+
+        // Limpar lista de sistemas
+        setSistemas([]);
+      }
+    } catch (error) {
+      // O erro será tratado no componente pai (CreateTicketPage)
+      throw error; // Relança o erro para ser capturado pelo componente pai
     }
   };
 
@@ -222,20 +241,10 @@ export function TicketFormBase({
                     setValue('empresaId', '');
                   }
                 }}
-                // empresaId={watch('empresaId')}
                 disabled={isSubmitting}
                 resetSelection={resetEmpresa}
                 onResetComplete={handleEmpresaResetComplete}
               />
-              {/* <Select
-                options={empresasFormatadas}
-                placeholder="Selecione a Empresa"
-                onChange={(opt: any) => {
-                  setValue('empresaId', opt);
-                  trigger('empresaId');
-                }}
-                value={watch('empresaId')}
-              /> */}
               {errors.empresaId && (
                 <p className="text-sm text-red-500">
                   {errors.empresaId.message}
@@ -252,6 +261,7 @@ export function TicketFormBase({
                   trigger('sistemaId');
                 }}
                 value={watch('sistemaId')}
+                disabled={isSubmitting || !!watch('empresaId') === false}
               />
               {errors.sistemaId && (
                 <p className="text-sm text-red-500">
@@ -365,12 +375,6 @@ export function TicketFormBase({
 
           {/* Ações */}
           <div className="flex justify-end gap-3">
-            {/* <Button
-              variant="outline"
-              onClick={() => console.log('DEBUG', watch())}
-            >
-              Debug
-            </Button> */}
             <Button variant="primary" disabled={isSubmitting}>
               {isSubmitting
                 ? mode === 'create'

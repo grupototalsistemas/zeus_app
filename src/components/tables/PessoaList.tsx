@@ -5,6 +5,7 @@ import { PessoaService } from '@/service/pessoa.service';
 import { Pessoa, PessoaResponse } from '@/types/pessoa.type';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import PageBreadcrumb from '../common/PageBreadCrumb';
 import Badge from '../ui/badge/Badge';
 import { Dropdown } from '../ui/dropdown/Dropdown';
 import { DropdownItem } from '../ui/dropdown/DropdownItem';
@@ -76,166 +77,171 @@ export default function PessoaList() {
   };
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pt-4 pb-3 sm:px-6 dark:border-gray-800 dark:bg-white/[0.03]">
-      <div className="max-w-full overflow-x-auto">
-        <Table>
-          <TableHeader className="border-b border-gray-100 dark:border-gray-800">
-            <TableRow>
-              <TableCell
-                isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
-              >
-                {''}
-              </TableCell>
-              <TableCell
-                isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
-              >
-                Nome
-              </TableCell>
+    <>
+      <PageBreadcrumb pageTitle="Listar Pessoas" pageBefore="Pessoas" />
+      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pt-4 pb-3 sm:px-6 dark:border-gray-800 dark:bg-white/[0.03]">
+        <div className="max-w-full overflow-x-auto">
+          <Table>
+            <TableHeader className="border-b border-gray-100 dark:border-gray-800">
+              <TableRow>
+                <TableCell
+                  isHeader
+                  className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+                >
+                  {''}
+                </TableCell>
+                <TableCell
+                  isHeader
+                  className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+                >
+                  Nome
+                </TableCell>
 
-              <TableCell
-                isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
-              >
-                Empresa
-              </TableCell>
-              <TableCell
-                isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
-              >
-                Acesso
-              </TableCell>
-              <TableCell
-                isHeader
-                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
-              >
-                Ações
-              </TableCell>
-            </TableRow>
-          </TableHeader>
-          <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {paginatedData.length > 0 &&
-              paginatedData.map((user: PessoaResponse) => (
-                <>
-                  <TableRow key={user.id}>
-                    <TableCell className="w-8">
-                      <button
-                        onClick={() => handleToggleExpand(String(user.id))}
-                        className="p-1 text-gray-500 hover:text-gray-800"
-                      >
-                        {expandedRowId === String(user.id) ? (
-                          <ChevronUpIcon size={18} />
-                        ) : (
-                          <ChevronDownIcon size={18} />
-                        )}
-                      </button>
-                    </TableCell>
-                    <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                      {user.nomeSocial || user.nome}
-                    </TableCell>
-
-                    <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                      {user.empresa?.nomeFantasia}
-                    </TableCell>
-                    <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                      <Badge
-                        size="sm"
-                        color={
-                          user.tipo?.descricao === 'FUNCIONARIO'
-                            ? 'success'
-                            : user.tipo?.descricao === 'SUPERVISOR'
-                              ? 'warning'
-                              : 'info'
-                        }
-                      >
-                        {user.tipo?.descricao}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="relative inline-block">
+                <TableCell
+                  isHeader
+                  className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+                >
+                  Empresa
+                </TableCell>
+                <TableCell
+                  isHeader
+                  className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+                >
+                  Acesso
+                </TableCell>
+                <TableCell
+                  isHeader
+                  className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+                >
+                  Ações
+                </TableCell>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
+              {paginatedData.length > 0 &&
+                paginatedData.map((user: PessoaResponse) => (
+                  <>
+                    <TableRow key={user.id}>
+                      <TableCell className="w-8">
                         <button
-                          onClick={() => handleToggleDropdown(String(user.id))}
-                          className="dropdown-toggle"
+                          onClick={() => handleToggleExpand(String(user.id))}
+                          className="p-1 text-gray-500 hover:text-gray-800"
                         >
-                          <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
-                        </button>
-                        <Dropdown
-                          isOpen={openDropdownId === String(user.id)}
-                          onClose={() => setOpenDropdownId(null)}
-                          className="w-40 p-2"
-                        >
-                          <DropdownItem
-                            onClick={() =>
-                              router.push(`/gerenciar-pessoa/${user.id}`)
-                            }
-                          >
-                            Editar
-                          </DropdownItem>
-                          <DropdownItem onClick={() => handleDelete(user)}>
-                            Deletar
-                          </DropdownItem>
-                        </Dropdown>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-
-                  {expandedRowId === String(user.id) && (
-                    <TableRow>
-                      <TableCell
-                        colSpan={6}
-                        className="bg-gray-50 dark:bg-gray-900/30"
-                      >
-                        <div className="space-y-2 p-4 text-sm text-gray-700 dark:text-gray-300">
-                          <p>
-                            <strong>Login:</strong>
-                            {user.usuarios.map((usuarios) => usuarios.login)}
-                          </p>
-                          <p>
-                            <strong>Perfil:</strong>{' '}
-                            {user.usuarios?.map((u) => u.perfil?.descricao)}
-                          </p>
-                          <p>
-                            <strong>Gênero:</strong> {user.genero}
-                          </p>
-                          <p>
-                            <strong>Ativo:</strong> {user.ativo}
-                          </p>
-                          <p>
-                            <strong>Criado em:</strong>{' '}
-                            {new Date(user.createdAt || '').toLocaleString()}
-                          </p>
-                          {user.motivo && (
-                            <p>
-                              <strong>Motivo:</strong> {user.motivo}
-                            </p>
+                          {expandedRowId === String(user.id) ? (
+                            <ChevronUpIcon size={18} />
+                          ) : (
+                            <ChevronDownIcon size={18} />
                           )}
+                        </button>
+                      </TableCell>
+                      <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                        {user.nomeSocial || user.nome}
+                      </TableCell>
+
+                      <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                        {user.empresa?.nomeFantasia}
+                      </TableCell>
+                      <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                        <Badge
+                          size="sm"
+                          color={
+                            user.tipo?.descricao === 'FUNCIONARIO'
+                              ? 'success'
+                              : user.tipo?.descricao === 'SUPERVISOR'
+                                ? 'warning'
+                                : 'info'
+                          }
+                        >
+                          {user.tipo?.descricao}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="relative inline-block">
+                          <button
+                            onClick={() =>
+                              handleToggleDropdown(String(user.id))
+                            }
+                            className="dropdown-toggle"
+                          >
+                            <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
+                          </button>
+                          <Dropdown
+                            isOpen={openDropdownId === String(user.id)}
+                            onClose={() => setOpenDropdownId(null)}
+                            className="w-40 p-2"
+                          >
+                            <DropdownItem
+                              onClick={() =>
+                                router.push(`/gerenciar-pessoa/${user.id}`)
+                              }
+                            >
+                              Editar
+                            </DropdownItem>
+                            <DropdownItem onClick={() => handleDelete(user)}>
+                              Deletar
+                            </DropdownItem>
+                          </Dropdown>
                         </div>
                       </TableCell>
                     </TableRow>
-                  )}
-                </>
-              ))}
-            {paginatedData.length === 0 && (
-              <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="text-theme-sm flex items-center justify-center py-10 text-gray-500 dark:text-gray-400"
-                >
-                  Nenhum usuário encontrado
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+
+                    {expandedRowId === String(user.id) && (
+                      <TableRow>
+                        <TableCell
+                          colSpan={6}
+                          className="bg-gray-50 dark:bg-gray-900/30"
+                        >
+                          <div className="space-y-2 p-4 text-sm text-gray-700 dark:text-gray-300">
+                            <p>
+                              <strong>Login:</strong>
+                              {user.usuarios.map((usuarios) => usuarios.login)}
+                            </p>
+                            <p>
+                              <strong>Perfil:</strong>{' '}
+                              {user.usuarios?.map((u) => u.perfil?.descricao)}
+                            </p>
+                            <p>
+                              <strong>Gênero:</strong> {user.genero}
+                            </p>
+                            <p>
+                              <strong>Ativo:</strong> {user.ativo}
+                            </p>
+                            <p>
+                              <strong>Criado em:</strong>{' '}
+                              {new Date(user.createdAt || '').toLocaleString()}
+                            </p>
+                            {user.motivo && (
+                              <p>
+                                <strong>Motivo:</strong> {user.motivo}
+                              </p>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </>
+                ))}
+              {paginatedData.length === 0 && (
+                <TableRow>
+                  <TableCell
+                    colSpan={6}
+                    className="text-theme-sm flex items-center justify-center py-10 text-gray-500 dark:text-gray-400"
+                  >
+                    Nenhum usuário encontrado
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+        <div className="mt-4 flex items-center justify-between">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
       </div>
-      <div className="mt-4 flex items-center justify-between">
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
-      </div>
-    </div>
+    </>
   );
 }

@@ -76,7 +76,7 @@ export function PrioridadeFormBase({
       title={`${mode === 'create' ? 'Criar' : 'Editar'} Tempo de Execução`}
     >
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-2 gap-6">
+        <div className="flex flex-col gap-6 md:grid md:grid-cols-2">
           {/* Descrição */}
           <div>
             <Label>Informe um nome para o tempo de execução</Label>
@@ -102,7 +102,7 @@ export function PrioridadeFormBase({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="flex flex-col gap-6 md:grid md:grid-cols-2">
           {/* Descrição */}
           <div>
             <Label>Escolha uma cor para representar a prioridade</Label>
