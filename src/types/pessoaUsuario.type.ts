@@ -12,6 +12,7 @@ export interface PessoaUsuario extends BaseEntity {
 
 export interface PessoaUsuarioResponse extends BaseEntity {
   perfil: PerfilDTO;
+  perfilId?: number;
   email: string;
   login: string;
   senha?: string;

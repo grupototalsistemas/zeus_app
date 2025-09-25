@@ -10,6 +10,7 @@ import { formatarData } from '@/utils/fomata-data';
 import { useSelector } from 'react-redux';
 
 import Badge from '@/components/ui/badge/Badge';
+import { usePessoa } from '@/hooks/usePessoa';
 import React from 'react';
 
 interface ChamadoModalInformacoesProps {
@@ -22,6 +23,7 @@ export const ChamadoModalInformacoes: React.FC<
   const { selectPerfilById } = usePerfil();
   const { selectPrioridadeById } = usePrioridade();
   const { findById } = useSistema();
+  const { selectPessoaById } = usePessoa();
   const { empresas } = useSelector((state: RootState) => state.empresa);
 
   const ultimoMovimento = (chamado: Chamado) => {
@@ -39,7 +41,7 @@ export const ChamadoModalInformacoes: React.FC<
   return (
     <div className="border-r border-b border-gray-200 p-6 md:h-3/4 md:overflow-y-auto lg:border-b-0 dark:border-gray-700">
       {/* Status e Prioridade */}
-      <div className="flex flex-wrap gap-4 md:grid md:grid-cols-2 md:pb-4">
+      <div className="flex flex-wrap gap-4 pb-4 md:grid md:grid-cols-2">
         <div>
           <p className="mb-1 text-sm font-medium text-gray-500 dark:text-gray-400">
             Status
@@ -94,8 +96,9 @@ export const ChamadoModalInformacoes: React.FC<
             Responsável
           </p>
           <p className="text-gray-900 dark:text-white">
-            {selectPerfilById(ultimoMovimento(chamado)?.usuarioId || 0)
-              ?.descricao || 'N/A'}
+            {selectPessoaById(ultimoMovimento(chamado)?.usuarioId || 0)
+              ?.nomeSocial ||
+              selectPessoaById(ultimoMovimento(chamado)?.usuarioId || 0)?.nome}
           </p>
         </div>
         <div>

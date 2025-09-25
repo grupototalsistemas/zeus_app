@@ -76,7 +76,7 @@ export const ChamadoModalFooter: React.FC<ChamadoModalFooterProps> = ({
       </div>
       <div className="flex w-full flex-col gap-3 pt-3 md:flex-row-reverse md:pt-0">
         <button
-          onClick={onClose}
+          onClick={() => setIsBottomSheetOpen(false)}
           className="w-full rounded-lg bg-gray-100 px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 focus:ring-2 focus:ring-gray-300 focus:outline-none md:w-auto md:py-2 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:focus:ring-gray-500"
         >
           Fechar
@@ -114,9 +114,6 @@ export const ChamadoModalFooter: React.FC<ChamadoModalFooterProps> = ({
             {/* Conteúdo do Bottom Sheet */}
             <div className="max-h-[70vh] overflow-y-auto px-4 pb-6">
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Ações Rápidas
-                </h3>
                 <FooterContent />
               </div>
             </div>
@@ -129,16 +126,20 @@ export const ChamadoModalFooter: React.FC<ChamadoModalFooterProps> = ({
           className="fixed right-4 bottom-4 z-20 rounded-full bg-blue-600 p-4 text-white shadow-lg transition-all hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 md:hidden dark:focus:ring-blue-500"
         >
           <svg
-            className="h-6 w-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+            className="fill-white stroke-current dark:fill-gray-800"
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
           >
+            <path d="M2.29 5.9H17.7" strokeWidth="1.5" strokeLinecap="round" />
+            <path d="M17.7 14.1H2.29" strokeWidth="1.5" strokeLinecap="round" />
             <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"
+              d="M12.08 3.33A2.57 2.57 0 1 1 9.51 5.9a2.57 2.57 0 0 1 2.57-2.57Z"
+              strokeWidth="1.5"
+            />
+            <path
+              d="M7.92 11.52a2.57 2.57 0 1 0 2.57 2.57 2.57 2.57 0 0 0-2.57-2.57Z"
+              strokeWidth="1.5"
             />
           </svg>
         </button>

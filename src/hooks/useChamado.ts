@@ -44,6 +44,7 @@ export const useChamado = () => {
 
   const update = useCallback(
     (id: number, data: Chamado) => {
+      console.log('data: ', data);
       return dispatch(updateChamado({ id, data }));
     },
     [dispatch]

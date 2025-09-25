@@ -47,7 +47,7 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      className="mx-4 my-4 flex h-[calc(100vh-2rem)] max-w-7xl flex-col overflow-hidden"
+      className="safe-area-insets mx-4 my-4 flex h-11/12 max-w-6xl flex-col overflow-hidden"
       showCloseButton={true}
     >
       {/* Header Component */}

@@ -1,12 +1,12 @@
 'use client';
 
+import { Modal } from '@/components/ui/modal';
 import { Chamado } from '@/types/chamado.type';
 import { formatarData } from '@/utils/fomata-data';
 import React, { useState } from 'react';
 import { Collapse } from '../CollapseModal';
-import { Modal } from '../ui/modal';
 
-interface Anexo {
+interface ChamadoMovimentoAnexo {
   id?: number;
   nomeOriginal?: string;
   mimeType?: string;
@@ -24,7 +24,7 @@ interface ChamadoModalAnexosProps {
 interface ImageViewerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  anexo: Anexo | null;
+  anexo: ChamadoMovimentoAnexo | null;
 }
 
 // Modal para visualizar imagens
@@ -59,12 +59,12 @@ const ImageViewerModal: React.FC<ImageViewerModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      className="mx-4 my-4 flex h-[calc(100vh-2rem)] max-w-6xl flex-col overflow-hidden"
+      className="mx-4 my-4 flex h-11/12 max-w-6xl flex-col overflow-hidden"
       showCloseButton={false}
     >
       {/* Header do Modal */}
-      <div className="flex items-center justify-between border-b border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
-        <div className="flex-1">
+      <div className="flex flex-col items-center justify-between border-b border-gray-200 bg-white p-4 md:flex-row dark:border-gray-700 dark:bg-gray-800">
+        <div className="flex-1 pb-4 md:pb-1">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
             {anexo.nomeOriginal}
           </h3>
@@ -72,7 +72,7 @@ const ImageViewerModal: React.FC<ImageViewerModalProps> = ({
             {anexo.mimeType} • {formatarData(anexo.createdAt || '', 'data')}
           </p>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex w-full items-center justify-around gap-2 md:w-auto">
           <button
             onClick={handleDownload}
             className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-300 focus:outline-none dark:focus:ring-blue-500"
@@ -114,7 +114,7 @@ const ImageViewerModal: React.FC<ImageViewerModalProps> = ({
       </div>
 
       {/* Conteúdo do Modal */}
-      <div className="flex flex-1 items-center justify-center bg-gray-50 p-4 dark:bg-gray-900">
+      <div className="flex h-full flex-1 items-center justify-center bg-gray-50 p-4 dark:bg-gray-900">
         {anexo.mimeType?.startsWith('image/') ? (
           <div className="relative max-h-full max-w-full">
             {isLoading && (
@@ -221,7 +221,8 @@ const ImageViewerModal: React.FC<ImageViewerModalProps> = ({
 export const ChamadoModalAnexos: React.FC<ChamadoModalAnexosProps> = ({
   chamado,
 }) => {
-  const [selectedAnexo, setSelectedAnexo] = useState<Anexo | null>(null);
+  const [selectedAnexo, setSelectedAnexo] =
+    useState<ChamadoMovimentoAnexo | null>(null);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
 
   const anexos = chamado.movimentos?.flatMap((mov) => mov.anexos) || [];
@@ -271,12 +272,15 @@ export const ChamadoModalAnexos: React.FC<ChamadoModalAnexosProps> = ({
     );
   };
 
-  const handleAnexoClick = (anexo: Anexo) => {
+  const handleAnexoClick = (anexo: ChamadoMovimentoAnexo) => {
     setSelectedAnexo(anexo);
     setIsViewerOpen(true);
   };
 
-  const handleDownload = (anexo: Anexo, event: React.MouseEvent) => {
+  const handleDownload = (
+    anexo: ChamadoMovimentoAnexo,
+    event: React.MouseEvent
+  ) => {
     event.stopPropagation(); // Previne a abertura do modal
     // Implementar lógica de download direto aqui
     console.log('Download direto:', anexo.nomeOriginal);
@@ -291,53 +295,82 @@ export const ChamadoModalAnexos: React.FC<ChamadoModalAnexosProps> = ({
     <>
       <Collapse title="Anexos" count={anexos.length}>
         <div className="max-h-80 space-y-3 overflow-y-auto p-4">
-          {anexos.map((anexo) => (
-            <div
-              key={anexo?.id}
-              className="flex cursor-pointer items-center space-x-3 rounded-lg bg-gray-50 p-3 transition-all hover:bg-gray-100 hover:shadow-md dark:bg-gray-900/50 dark:hover:bg-gray-800/50"
-              onClick={() => handleAnexoClick(anexo)}
-            >
-              <div className="flex-shrink-0">
-                {getFileIcon(anexo?.mimeType || '')}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
-                  {anexo?.nomeOriginal}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {anexo?.ativo} • {anexo?.usuarioId} •{' '}
-                  {formatarData(anexo?.createdAt || '', 'data')}
-                </p>
-                {anexo?.mimeType?.startsWith('image/') && (
-                  <span className="mt-1 inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
-                    <svg
-                      className="mr-1 h-3 w-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+          {anexos &&
+            anexos?.map((anexo) => (
+              <div
+                key={anexo?.id}
+                className="flex cursor-pointer items-center space-x-3 rounded-lg bg-gray-50 p-3 transition-all hover:bg-gray-100 hover:shadow-md dark:bg-gray-900/50 dark:hover:bg-gray-800/50"
+                onClick={() => handleAnexoClick(anexo as ChamadoMovimentoAnexo)}
+              >
+                <div className="flex-shrink-0">
+                  {getFileIcon(anexo?.mimeType || '')}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
+                    {anexo?.nomeOriginal}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {anexo?.ativo} • {anexo?.usuarioId} •{' '}
+                    {formatarData(anexo?.createdAt || '', 'data')}
+                  </p>
+                  {anexo?.mimeType?.startsWith('image/') && (
+                    <span className="mt-1 inline-flex items-center bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 md:rounded-full dark:bg-blue-900/20 dark:text-blue-400">
+                      <svg
+                        className="mr-1 h-3 w-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        />
+                      </svg>
+                      Clique para visualizar
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-shrink-0 items-center space-x-2">
+                  {anexo?.mimeType?.startsWith('image/') && (
+                    <button
+                      className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300"
+                      title="Visualizar imagem"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                      />
-                    </svg>
-                    Clique para visualizar
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-shrink-0 items-center space-x-2">
-                {anexo?.mimeType?.startsWith('image/') && (
+                      <svg
+                        className="h-5 w-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        />
+                      </svg>
+                    </button>
+                  )}
                   <button
-                    className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300"
-                    title="Visualizar imagem"
+                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                    onClick={(e) =>
+                      handleDownload(anexo as ChamadoMovimentoAnexo, e)
+                    }
+                    title="Fazer download"
                   >
                     <svg
                       className="h-5 w-5"
@@ -349,39 +382,13 @@ export const ChamadoModalAnexos: React.FC<ChamadoModalAnexosProps> = ({
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                       />
                     </svg>
                   </button>
-                )}
-                <button
-                  className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                  onClick={(e) => handleDownload(anexo, e)}
-                  title="Fazer download"
-                >
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                  </svg>
-                </button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </Collapse>
 

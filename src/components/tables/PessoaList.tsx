@@ -1,5 +1,6 @@
 'use client';
 
+import { usePerfil } from '@/hooks/usePerfil';
 import { ChevronDownIcon, ChevronUpIcon, MoreDotIcon } from '@/icons';
 import { PessoaService } from '@/service/pessoa.service';
 import { Pessoa, PessoaResponse } from '@/types/pessoa.type';
@@ -26,6 +27,8 @@ export default function PessoaList() {
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
   const [pessoas, setPessoas] = useState<any[]>([]);
+
+  const { selectPerfilById } = usePerfil();
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -193,26 +196,30 @@ export default function PessoaList() {
                         >
                           <div className="space-y-2 p-4 text-sm text-gray-700 dark:text-gray-300">
                             <p>
-                              <strong>Login:</strong>
+                              <strong>Login:&nbsp;</strong>
                               {user.usuarios.map((usuarios) => usuarios.login)}
                             </p>
                             <p>
-                              <strong>Perfil:</strong>{' '}
-                              {user.usuarios?.map((u) => u.perfil?.descricao)}
+                              <strong>Perfil:&nbsp;</strong>{' '}
+                              {user.usuarios.map(
+                                (usuarios) =>
+                                  selectPerfilById(usuarios.perfilId || 0)
+                                    ?.descricao
+                              )}
                             </p>
                             <p>
-                              <strong>Gênero:</strong> {user.genero}
+                              <strong>Gênero:&nbsp;</strong> {user.genero}
                             </p>
                             <p>
-                              <strong>Ativo:</strong> {user.ativo}
+                              <strong>Ativo:&nbsp;</strong> {user.ativo}
                             </p>
                             <p>
-                              <strong>Criado em:</strong>{' '}
+                              <strong>Criado em:&nbsp;</strong>{' '}
                               {new Date(user.createdAt || '').toLocaleString()}
                             </p>
                             {user.motivo && (
                               <p>
-                                <strong>Motivo:</strong> {user.motivo}
+                                <strong>Motivo:&nbsp;</strong> {user.motivo}
                               </p>
                             )}
                           </div>

@@ -8,6 +8,7 @@ import {
   GroupIcon,
 } from '@/icons';
 import dynamic from 'next/dynamic';
+import { useEffect } from 'react';
 import Badge from '../ui/badge/Badge';
 
 // Sparkline (pequeno gráfico de tendência)
@@ -16,6 +17,14 @@ const ReactApexChart = dynamic(() => import('react-apexcharts'), {
 });
 
 export const EcommerceMetrics = () => {
+  useEffect(() => {
+    const verificarTempoMedio = async () => {
+      const response = await fetch('/api/verificarTempoMedio');
+      const data = await response.json();
+      console.log(data);
+    };
+    verificarTempoMedio();
+  }, []);
   // Configuração simples para mini gráfico
   const sparklineOptions = {
     chart: { type: 'line' as const, sparkline: { enabled: true } },

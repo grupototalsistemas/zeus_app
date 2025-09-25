@@ -6,6 +6,7 @@ export default function ListTicketPage() {
   return (
     <div className="col-span-12 xl:col-span-7">
       <PageBreadcrumb pageTitle="Listar Chamados" pageBefore="Chamados" />
+
       <TicketList />
     </div>
   );

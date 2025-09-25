@@ -56,6 +56,13 @@ export const ChamadoModalMensagens: React.FC<ChamadoModalMensagensProps> = ({
     }
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleEnviarMensagem();
+    }
+  };
+
   return (
     <Collapse title="Mensagens" count={mensagens.length} defaultOpen={true}>
       <div className="scrollbar-stable h-6/9 space-y-4 px-6 pt-6">
@@ -85,14 +92,16 @@ export const ChamadoModalMensagens: React.FC<ChamadoModalMensagensProps> = ({
             placeholder="Escreva uma nova mensagem..."
             value={novaMensagem}
             onChange={(e) => setNovaMensagem(e.target.value)}
-            className="flex-1 text-black dark:text-white"
+            onKeyPress={handleKeyPress}
+            className="flex-1 border-gray-300 text-black dark:border-gray-600 dark:text-white"
           />
           <Button
             onClick={handleEnviarMensagem}
             disabled={novaMensagem.trim() === ''}
-            className="px-4"
+            className="px-4 py-2"
+            size="default"
           >
-            <Send className="h-4 w-4" color="#fff dark:#cccc" />
+            <Send className="h-6 w-6 text-white dark:text-gray-200" />
           </Button>
         </div>
       </div>
