@@ -17,7 +17,7 @@ const createEmpresaCategoria = async (data: EmpresaCategoria) => {
 };
 
 const updateEmpresaCategoria = async (id: number, data: EmpresaCategoria) => {
-  const response = await api.put(`/empresas-categorias/${id}`, data);
+  const response = await api.patch(`/empresas-categorias/${id}`, data);
   return response.data;
 };
 

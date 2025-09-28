@@ -4,7 +4,7 @@ import { TipoEmpresaFormBase } from '@/components/form/tipoEmpresa/TipoEmpresaFo
 import TipoEmpresaList from '@/components/tables/TipoEmpresaList';
 
 export const metadata = {
-  title: 'Gerenciar Tipos de Empresa',
+  title: 'Criar Tipos de Empresa | Zeus',
   description: 'Lista e gerenciamento de tipos de empresa',
 };
 

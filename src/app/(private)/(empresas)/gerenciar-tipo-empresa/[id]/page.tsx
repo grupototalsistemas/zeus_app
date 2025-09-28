@@ -10,7 +10,7 @@ interface PageProps {
 }
 
 export const metadata: Metadata = {
-  title: 'Editar Tipo de Empresa',
+  title: 'Editar Tipo de Empresa | Zeus',
   description: 'Edição de tipo de empresa',
 };
 

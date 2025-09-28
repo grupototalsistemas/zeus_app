@@ -1,7 +1,6 @@
 'use client';
 
 import ComponentCard from '@/components/common/ComponentCard';
-import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import Label from '@/components/form/Label';
 import Switch from '@/components/form/switch/Switch';
 import Button from '@/components/ui/button/Button';
@@ -106,7 +105,6 @@ export function SistemaFormBase({
 
   return (
     <>
-      <PageBreadcrumb pageTitle="Sistemas" pageBefore="Empresas" />
       <ComponentCard
         title={`${mode === 'create' ? 'Criar' : 'Editar'} Sistema`}
       >

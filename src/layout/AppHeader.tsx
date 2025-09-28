@@ -1,6 +1,6 @@
 'use client';
 import { ThemeToggleButton } from '@/components/common/ThemeToggleButton';
-import FilterDropdown from '@/components/header/FilterDropdown';
+
 import NotificationDropdown from '@/components/header/NotificationDropdown';
 import UserDropdown from '@/components/header/UserDropdown';
 import SearchInput from '@/components/SearchInput';
@@ -130,7 +130,7 @@ const AppHeader: React.FC = () => {
                 </span>
                 <SearchInput />
               </div>
-              <FilterDropdown />
+              {/* <FilterDropdown /> */}
             </form>
           </div>
         </div>

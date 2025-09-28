@@ -24,7 +24,7 @@ export default function TipoEmpresaList() {
   const router = useRouter();
 
   // Hook customizado com todas as operações de tipoEmpresa
-  const { empresaTipos, loading, error, remove, update, getAll, resetError } =
+  const { empresaTipos, loading, error, remove, getAll, resetError } =
     useEmpresaTipo();
 
   // Estados locais (apenas para UI)

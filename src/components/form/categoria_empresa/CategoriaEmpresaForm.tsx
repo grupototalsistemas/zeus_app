@@ -1,46 +1,46 @@
 'use client';
 
 import ComponentCard from '@/components/common/ComponentCard';
-import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import Label from '@/components/form/Label';
 import Switch from '@/components/form/switch/Switch';
 import Button from '@/components/ui/button/Button';
-import { selectEmpresas } from '@/store/slices/empresaSlice';
-import { OcorrenciaTipo } from '@/types/chamadoOcorrenciaTipo.type';
+import { useEmpresaCategoria } from '@/hooks/useEmpresaCategoria';
+import { EmpresaCategoria } from '@/types/empresaCategoria.type';
 import { StatusRegistro } from '@/types/enum';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
 import EmpresaAutocomplete from '../empresa/EmpresaAutoComplete';
 import Input from '../input/InputField';
 
-export interface CategoriaEmpresaFormData {
-  id?: number;
-  empresaId: number;
-  descricao: string;
-  ativo: StatusRegistro;
-}
-
 interface CategoriaEmpresaFormBaseProps {
   mode: 'create' | 'edit';
-  initialData?: OcorrenciaTipo;
-  onSubmit: (data: CategoriaEmpresaFormData) => void;
+  id: String | undefined;
   disabled?: boolean;
 }
 
 export function CategoriaEmpresaFormBase({
   mode,
-  initialData,
-  onSubmit,
+  id,
   disabled = false,
 }: CategoriaEmpresaFormBaseProps) {
-  const empresas = useSelector(selectEmpresas);
+  const [resetSelection, setResetSelection] = useState(false);
+  const { getById, create, update } = useEmpresaCategoria();
   const router = useRouter();
-  const [formData, setFormData] = useState<CategoriaEmpresaFormData>({
-    empresaId: initialData?.empresaId || 0,
-    descricao: initialData?.descricao || '',
-    ativo: initialData?.ativo || StatusRegistro.ATIVO,
+  const [formData, setFormData] = useState<EmpresaCategoria>({
+    empresaId: 0,
+    descricao: '',
+    ativo: StatusRegistro.ATIVO,
   });
+
+  useEffect(() => {
+    if (mode === 'edit' && id) {
+      getById(Number(id)).then((response) => {
+        if (response.payload) {
+          setFormData(response.payload);
+        }
+      });
+    }
+  }, []);
 
   const handleChange = (name: string, value: any) => {
     if (!disabled) {
@@ -51,25 +51,47 @@ export function CategoriaEmpresaFormBase({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!disabled) {
-      onSubmit(formData);
+      await create(formData).then(() => {
+        setResetSelection(true);
+        handleCancel();
+      });
+    }
+  };
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!disabled) {
+      const { id: id_formdata, createdAt, updatedAt, ...rest } = formData;
+      await update(Number(id) || 0, rest).then(
+        (response) => response && handleCancel()
+      );
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    if (mode === 'create') {
+      handleCreate(e);
+    } else {
+      handleUpdate(e);
     }
   };
 
   const handleCancel = () => {
     if (!disabled) {
-      router.back();
+      setFormData({
+        empresaId: 0,
+        descricao: '',
+        ativo: StatusRegistro.ATIVO,
+      });
+      setResetSelection(false);
+      router.replace('/gerenciar-categoria');
     }
   };
 
   return (
     <>
-      <PageBreadcrumb
-        pageTitle="Categorias de Empresas"
-        pageBefore="Empresas"
-      />
       <ComponentCard
         title={`${mode === 'create' ? 'Criar' : 'Editar'} Categoria de Empresa`}
       >
@@ -94,8 +116,8 @@ export function CategoriaEmpresaFormBase({
                   handleChange('empresaId', empresa?.id || 0)
                 }
                 disabled={disabled}
-                // resetSelection={mode === 'create'}
-                onResetComplete={() => handleChange('empresaId', 0)}
+                empresaId={formData.empresaId.toString()}
+                resetSelection={resetSelection}
               />
             </div>
           </div>
@@ -125,6 +147,7 @@ export function CategoriaEmpresaFormBase({
               onClick={handleCancel}
               disabled={disabled}
               variant="outline"
+              type="button"
             >
               Cancelar
             </Button>
