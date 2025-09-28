@@ -26,7 +26,10 @@ export default function OcorrenciaPage() {
   });
   const handleSubmit = async (data: any) => {
     console.log(data);
-    const response = await TipoOcorrenciaService.createOcorrenciaTipo(data);
+    const response = await TipoOcorrenciaService.updateOcorrenciaTipo(
+      Number(id),
+      data
+    );
     console.log(response);
     router.push('/tipo-ocorrencia');
   };

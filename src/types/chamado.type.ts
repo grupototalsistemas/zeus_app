@@ -18,7 +18,6 @@ export interface Chamado extends BaseEntity {
 
 // DTO principal de criação de chamado
 export interface CreateChamadoDto {
-  id?: number;
   empresaId: number;
   sistemaId: number;
   pessoaId: number;

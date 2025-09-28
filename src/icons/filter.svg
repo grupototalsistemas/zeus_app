@@ -1,0 +1,17 @@
+<svg
+            className="fill-white stroke-current dark:fill-gray-800"
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+          >
+            <path d="M2.29 5.9H17.7" strokeWidth="1.5" strokeLinecap="round" />
+            <path d="M17.7 14.1H2.29" strokeWidth="1.5" strokeLinecap="round" />
+            <path
+              d="M12.08 3.33A2.57 2.57 0 1 1 9.51 5.9a2.57 2.57 0 0 1 2.57-2.57Z"
+              strokeWidth="1.5"
+            />
+            <path
+              d="M7.92 11.52a2.57 2.57 0 1 0 2.57 2.57 2.57 2.57 0 0 0-2.57-2.57Z"
+              strokeWidth="1.5"
+            />
+          </svg>

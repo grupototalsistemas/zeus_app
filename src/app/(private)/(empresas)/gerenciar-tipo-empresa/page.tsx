@@ -1,30 +1,18 @@
-'use client';
-
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
-import {
-  TipoEmpresaFormBase,
-  TipoEmpresaFormData,
-} from '@/components/form/tipoEmpresa/TipoEmpresaForm';
+import { TipoEmpresaFormBase } from '@/components/form/tipoEmpresa/TipoEmpresaForm';
 
 import TipoEmpresaList from '@/components/tables/TipoEmpresaList';
-import { useEmpresaTipo } from '@/hooks/useEmpresaTipo';
-import { useRouter } from 'next/navigation';
+
+export const metadata = {
+  title: 'Gerenciar Tipos de Empresa',
+  description: 'Lista e gerenciamento de tipos de empresa',
+};
 
 export default function TipoEmpresa() {
-  const router = useRouter();
-  const { create } = useEmpresaTipo();
-
-  const handleSubmit = async (data: TipoEmpresaFormData) => {
-    //retirando o id
-    const { id, motivo, ...rest } = data;
-    create(rest);
-    router.push('/gerenciar-tipo-empresa');
-  };
-
   return (
     <>
       <PageBreadcrumb pageTitle="Tipos de Empresas" pageBefore="Empresas" />
-      <TipoEmpresaFormBase mode="create" onSubmit={handleSubmit} />
+      <TipoEmpresaFormBase mode="create" id="" />
 
       <br />
 

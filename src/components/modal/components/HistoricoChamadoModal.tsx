@@ -1,5 +1,6 @@
 'use client';
 
+import { usePessoa } from '@/hooks/usePessoa';
 import { Chamado } from '@/types/chamado.type';
 import { formatarData } from '@/utils/fomata-data';
 import React from 'react';
@@ -13,6 +14,7 @@ export const ChamadoModalHistorico: React.FC<ChamadoModalHistoricoProps> = ({
   chamado,
 }) => {
   const movimentos = chamado.movimentos || [];
+  const { selectPessoaById } = usePessoa();
 
   return (
     <Collapse title="Histórico" count={movimentos.length}>
@@ -37,7 +39,7 @@ export const ChamadoModalHistorico: React.FC<ChamadoModalHistoricoProps> = ({
                   </span>
                 </div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  por {item.usuarioId}
+                  por {selectPessoaById(item.usuarioId)?.nome}
                 </p>
                 {item.motivo && (
                   <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">

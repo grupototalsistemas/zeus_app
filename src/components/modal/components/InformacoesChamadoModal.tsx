@@ -130,7 +130,19 @@ export const ChamadoModalInformacoes: React.FC<
           </div>
         </div>
       </div>
-
+      {/*Requerente e Técnico */}
+      <div className="grid grid-cols-1 gap-4 pt-4 sm:grid-cols-2">
+        <div>
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            Requerente
+          </p>
+          <p className="text-gray-900 dark:text-white">
+            {selectPessoaById(chamado.pessoaId)?.nomeSocial ||
+              selectPessoaById(chamado.pessoaId)?.nome ||
+              'N/A'}
+          </p>
+        </div>
+      </div>
       {/* Descrição */}
       <div>
         <p className="mb-2 text-sm font-medium text-gray-500 dark:text-gray-400">

@@ -1,51 +1,38 @@
 'use client';
 import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
-import { usePessoaTipo } from '@/hooks/usePessoaTipo';
-import { useAppDispatch } from '@/hooks/useRedux';
 import { EyeCloseIcon, EyeIcon } from '@/icons';
 import { AuthService } from '@/service/auth.service';
-import { RootState } from '@/store/rootReducer';
-import { Empresa } from '@/types/empresa.type';
 import { StatusGenero } from '@/types/enum';
 import { PessoaUsuarioRegisterDTO } from '@/types/pessoaUsuario.type';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useState } from 'react';
 import EmpresaAutocomplete from '../form/empresa/EmpresaAutoComplete';
 import Checkbox from '../form/input/Checkbox';
-import PessoaTipoAutocomplete from '../form/tipo/PessoaTipoAutoComplete';
 
 export default function SignUpForm() {
-  const dispatch = useAppDispatch();
-  const { empresas } = useSelector((state: RootState) => state.empresa);
   const [showPassword, setShowPassword] = useState(false);
-  const [empresa, setEmpresa] = useState(0);
-  const [empresasFormatadas, setEmpresasFormatadas] = useState([
-    { value: 0, label: 'Selecione uma empresa' },
-  ]);
+
   const [formData, setFormData] = useState<PessoaUsuarioRegisterDTO>({
     login: '',
     email: '',
     pessoa: {
-      empresaId: empresa,
+      empresaId: 0,
       tipoId: 1,
       genero: StatusGenero.MASCULINO,
       nome: '',
       nomeSocial: '',
     },
     perfil: {
-      empresaId: empresa,
-      descricao: 'MASTER',
+      empresaId: 0,
+      descricao: 'ATENDENTE',
     },
     senha: '',
   });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
-  const { pessoasTiposFormatados } = usePessoaTipo();
 
   const handleChange = (path: string, value: any) => {
     setFormData((prev) => {
@@ -80,7 +67,7 @@ export default function SignUpForm() {
     }
 
     try {
-      console.log(formData);
+      console.log(' formData: ', formData);
       await AuthService.register(formData);
       router.push('/signin');
     } catch (err: any) {
@@ -91,21 +78,6 @@ export default function SignUpForm() {
       setLoading(false);
     }
   };
-
-  const formataEmpresa = (empresas: Empresa[]) => {
-    const empresasFormatadas = empresas.map((empresa) => ({
-      value: empresa.id || 0,
-      label: empresa.nomeFantasia,
-    }));
-    setEmpresasFormatadas(empresasFormatadas);
-  };
-
-  useEffect(() => {
-    if (empresas && empresas.length > 0) {
-      // console.log('empresas: ', empresas);
-      formataEmpresa(empresas);
-    }
-  }, [empresas]);
 
   return (
     <div className="no-scrollbar flex w-full flex-1 flex-col overflow-y-auto px-4 sm:px-6 lg:w-1/2">
@@ -182,24 +154,9 @@ export default function SignUpForm() {
                 handleChange('perfil.empresaId', empresa?.id || 0);
               }}
             />
-
-            {/* <Label>Empresa</Label>
-            <div className="relative">
-              <Select
-                options={empresasFormatadas}
-                placeholder="Selecione a empresa"
-                onChange={(opt: string) => {
-                  handleChange('pessoa.empresaId', Number(opt));
-                  handleChange('perfil.empresaId', Number(opt));
-                }}
-              />
-              <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">
-                <ChevronDownIcon />
-              </span>
-            </div> */}
           </div>
 
-          <div>
+          {/* <div>
             <Label>O que você é dessa empresa</Label>
             <div className="relative">
               <PessoaTipoAutocomplete
@@ -209,19 +166,8 @@ export default function SignUpForm() {
                 empresaId={String(formData.pessoa.empresaId)}
                 disabled={!formData.pessoa.empresaId}
               />
-              {/* <Select
-                options={pessoasTiposFormatados}
-                placeholder="Selecione"
-                onChange={(opt: any) => {
-                  console.log('tipo pessoa: ', opt);
-                  handleChange('pessoa.tipoId', Number(opt));
-                }}
-              />
-              <span className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500">
-                <ChevronDownIcon />
-              </span> */}
             </div>
-          </div>
+          </div> */}
 
           <div className="flex flex-wrap gap-4">
             <label className="flex items-center gap-2">
@@ -257,7 +203,7 @@ export default function SignUpForm() {
               />
               <span
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute top-1/2 right-4 cursor-pointer"
+                className="absolute top-1/4 right-4 cursor-pointer"
               >
                 {showPassword ? <EyeIcon /> : <EyeCloseIcon />}
               </span>

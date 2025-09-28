@@ -1,47 +1,26 @@
-'use client';
-
+// gerenciar-tipo-empresa/[id]/page.tsx
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
-import {
-  TipoEmpresaFormBase,
-  TipoEmpresaFormData,
-} from '@/components/form/tipoEmpresa/TipoEmpresaForm';
-
+import { TipoEmpresaFormBase } from '@/components/form/tipoEmpresa/TipoEmpresaForm';
 import TipoEmpresaList from '@/components/tables/TipoEmpresaList';
-import { useEmpresaTipo } from '@/hooks/useEmpresaTipo';
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-
-export default function TipoEmpresaEdit() {
-  const router = useRouter();
-  const { update, getById, currentEmpresaTipo } = useEmpresaTipo();
-  const { id } = useParams();
-
-  const handleSubmit = async (data: TipoEmpresaFormData) => {
-    //retirando o id
-    const { id, motivo, ...rest } = data;
-    update(id, rest);
-    router.replace('/gerenciar-tipo-empresa');
+import { Metadata } from 'next';
+interface PageProps {
+  params: {
+    id: string;
   };
+}
 
-  useEffect(() => {
-    if (id) {
-      getById(Number(id));
-    }
-  }, []);
+export const metadata: Metadata = {
+  title: 'Editar Tipo de Empresa',
+  description: 'Edição de tipo de empresa',
+};
 
+// Server Component - recebe params como prop
+export default function TipoEmpresaEdit({ params: { id } }: PageProps) {
   return (
     <>
       <PageBreadcrumb pageTitle="Tipos de Empresas" pageBefore="Empresas" />
-      {currentEmpresaTipo && (
-        <TipoEmpresaFormBase
-          mode="edit"
-          onSubmit={handleSubmit}
-          initialData={currentEmpresaTipo}
-        />
-      )}
-
+      <TipoEmpresaFormBase mode="edit" id={id} />
       <br />
-
       <TipoEmpresaList />
     </>
   );

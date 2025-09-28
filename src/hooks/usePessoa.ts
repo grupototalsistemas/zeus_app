@@ -171,12 +171,9 @@ export const usePessoa = () => {
     [dispatch]
   );
 
-  const selectPessoaById = useCallback(
-    (id: number) => {
-      return pessoas.find((pessoa) => pessoa.id === id);
-    },
-    [pessoas]
-  );
+  const selectPessoaById = (id: number) => {
+    return pessoas.find((pessoa) => pessoa.id === id);
+  };
 
   // --- Retorno do Hook ---
   return {
