@@ -5,47 +5,61 @@ import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import Label from '@/components/form/Label';
 import Switch from '@/components/form/switch/Switch';
 import Button from '@/components/ui/button/Button';
-import { selectEmpresas } from '@/store/slices/empresaSlice';
+import { useSistema } from '@/hooks/useSistema';
 import { StatusRegistro } from '@/types/enum';
 import { Sistema } from '@/types/sistemas.type';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
 import EmpresaAutocomplete from '../empresa/EmpresaAutoComplete';
 import Input from '../input/InputField';
 
-export interface SistemaFormData {
-  id: number;
-  empresaId: number;
-  descricao: string;
-  nome: string;
-  ativo: StatusRegistro;
-  motivo?: string;
-}
-
 interface SistemaFormBaseProps {
   mode: 'create' | 'edit';
-  initialData?: Sistema;
-  onSubmit: (data: SistemaFormData) => void;
+
+  id: string | undefined;
   disabled?: boolean;
 }
 
 export function SistemaFormBase({
   mode,
-  initialData,
-  onSubmit,
+  id,
   disabled = false,
 }: SistemaFormBaseProps) {
-  const empresas = useSelector(selectEmpresas);
   const router = useRouter();
-  const [formData, setFormData] = useState<SistemaFormData>({
-    id: initialData?.id || 0,
-    empresaId: initialData?.empresaId || 0,
-    descricao: initialData?.descricao || '',
-    nome: initialData?.nome || '',
-    ativo: initialData?.ativo || StatusRegistro.ATIVO,
-    motivo: initialData?.motivo || '',
+
+  const [resetSelection, setResetSelection] = useState<boolean>(false);
+
+  const [formData, setFormData] = useState<Sistema>({
+    id: 0,
+    empresaId: 0,
+    descricao: '',
+    nome: '',
+    ativo: StatusRegistro.ATIVO,
+    motivo: '',
   });
+
+  const { create, getById, update } = useSistema();
+
+  useEffect(() => {
+    if (mode === 'edit' && id) {
+      getById(Number(id)).then((response) => {
+        const data: Sistema = response.payload;
+        setFormData(data);
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    setFormData({
+      id: 0,
+      empresaId: 0,
+      descricao: '',
+      nome: '',
+      ativo: StatusRegistro.ATIVO,
+      motivo: '',
+    });
+    setResetSelection(false);
+  }, [resetSelection]);
 
   const handleChange = (name: string, value: any) => {
     if (!disabled) {
@@ -57,15 +71,36 @@ export function SistemaFormBase({
   };
 
   const handleSubmit = (e: React.FormEvent) => {
+    if (mode === 'create') {
+      handleCreate(e);
+    } else {
+      handleUpdate(e);
+    }
+  };
+
+  const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!disabled) {
-      onSubmit(formData);
+      const { id, motivo, ...rest } = formData;
+      await create(rest);
+      setResetSelection(true);
+      router.replace('/gerenciar-sistema');
+    }
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!disabled) {
+      const { id, createdAt, updatedAt, ...rest } = formData;
+      await update(Number(id), rest);
+
+      router.replace('/gerenciar-sistema');
     }
   };
 
   const handleCancel = () => {
     if (!disabled) {
-      router.back();
+      router.replace('/gerenciar-sistema');
     }
   };
 
@@ -109,8 +144,9 @@ export function SistemaFormBase({
                 onSelect={(empresa) =>
                   handleChange('empresaId', empresa?.id || 0)
                 }
+                resetSelection={resetSelection}
                 disabled={disabled}
-                empresaId={initialData?.empresaId?.toString()}
+                empresaId={formData.empresaId.toString()}
               />
             </div>
             <div>
@@ -155,6 +191,7 @@ export function SistemaFormBase({
               onClick={handleCancel}
               disabled={disabled}
               variant="outline"
+              type="button"
             >
               Cancelar
             </Button>

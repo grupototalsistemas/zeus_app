@@ -64,12 +64,21 @@ export const useEmpresa = () => {
     return dispatch(clearError());
   }, [dispatch]);
 
+  const findById = useCallback(
+    (id: number) => {
+      return empresas.find((empresa) => empresa.id === id);
+    },
+    [empresas]
+  );
+
   return {
     // State
     empresas,
     empresa,
     loading,
     error,
+
+    findById,
 
     // Actions
     getAllEmpresas,

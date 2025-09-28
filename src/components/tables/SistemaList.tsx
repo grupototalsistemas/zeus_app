@@ -1,14 +1,17 @@
 'use client';
 
+import { useEmpresa } from '@/hooks/useEmpresa';
 import { useSistema } from '@/hooks/useSistema';
 import { MoreDotIcon } from '@/icons';
 import { StatusRegistro } from '@/types/enum';
 import { Sistema } from '@/types/sistemas.type';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
 import Badge from '../ui/badge/Badge';
 import { Dropdown } from '../ui/dropdown/Dropdown';
 import { DropdownItem } from '../ui/dropdown/DropdownItem';
+import FilterDropdown, { FilterConfig } from '../ui/filter/FilterDropdown';
+import { useFilter, ViewAllButton } from '../ui/filter/ViewAllButton';
 import {
   Table,
   TableBody,
@@ -23,6 +26,7 @@ export default function SistemaList() {
 
   // Hook customizado com todas as operações de sistema
   const { sistemas, loading, error, getAll, remove, resetError } = useSistema();
+  const { findById } = useEmpresa();
 
   // Estados locais (apenas para UI)
   const [currentPage, setCurrentPage] = useState(1);
@@ -31,7 +35,121 @@ export default function SistemaList() {
   const itemsPerPage = 10;
   const totalPages = Math.ceil(sistemas.length / itemsPerPage);
 
-  const paginatedData = sistemas.slice(
+  const pathname = usePathname();
+
+  useEffect(() => {
+    getAll();
+  }, [getAll, pathname]);
+
+  // Configuração dos filtros
+  const filterConfigs: FilterConfig[] = useMemo(
+    () => [
+      {
+        key: 'status',
+        label: 'Status',
+        type: 'single',
+        options: [
+          {
+            label: 'Ativo',
+            value: StatusRegistro.ATIVO,
+            count: sistemas.filter(
+              (item) => item.ativo === StatusRegistro.ATIVO
+            ).length,
+          },
+          {
+            label: 'Inativo',
+            value: StatusRegistro.INATIVO,
+            count: sistemas.filter(
+              (item) => item.ativo === StatusRegistro.INATIVO
+            ).length,
+          },
+        ],
+      },
+      {
+        key: 'descricao',
+        label: 'Descrição',
+        type: 'multiple',
+        options: [
+          // Gerar opções dinamicamente baseado nas descrições únicas
+          ...Array.from(new Set(sistemas.map((item) => item.descricao)))
+            .sort()
+            .map((desc) => ({
+              label: desc,
+              value: desc,
+              count: sistemas.filter((item) => item.descricao === desc).length,
+            })),
+        ],
+      },
+      {
+        key: 'nome',
+        label: 'Nome',
+        type: 'multiple',
+        options: [
+          // Gerar opções dinamicamente baseado nos nomes únicos
+          ...Array.from(new Set(sistemas.map((item) => item.nome)))
+            .sort()
+            .map((nome) => ({
+              label: nome,
+              value: nome,
+              count: sistemas.filter((item) => item.nome === nome).length,
+            })),
+        ],
+      },
+      // Adicionar mais configurações de filtro conforme necessário
+      {
+        key: 'empresa',
+        label: 'Empresa',
+        type: 'multiple',
+        options: [
+          // Gerar opções dinamicamente baseado nas empresas únicas
+          ...Array.from(new Set(sistemas.map((item) => String(item.empresaId))))
+            .filter((nome): nome is string => !!nome) // Filtrar valores nulos ou indefinidos
+            .sort()
+            .map((nome) => ({
+              label: nome,
+              value: nome,
+              count: sistemas.filter(
+                (item) => item.empresaId?.toString() === nome
+              ).length,
+            })),
+        ],
+      },
+    ],
+    [sistemas]
+  );
+
+  // Funções de filtro
+  const filterFunctions = {
+    status: (item: Sistema, filterValue: StatusRegistro) => {
+      return item.ativo === filterValue;
+    },
+    descricao: (item: Sistema, filterValue: string[]) => {
+      return filterValue.includes(item.descricao);
+    },
+    nome: (item: Sistema, filterValue: string[]) =>
+      filterValue.includes(item.nome),
+    empresa: (item: Sistema, filterValue: string[]) =>
+      filterValue.includes(String(item.empresaId)),
+  };
+
+  // Hook de filtro
+  const {
+    filteredData,
+    activeFilters,
+    handleFilterChange,
+    clearAllFilters,
+    hasActiveFilters,
+  } = useFilter({
+    data: sistemas,
+    filterFunctions,
+  });
+
+  // Resetar página quando filtros mudarem
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeFilters]);
+
+  const paginatedData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -64,21 +182,9 @@ export default function SistemaList() {
       alert('Erro ao excluir o sistema. Tente novamente.');
     }
   };
-
-  useEffect(() => {
-    // Só carrega se não há sistemas no store ou se houver erro
-    if (sistemas.length === 0 && !loading) {
-      getAll();
-    }
-
-    const interval = setInterval(() => {
-      if (!loading) {
-        getAll();
-      }
-    }, 15000);
-
-    return () => clearInterval(interval);
-  }, [getAll, sistemas.length, loading]);
+  const handleViewAll = () => {
+    clearAllFilters();
+  };
 
   const handleToggle = (id: number) => {
     setOpenDropdownId(openDropdownId === id ? null : id);
@@ -97,7 +203,7 @@ export default function SistemaList() {
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pt-4 pb-3 sm:px-6 dark:border-gray-800 dark:bg-white/[0.03]">
+    <div className="rounded-2xl border border-gray-200 bg-white px-4 pt-4 pb-3 sm:px-6 dark:border-gray-800 dark:bg-white/[0.03]">
       {error && (
         <div className="mb-4 rounded-lg bg-red-50 p-4 text-red-700 dark:bg-red-900/20 dark:text-red-300">
           <div className="flex items-center justify-between">
@@ -116,8 +222,30 @@ export default function SistemaList() {
           </div>
         </div>
       )}
+      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+            Sistemas Cadastrados
+          </h3>
+          {hasActiveFilters && (
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              {filteredData.length} de {sistemas.length} resultados
+            </p>
+          )}
+        </div>
 
-      <div className="max-w-full overflow-x-auto">
+        <div className="flex items-center gap-3">
+          <FilterDropdown
+            filters={filterConfigs}
+            activeFilters={activeFilters}
+            onFilterChange={handleFilterChange}
+            onClearAll={clearAllFilters}
+          />
+
+          <ViewAllButton onClick={handleViewAll} disabled={!hasActiveFilters} />
+        </div>
+      </div>
+      <div className="max-w-full">
         <Table>
           <TableHeader className="border-b border-gray-100 dark:border-gray-800">
             <TableRow>
@@ -133,7 +261,12 @@ export default function SistemaList() {
               >
                 Descrição
               </TableCell>
-
+              <TableCell
+                isHeader
+                className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+              >
+                Empresa
+              </TableCell>
               <TableCell
                 isHeader
                 className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
@@ -157,7 +290,12 @@ export default function SistemaList() {
                 <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                   {sistema.descricao}
                 </TableCell>
-
+                <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                  {sistema.empresaId
+                    ? findById(sistema.empresaId)?.nomeFantasia ||
+                      findById(sistema.empresaId)?.razaoSocial
+                    : 'N/A'}
+                </TableCell>
                 <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                   <Badge
                     size="sm"

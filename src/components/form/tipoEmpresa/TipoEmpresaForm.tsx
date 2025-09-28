@@ -133,7 +133,12 @@ export function TipoEmpresaFormBase({
 
         {/* Botões */}
         <div className="flex justify-end space-x-4">
-          <Button onClick={handleCancel} disabled={disabled} variant="outline">
+          <Button
+            onClick={handleCancel}
+            disabled={disabled}
+            type="button"
+            variant="outline"
+          >
             Cancelar
           </Button>
           <Button disabled={disabled}>
