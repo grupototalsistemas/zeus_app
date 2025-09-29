@@ -4,42 +4,55 @@ import ComponentCard from '@/components/common/ComponentCard';
 import Label from '@/components/form/Label';
 import Switch from '@/components/form/switch/Switch';
 import Button from '@/components/ui/button/Button';
-import { selectEmpresas } from '@/store/slices/empresaSlice';
 import { StatusRegistro } from '@/types/enum';
 import { PessoaTipo } from '@/types/pessoaTipo.type';
 
+import { usePessoaTipo } from '@/hooks/usePessoaTipo';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
 import EmpresaAutocomplete from '../empresa/EmpresaAutoComplete';
 import Input from '../input/InputField';
 
-export interface TipoFormData {
-  empresaId: number;
-  descricao: string;
-  ativo: StatusRegistro;
-}
-
 interface TipoFormBaseProps {
   mode: 'create' | 'edit';
-  initialData?: PessoaTipo;
-  onSubmit: (data: TipoFormData) => void;
+  id: string | undefined;
   disabled?: boolean;
 }
 
 export function TipoFormBase({
   mode,
-  initialData,
-  onSubmit,
+  id,
   disabled = false,
 }: TipoFormBaseProps) {
-  const empresas = useSelector(selectEmpresas);
   const router = useRouter();
-  const [formData, setFormData] = useState<TipoFormData>({
-    empresaId: initialData?.empresaId || 0,
-    descricao: initialData?.descricao || '',
-    ativo: initialData?.ativo || StatusRegistro.ATIVO,
+  const {
+    fetchPessoaTipoById,
+    pessoasTipos,
+    createPessoaTipo,
+    editPessoaTipo,
+  } = usePessoaTipo();
+  const [formData, setFormData] = useState<PessoaTipo>({
+    empresaId: 0,
+    descricao: '',
+    ativo: StatusRegistro.ATIVO,
   });
+
+  useEffect(() => {
+    if (mode === 'edit' && id) {
+      fetchPessoaTipoById(Number(id)).then((response) => {
+        console.log('Response fetchPessoaTipoById:', response);
+        if (response) {
+          const aux: PessoaTipo = {
+            id: response.id,
+            ativo: response.ativo,
+            descricao: response.descricao,
+            empresaId: response.empresaId,
+          };
+          setFormData(aux);
+        }
+      });
+    }
+  }, [mode, id]);
 
   const handleChange = (name: string, value: any) => {
     if (!disabled) {
@@ -51,15 +64,40 @@ export function TipoFormBase({
   };
 
   const handleSubmit = (e: React.FormEvent) => {
+    if (mode === 'create') {
+      handleCreate(e);
+    } else {
+      handleUpdate(e);
+    }
+  };
+
+  const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!disabled) {
-      onSubmit(formData);
+    // Lógica para criar um novo tipo
+    createPessoaTipo(formData).then(() => {
+      setFormData({ descricao: '', ativo: StatusRegistro.ATIVO, empresaId: 0 });
+      router.replace('/gerenciar-tipo');
+    });
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // Lógica para editar um tipo existente
+    if (id) {
+      editPessoaTipo(formData).then(() => {
+        setFormData({
+          descricao: '',
+          ativo: StatusRegistro.ATIVO,
+          empresaId: 0,
+        });
+        router.replace('/gerenciar-tipo');
+      });
     }
   };
 
   const handleCancel = () => {
     if (!disabled) {
-      router.back();
+      router.replace('/gerenciar-tipo');
     }
   };
 
@@ -83,7 +121,7 @@ export function TipoFormBase({
           <div>
             <EmpresaAutocomplete
               onSelect={(empresa) => handleChange('empresaId', empresa?.id)}
-              empresaId={initialData?.empresaId.toString()}
+              empresaId={formData?.empresaId.toString()}
               disabled={disabled}
             />
           </div>
@@ -110,7 +148,12 @@ export function TipoFormBase({
 
         {/* Botões */}
         <div className="flex justify-end space-x-4">
-          <Button onClick={handleCancel} disabled={disabled} variant="outline">
+          <Button
+            onClick={handleCancel}
+            disabled={disabled}
+            type="button"
+            variant="outline"
+          >
             Cancelar
           </Button>
           <Button disabled={disabled}>

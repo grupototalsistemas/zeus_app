@@ -1,57 +1,20 @@
-'use client';
-
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
-import { TipoFormBase, TipoFormData } from '@/components/form/tipo/TipoForm';
-import TipoList from '@/components/tables/TipoList';
-import { usePessoaTipo } from '@/hooks/usePessoaTipo';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { TipoFormBase } from '@/components/form/tipo/TipoForm';
+import TipoPessoaList from '@/components/tables/TipoList';
+
+export const metadata = {
+  title: 'Criar Função | Zeus',
+  description: 'Criar nova função',
+};
 
 export default function CreateTipoPage() {
-  const router = useRouter();
-  const { createPessoaTipo, loading, error } = usePessoaTipo();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleCreate = async (data: TipoFormData) => {
-    try {
-      setIsSubmitting(true);
-
-      // Usa o hook que já gerencia o Redux
-      await createPessoaTipo(data);
-
-      // Redireciona após sucesso
-      router.push('/listar-tipo');
-    } catch (error) {
-      console.error('Erro ao criar tipo:', error);
-      // O erro já é tratado no hook, mas você pode adicionar notificação aqui
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
     <>
       <PageBreadcrumb pageTitle="Criar Função" pageBefore="Funções" />
 
-      {error && (
-        <div className="mb-4 rounded-lg bg-red-50 p-4 text-red-700 dark:bg-red-900/20 dark:text-red-300">
-          {error}
-        </div>
-      )}
-
-      <div
-        className={
-          loading || isSubmitting ? 'pointer-events-none opacity-50' : ''
-        }
-      >
-        <TipoFormBase
-          mode="create"
-          onSubmit={handleCreate}
-          disabled={loading || isSubmitting}
-        />
-        <br />
-        <TipoList />
-      </div>
+      <TipoFormBase mode="create" id="" />
+      <br />
+      <TipoPessoaList />
     </>
   );
 }

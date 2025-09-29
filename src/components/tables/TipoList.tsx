@@ -1,14 +1,17 @@
 'use client';
 
-import { usePessoaTipo } from '@/hooks/usePessoaTipo';
 import { MoreDotIcon } from '@/icons';
+
+import { usePessoaTipo } from '@/hooks/usePessoaTipo';
 import { StatusRegistro } from '@/types/enum';
 import { PessoaTipo } from '@/types/pessoaTipo.type';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
 import Badge from '../ui/badge/Badge';
 import { Dropdown } from '../ui/dropdown/Dropdown';
 import { DropdownItem } from '../ui/dropdown/DropdownItem';
+import FilterDropdown, { FilterConfig } from '../ui/filter/FilterDropdown';
+import { useFilter, ViewAllButton } from '../ui/filter/ViewAllButton';
 import {
   Table,
   TableBody,
@@ -18,16 +21,16 @@ import {
 } from '../ui/table';
 import Pagination from './Pagination';
 
-export default function TipoList() {
+export default function TipoPessoaList() {
   const router = useRouter();
 
-  // Hook customizado com todas as operações de tipo
+  // Hook customizado com todas as operações de pessoaTipo
   const {
     pessoasTipos,
     loading,
     error,
-    fetchPessoasTipos,
     deletePessoaTipo,
+    fetchPessoasTipos,
     clearError,
   } = usePessoaTipo();
 
@@ -38,23 +41,98 @@ export default function TipoList() {
   const itemsPerPage = 10;
   const totalPages = Math.ceil(pessoasTipos.length / itemsPerPage);
 
-  const paginatedData = pessoasTipos.slice(
+  // Configuração dos filtros
+  const filterConfigs: FilterConfig[] = useMemo(
+    () => [
+      {
+        key: 'status',
+        label: 'Status',
+        type: 'single',
+        options: [
+          {
+            label: 'Ativo',
+            value: StatusRegistro.ATIVO,
+            count: pessoasTipos.filter(
+              (item) => item.ativo === StatusRegistro.ATIVO
+            ).length,
+          },
+          {
+            label: 'Inativo',
+            value: StatusRegistro.INATIVO,
+            count: pessoasTipos.filter(
+              (item) => item.ativo === StatusRegistro.INATIVO
+            ).length,
+          },
+        ],
+      },
+      {
+        key: 'descricao',
+        label: 'Descrição',
+        type: 'multiple',
+        options: [
+          // Gerar opções dinamicamente baseado nas descrições únicas
+          ...Array.from(new Set(pessoasTipos.map((item) => item.descricao)))
+            .sort()
+            .map((desc) => ({
+              label: desc,
+              value: desc,
+              count: pessoasTipos.filter((item) => item.descricao === desc)
+                .length,
+            })),
+        ],
+      },
+    ],
+    [pessoasTipos]
+  );
+
+  // Funções de filtro
+  const filterFunctions = {
+    status: (item: PessoaTipo, filterValue: StatusRegistro) => {
+      return item.ativo === filterValue;
+    },
+    descricao: (item: PessoaTipo, filterValue: string[]) => {
+      return filterValue.includes(item.descricao);
+    },
+  };
+
+  // Hook de filtro
+  const {
+    filteredData,
+    activeFilters,
+    handleFilterChange,
+    clearAllFilters,
+    hasActiveFilters,
+  } = useFilter({
+    data: pessoasTipos,
+    filterFunctions,
+  });
+
+  const paginatedData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
-  const handleDelete = async (tipo: PessoaTipo) => {
+  const pathname = usePathname();
+
+  // Resetar página quando filtros mudarem
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeFilters]);
+
+  useEffect(() => {
+    fetchPessoasTipos();
+  }, [pathname, fetchPessoasTipos]);
+
+  const handleDelete = async (pessoaTipo: PessoaTipo) => {
     // Confirmação antes de excluir
     const confirmDelete = window.confirm(
-      `Tem certeza que deseja excluir o tipo "${tipo.descricao}"?\n\nEsta ação não pode ser desfeita.`
+      `Tem certeza que deseja excluir o pessoaTipo "${pessoaTipo.descricao}"?\n\nEsta ação não pode ser desfeita.`
     );
-
     if (!confirmDelete) {
       return; // Usuário cancelou a exclusão
     }
-
     try {
-      await deletePessoaTipo(tipo.id!);
+      await deletePessoaTipo(pessoaTipo.id!);
 
       // Fecha o dropdown se estiver aberto
       setOpenDropdownId(null);
@@ -64,31 +142,27 @@ export default function TipoList() {
       if (currentPage > newTotalPages && newTotalPages > 0) {
         setCurrentPage(newTotalPages);
       }
-
-      console.log('Tipo excluído com sucesso');
     } catch (error) {
-      console.error('Erro ao excluir tipo:', error);
-      alert('Erro ao excluir o tipo. Tente novamente.');
+      console.error('Erro ao excluir pessoaTipo:', error);
+      alert('Erro ao excluir o pessoaTipo. Tente novamente.');
     }
   };
-
-  useEffect(() => {
-    // Só carrega se não há pessoasTipos no store ou se houver erro
-    if (pessoasTipos.length === 0 && !loading) {
-      fetchPessoasTipos();
-    }
-  }, [fetchPessoasTipos, pessoasTipos.length, loading]);
 
   const handleToggle = (id: number) => {
     setOpenDropdownId(openDropdownId === id ? null : id);
   };
 
-  if (loading && pessoasTipos.length === 0) {
+  const handleViewAll = () => {
+    clearAllFilters();
+  };
+
+  if (loading) {
     return (
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pt-4 pb-3 sm:px-6 dark:border-gray-800 dark:bg-white/[0.03]">
         <div className="flex items-center justify-center py-10">
           <div className="text-gray-500 dark:text-gray-400">
             Carregando pessoasTipos...
+            {loading}
           </div>
         </div>
       </div>
@@ -96,7 +170,7 @@ export default function TipoList() {
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pt-4 pb-3 sm:px-6 dark:border-gray-800 dark:bg-white/[0.03]">
+    <div className="rounded-2xl border border-gray-200 bg-white px-4 pt-4 pb-3 sm:px-6 dark:border-gray-800 dark:bg-white/[0.03]">
       {error && (
         <div className="mb-4 rounded-lg bg-red-50 p-4 text-red-700 dark:bg-red-900/20 dark:text-red-300">
           <div className="flex items-center justify-between">
@@ -119,7 +193,31 @@ export default function TipoList() {
         </div>
       )}
 
-      <div className="max-w-full overflow-x-auto">
+      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+            Tipos Cadastrados
+          </h3>
+          {hasActiveFilters && (
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              {filteredData.length} de {pessoasTipos.length} resultados
+            </p>
+          )}
+        </div>
+
+        <div className="flex items-center gap-3">
+          <FilterDropdown
+            filters={filterConfigs}
+            activeFilters={activeFilters}
+            onFilterChange={handleFilterChange}
+            onClearAll={clearAllFilters}
+          />
+
+          <ViewAllButton onClick={handleViewAll} disabled={!hasActiveFilters} />
+        </div>
+      </div>
+
+      <div className="flex max-w-full justify-around">
         <Table>
           <TableHeader className="border-b border-gray-100 dark:border-gray-800">
             <TableRow>
@@ -129,6 +227,7 @@ export default function TipoList() {
               >
                 Descrição
               </TableCell>
+
               <TableCell
                 isHeader
                 className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
@@ -144,25 +243,30 @@ export default function TipoList() {
             </TableRow>
           </TableHeader>
           <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {paginatedData.map((tipo) => (
-              <TableRow key={tipo.id}>
+            {paginatedData.map((pessoaTipo) => (
+              <TableRow key={pessoaTipo.id}>
                 <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                  {tipo.descricao}
+                  {pessoaTipo.descricao}
                 </TableCell>
+
                 <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                   <Badge
                     size="sm"
                     color={
-                      tipo.ativo === StatusRegistro.ATIVO ? 'success' : 'error'
+                      pessoaTipo.ativo === StatusRegistro.ATIVO
+                        ? 'success'
+                        : 'error'
                     }
                   >
-                    {tipo.ativo === StatusRegistro.ATIVO ? 'Ativo' : 'Inativo'}
+                    {pessoaTipo.ativo === StatusRegistro.ATIVO
+                      ? 'Ativo'
+                      : 'Inativo'}
                   </Badge>
                 </TableCell>
                 <TableCell>
                   <div className="relative inline-block">
                     <button
-                      onClick={() => handleToggle(tipo.id!)}
+                      onClick={() => handleToggle(pessoaTipo.id!)}
                       className="dropdown-toggle"
                       disabled={loading}
                     >
@@ -170,18 +274,21 @@ export default function TipoList() {
                     </button>
 
                     <Dropdown
-                      isOpen={openDropdownId === tipo.id}
+                      isOpen={openDropdownId === pessoaTipo.id}
                       onClose={() => setOpenDropdownId(null)}
                       className="w-40 p-2"
                     >
                       <DropdownItem
-                        onClick={() => router.push(`/editar-tipo/${tipo.id}`)}
+                        onClick={() =>
+                          router.push(`/gerenciar-tipo/${pessoaTipo.id}`)
+                        }
                         className="flex w-full rounded-lg text-left font-normal text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
                       >
                         Editar
                       </DropdownItem>
+
                       <DropdownItem
-                        onClick={() => handleDelete(tipo)}
+                        onClick={() => handleDelete(pessoaTipo)}
                         className="flex w-full rounded-lg text-left font-normal text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
                       >
                         Deletar
@@ -191,13 +298,15 @@ export default function TipoList() {
                 </TableCell>
               </TableRow>
             ))}
-            {pessoasTipos.length === 0 && !loading && (
+            {filteredData.length === 0 && !loading && (
               <TableRow>
                 <TableCell
                   {...{ colSpan: 3 }}
                   className="text-theme-sm flex items-center justify-center py-10 text-gray-500 dark:text-gray-400"
                 >
-                  Nenhuma função encontrada
+                  {hasActiveFilters
+                    ? 'Nenhum resultado encontrado para os filtros aplicados'
+                    : 'Nenhuma Tipo de Empresa encontrado'}
                 </TableCell>
               </TableRow>
             )}
@@ -205,7 +314,7 @@ export default function TipoList() {
         </Table>
       </div>
 
-      {pessoasTipos.length > 0 && (
+      {filteredData.length > 0 && (
         <div className="mt-4 flex items-center justify-between">
           <Pagination
             currentPage={currentPage}
