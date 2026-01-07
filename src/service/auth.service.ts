@@ -2,7 +2,11 @@ import { PessoaUsuarioRegisterDTO } from '@/types/pessoaUsuario.type';
 import api from './api';
 
 const login = async (login: string, senha: string) => {
-  const res = await api.post('/auth/login', { login, senha });
+  const res = await api.post('/auth/login_senha', {
+    login,
+    senha,
+    sistema: 3,
+  });
   return res.data;
 };
 
