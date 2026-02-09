@@ -46,25 +46,25 @@ export default function InitialLoader() {
   useEffect(() => {
     const loadAllData = async () => {
       try {
-        console.log('Carregando dados iniciais...');
+        // console.log('Carregando dados iniciais...');
 
         // Executa em paralelo
-        const results = await Promise.all([
-          fetchPrioridades(),
-          fetchOcorrencias(),
-          fetchPessoasTipos(),
-          fetchPessoas(),
-          fetchEtapas(),
-          getAllChamados(),
-          getAllMovimentoMensagens(),
-          buscarOcorrenciasTipos(),
-          getAllPessoaUsuarios(),
-          fetchPerfis(),
-          getAllEmpresaCategorias(),
-          getAllSistemas(),
-          getAllEmpresaTipos(),
-          getAllEmpresaSistemas(),
-        ]);
+        // const results = await Promise.all([
+        //   fetchPrioridades(),
+        //   fetchOcorrencias(),
+        //   fetchPessoasTipos(),
+        //   fetchPessoas(),
+        //   fetchEtapas(),
+        //   getAllChamados(),
+        //   getAllMovimentoMensagens(),
+        //   buscarOcorrenciasTipos(),
+        //   getAllPessoaUsuarios(),
+        //   fetchPerfis(),
+        //   getAllEmpresaCategorias(),
+        //   getAllSistemas(),
+        //   getAllEmpresaTipos(),
+        //   getAllEmpresaSistemas(),
+        // ]);
 
         setIsLoading(false);
         router.push('/listar-chamado');

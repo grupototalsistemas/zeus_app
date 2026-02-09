@@ -1,5 +1,5 @@
 import { BaseEntity } from './base.type';
 
-export interface PessoasTipo extends BaseEntity {
+export interface PessoasOrigens extends BaseEntity {
   descricao: string;
 }

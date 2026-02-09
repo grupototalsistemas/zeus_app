@@ -2,15 +2,16 @@ import { BaseEntity } from './base.type';
 import { ChamadoMovimentoAnexo } from './chamadoMovimentoAnexo.type';
 import { ChamadoMovimentoEtapa } from './chamadoMovimentoEtapa.type';
 import { ChamadoMovimentoMensagem } from './chamadoMovimentoMensagem.type';
+
 export interface ChamadoMovimento extends BaseEntity {
-  chamadoId: number;
-  etapaId: number;
-  usuarioId: number;
+  id_chamado: number;
+  id_chamado_movimento_etapa: number;
+  id_pessoa_usuario: number;
   ordem?: number;
-  inicio?: string;
-  fim?: string;
+  dataHoraInicio?: string;
+  dataHoraFim?: string;
   descricaoAcao: string;
-  observacaoTec?: string;
+  observacaoTecnica: string;
   etapa?: ChamadoMovimentoEtapa;
   anexos?: ChamadoMovimentoAnexo[];
   mensagens?: ChamadoMovimentoMensagem[];

@@ -3,12 +3,12 @@ import { ChamadoMovimento } from './chamadoMovimento.type';
 import { StatusRegistro } from './enum';
 
 export interface Chamado extends BaseEntity {
-  empresaId: number;
-  sistemaId: number;
-  pessoaId: number;
-  usuarioId: number;
-  ocorrenciaId: number;
-  prioridadeId: number;
+  id_empresa: number;
+  id_sistema: number;
+  id_pessoa_empresa: number;
+  id_pessoa_usuario: number;
+  id_ocorrencia: number;
+  id_prioridade: number;
   protocolo?: number;
   titulo: string;
   descricao: string;

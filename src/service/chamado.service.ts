@@ -1,5 +1,5 @@
 import { Chamado, CreateChamadoDto } from '@/types/chamado.type';
-import api, { socket } from './api';
+import api from './api';
 
 const getChamados = async (): Promise<Chamado[]> => {
   const response = await api.get('/chamados');
@@ -8,9 +8,9 @@ const getChamados = async (): Promise<Chamado[]> => {
 
 const getChamado = async (id: number) => {
   const response = await api.get(`/chamados/${id}`);
-  socket.on('chamados', (data) => {
-    console.log(data);
-  });
+  // socket.on('chamados', (data) => {
+  //   console.log(data);
+  // });
   return response.data;
 };
 

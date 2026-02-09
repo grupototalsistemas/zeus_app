@@ -88,10 +88,10 @@ export default function EmpresaList() {
   const filterFunctions = useMemo(
     () => ({
       status: (item: Empresa, filterValue: StatusRegistro) => {
-        return item.ativo === filterValue;
+        return item.situacao === filterValue;
       },
       descricao: (item: Empresa, filterValue: string[]) => {
-        return filterValue.includes(item.nomeFantasia);
+        return filterValue.includes(item.nome_fantasia);
       },
     }),
     []
@@ -176,7 +176,7 @@ export default function EmpresaList() {
 
   const getStatusBadge = (empresa: any) => {
     // Assumindo que existe um campo ativo ou status
-    if (empresa.ativo === 'INATIVO') {
+    if (empresa.situacao !== 1) {
       return { color: 'error', text: 'Inativa' };
     }
     if (empresa.tipo?.descricao === 'MATRIZ') {
@@ -312,11 +312,11 @@ export default function EmpresaList() {
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                     <div>
                       <div className="font-medium text-gray-900 dark:text-gray-100">
-                        {empresa.nomeFantasia}
+                        {empresa.nome_fantasia}
                       </div>
-                      {empresa.codigo && (
+                      {empresa.pessoa?.codigo && (
                         <div className="text-xs text-gray-500">
-                          Código: {empresa.codigo}
+                          Código: {empresa.pessoa.codigo}
                         </div>
                       )}
                     </div>
@@ -325,9 +325,7 @@ export default function EmpresaList() {
                     {formatCNPJ(empresa.cnpj)}
                   </TableCell>
                   <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
-                    {empresa.cidade && empresa.estado
-                      ? `${empresa.cidade}/${empresa.estado}`
-                      : empresa.cidade || empresa.estado || '-'}
+                    RJ
                   </TableCell>
                   <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
                     <Badge
@@ -385,14 +383,15 @@ export default function EmpresaList() {
                             </h4>
                             <p>
                               <strong>Razão Social:</strong>{' '}
-                              {empresa.razaoSocial}
+                              {empresa.razao_social || '-'}
                             </p>
                             <p>
-                              <strong>Tipo:</strong> {empresa.tipoId || '-'}
+                              <strong>Tipo:</strong>{' '}
+                              {empresa.pessoaTipo?.descricao || '-'}
                             </p>
                             <p>
                               <strong>Categoria:</strong>{' '}
-                              {empresa.categoriaId || '-'}
+                              {empresa.pessoaOrigem?.descricao || '-'}
                             </p>
                             <p>
                               <strong>Empresa Pai:</strong>{' '}

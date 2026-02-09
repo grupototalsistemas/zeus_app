@@ -1,7 +1,17 @@
 import { BaseEntity } from './base.type';
-import { Pessoa } from './pessoa.type';
+import { Pessoas } from './pessoa.type';
 import { PerfilDTO } from './pessoaPerfil.type';
 
+export interface PessoasUsuarios extends BaseEntity {
+  id_pessoa_fisica: number;
+  nome_login: string;
+  login: string;
+  senha?: string;
+  senha_master?: string;
+  first_access: number;
+}
+
+// Manter interface legada para compatibilidade
 export interface PessoaUsuario extends BaseEntity {
   pessoaId: number;
   perfilId: number;
@@ -19,7 +29,7 @@ export interface PessoaUsuarioResponse extends BaseEntity {
 }
 
 export interface PessoaUsuarioRegisterDTO extends BaseEntity {
-  pessoa: Pessoa;
+  pessoa: Pessoas;
   perfil: PerfilDTO;
   email: string;
   login: string;
@@ -27,7 +37,7 @@ export interface PessoaUsuarioRegisterDTO extends BaseEntity {
 }
 
 export interface PessoaUsuarioDTO {
-  pessoa: Pessoa;
+  pessoa: Pessoas;
   perfilId: number;
   email: string;
   login: string;

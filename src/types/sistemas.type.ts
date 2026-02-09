@@ -1,6 +1,8 @@
 import { BaseEntity } from './base.type';
-export interface Sistema extends BaseEntity {
-  empresaId: number;
-  nome: string;
+
+export interface Sistemas extends BaseEntity {
+  id_pessoa_juridica_base: number;
+  sistema: string;
   descricao: string;
+  status_web: number;
 }

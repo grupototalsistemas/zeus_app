@@ -1,10 +1,11 @@
 import { BaseEntity } from './base.type';
+
 export interface ChamadoMovimentoMensagem extends BaseEntity {
-  movimentoId: number;
-  usuarioEnvioId: number;
-  usuarioLeituraId: number;
+  id_chamado_movimento: number;
+  id_pessoa_usuario_envio: number;
+  id_pessoa_usuario_leitura: number;
   ordem?: number;
   descricao: string;
-  envio?: string;
-  leitura?: string;
+  dataHoraEnvio?: string;
+  dataHoraLeitura?: string;
 }

@@ -1,8 +1,8 @@
 import { BaseEntity } from './base.type';
 
 export interface Prioridade extends BaseEntity {
-  empresaId: number;
+  id_empresa: number;
   descricao: string;
   cor: string;
-  tempo: string; // formato HH:mm:ss
+  tempoResolucao: string;
 }

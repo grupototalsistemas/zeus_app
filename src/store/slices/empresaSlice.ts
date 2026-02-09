@@ -17,9 +17,12 @@ const initialState: EmpresaState = {
 };
 
 // Async Thunks
-export const fetchEmpresas = createAsyncThunk('empresas/fetchAll', async () => {
-  return await EmpresaService.getEmpresas();
-});
+export const fetchEmpresas = createAsyncThunk(
+  `empresas/fetchAll`,
+  async (params?: { id_pessoa_juridica_empresa?: number }) => {
+    return await EmpresaService.getEmpresas(params);
+  }
+);
 
 export const fetchEmpresasById = createAsyncThunk(
   'empresas/fetchById',

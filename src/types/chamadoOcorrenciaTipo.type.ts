@@ -1,6 +1,6 @@
 import { BaseEntity } from './base.type';
 
 export interface OcorrenciaTipo extends BaseEntity {
-  empresaId: number;
+  id_empresa: number;
   descricao: string;
 }

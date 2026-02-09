@@ -11,6 +11,7 @@ import {
   selectEmpresas,
   updateEmpresas,
 } from '@/store/slices/empresaSlice';
+import { selectPessoaInfo } from '@/store/slices/pessoaSlice';
 import { AppDispatch } from '@/store/store';
 import { Empresa } from '@/types/empresa.type';
 import { useCallback } from 'react';
@@ -18,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 export const useEmpresa = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const pessoaInfo = useSelector(selectPessoaInfo);
 
   const empresas = useSelector(selectEmpresas);
   const empresa = useSelector(selectEmpresa);
@@ -25,8 +27,12 @@ export const useEmpresa = () => {
   const error = useSelector(selectEmpresaError);
 
   const getAllEmpresas = useCallback(() => {
-    return dispatch(fetchEmpresas());
-  }, [dispatch]);
+    return dispatch(
+      fetchEmpresas({
+        id_pessoa_juridica_empresa: Number(pessoaInfo?.id_pessoa_juridica),
+      })
+    );
+  }, [dispatch, pessoaInfo]);
 
   const getEmpresaById = useCallback(
     (id: number) => {

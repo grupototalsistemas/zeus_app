@@ -85,11 +85,13 @@ export const selectError = (state: RootState) => state.chamado_ocorrencia.error;
 // Seletores derivados memoizados
 export const selectOcorrenciasFormatadas = createSelector(
   [selectOcorrencias],
-  (ocorrencias) =>
-    ocorrencias.map((ocorrencia) => ({
+  (ocorrencias) => {
+    console.log('Ocorrencias no seletor: ', ocorrencias);
+    return ocorrencias.map((ocorrencia) => ({
       value: ocorrencia.id || 0,
       label: ocorrencia.descricao,
-    }))
+    }));
+  }
 );
 
 export const selectOcorrenciasAtivas = createSelector(

@@ -1,23 +1,24 @@
 import { BaseEntity } from './base.type';
-import { StatusSiglaEstado } from './enum';
 
-export interface Empresa extends BaseEntity {
-  parentId: number;
-  tipoId: number;
-  categoriaId: number;
+export interface PessoasJuridicas extends BaseEntity {
+  id_pessoa: number;
+  id_pessoa_fisica_responsavel?: number;
   cnpj: string;
-  codigo?: string;
-  razaoSocial: string;
-  nomeFantasia: string;
-  logradouro?: string;
-  endereco?: string;
-  numero?: string;
-  complemento?: string;
-  bairro?: string;
-  cidade?: string;
-  estado?: StatusSiglaEstado;
-  cep?: string;
-  contato?: string;
-  email?: string;
-  observacao?: string;
+  razao_social: string;
+  nome_fantasia?: string;
+  insc_estadual?: string;
+  insc_municipal?: string;
+  filial_principal?: number;
+}
+
+// Manter interface legada para compatibilidade
+export interface Empresa extends BaseEntity {
+  id_pessoa: number;
+  id_pessoa_fisica_responsavel: number;
+  cnpj: string;
+  razao_social: string;
+  nome_fantasia: string;
+  insc_estadual: string;
+  insc_municipal: string;
+  filial_principal: number;
 }

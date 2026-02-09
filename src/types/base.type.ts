@@ -1,10 +1,9 @@
 import { ChamadoMovimentoEtapa } from './chamadoMovimentoEtapa.type';
-import { StatusRegistro } from './enum';
 
 /** Campos padrão de todas as entidades */
 export interface BaseEntity {
   id?: number;
-  ativo?: StatusRegistro;
+  situacao?: number;
   motivo?: string;
   createdAt?: string;
   updatedAt?: string;

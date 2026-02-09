@@ -1,13 +1,9 @@
 import { BaseEntity } from './base.type';
+
 export interface ChamadoMovimentoAnexo extends BaseEntity {
-  movimentoId: number;
-  usuarioId: number;
+  id_chamado_movimento: number;
+  id_pessoa_usuario: number;
   ordem?: number;
-  url: string;
-  mimeType?: string;
-  nomeOriginal?: string;
-  pathname?: string;
-  tamanho?: number;
   descricao: string;
   dataHora?: string;
   caminho: string;
