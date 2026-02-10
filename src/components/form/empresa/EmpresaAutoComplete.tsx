@@ -38,9 +38,9 @@ export default function EmpresaAutocomplete({
 
   // Estado do formulário de criação
   const [newEmpresa, setNewEmpresa] = useState<Partial<Empresa>>({
-    nomeFantasia: '',
+    nome_fantasia: '',
     cnpj: '',
-    tipoId: undefined,
+    pessoaTipo: undefined,
   });
 
   // Novo: estado da empresa selecionada
@@ -54,7 +54,7 @@ export default function EmpresaAutocomplete({
       const empresa = empresas.find((emp) => emp.id === Number(empresaId));
       if (empresa) {
         setSelectedEmpresa(empresa);
-        setSearchTerm(empresa.nomeFantasia);
+        setSearchTerm(empresa.nome_fantasia);
         onSelect(empresa);
       }
     }
@@ -74,7 +74,7 @@ export default function EmpresaAutocomplete({
 
   // Buscar empresas quando o termo de pesquisa mudar
   useEffect(() => {
-    if (selectedEmpresa) return; // 🚀 Evita buscar novamente se já está selecionado
+    if (selectedEmpresa) return;
 
     const searchEmpresas = async () => {
       if (debouncedSearch.trim().length < 3) {
@@ -89,7 +89,7 @@ export default function EmpresaAutocomplete({
         const response =
           empresas?.length > 0 ? empresas : await EmpresaService.getEmpresas();
         const filtered = response.filter((empresa) =>
-          empresa.nomeFantasia
+          empresa.nome_fantasia
             .toLowerCase()
             .includes(debouncedSearch.toLowerCase())
         );
@@ -109,7 +109,7 @@ export default function EmpresaAutocomplete({
   // Marca a empresa escolhida
   const handleSelect = (empresa: Empresa) => {
     setSelectedEmpresa(empresa);
-    setSearchTerm(empresa.nomeFantasia);
+    setSearchTerm(empresa.nome_fantasia);
     setShowResults(false);
     onSelect(empresa);
   };
@@ -122,7 +122,7 @@ export default function EmpresaAutocomplete({
   };
 
   const handleCreateEmpresa = async () => {
-    if (!newEmpresa.nomeFantasia || !newEmpresa.tipoId) {
+    if (!newEmpresa.nome_fantasia || !newEmpresa.tipoId) {
       setError('Nome, função e serventia são obrigatórios');
       return;
     }
@@ -137,9 +137,9 @@ export default function EmpresaAutocomplete({
       handleSelect(createdEmpresa);
       setShowCreateForm(false);
       setNewEmpresa({
-        nomeFantasia: '',
+        nome_fantasia: '',
         cnpj: '',
-        tipoId: undefined,
+        pessoaTipo: undefined,
       });
     } catch (err) {
       setError('Erro ao criar empresa');
@@ -166,7 +166,7 @@ export default function EmpresaAutocomplete({
       {/* Mostrar info da empresa selecionada */}
       {selectedEmpresa && (
         <div className="mt-2 flex items-center justify-between rounded bg-gray-100 p-2 text-sm dark:bg-gray-700">
-          <span>{selectedEmpresa.nomeFantasia}</span>
+          <span>{selectedEmpresa.nome_fantasia}</span>
           <button
             type="button"
             onClick={handleClearSelection}
@@ -193,7 +193,7 @@ export default function EmpresaAutocomplete({
                     className="cursor-pointer rounded-md px-4 py-2 hover:bg-gray-500"
                     onClick={() => handleSelect(empresa)}
                   >
-                    {empresa.nomeFantasia}
+                    {empresa.nome_fantasia}
                   </li>
                 ))}
               </ul>
@@ -206,7 +206,7 @@ export default function EmpresaAutocomplete({
                     router.push('/gerenciar-empresas');
                     // setShowCreateForm(true);
                     // setShowResults(false);
-                    // setNewEmpresa({ ...newEmpresa, nomeFantasia: searchTerm });
+                    // setNewEmpresa({ ...newEmpresa, nome_fantasia: searchTerm });
                   }}
                   className="text-blue-600 hover:text-blue-800"
                 >
@@ -225,9 +225,9 @@ export default function EmpresaAutocomplete({
             <Label>Nome *</Label>
             <Input
               type="text"
-              value={newEmpresa.nomeFantasia}
+              value={newEmpresa.nome_fantasia}
               onChange={(e) =>
-                setNewEmpresa({ ...newEmpresa, nomeFantasia: e.target.value })
+                setNewEmpresa({ ...newEmpresa, nome_fantasia: e.target.value })
               }
               disabled={isLoading}
             />

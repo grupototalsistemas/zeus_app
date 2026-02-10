@@ -1,4 +1,5 @@
 import { BaseEntity } from './base.type';
+import { Chamado } from './chamado.type';
 import { Pessoas } from './pessoa.type';
 import { PessoasJuridicasJuridicas } from './pessoasJuridicasJuridicas.type';
 import { PessoasOrigens } from './pessoasOrigens.type';
@@ -29,4 +30,5 @@ export interface Empresa extends BaseEntity {
   pessoaTipo?: PessoasTipo;
   pessoaOrigem?: PessoasOrigens;
   vinculoJuridico?: PessoasJuridicasJuridicas[];
+  chamados?: Chamado[]; // Substituir por tipo específico de Chamado quando disponível
 }

@@ -320,7 +320,7 @@ export default function EmpresaList() {
                   <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                     <div>
                       <div className="font-medium text-gray-900 dark:text-gray-100">
-                        {empresa.nome_fantasia}
+                        {empresa.nome_fantasia || empresa.razao_social || '-'}
                       </div>
                       {empresa.pessoa?.codigo && (
                         <div className="text-xs text-gray-500">
@@ -339,7 +339,9 @@ export default function EmpresaList() {
                     RJ
                   </TableCell>
                   <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
-                    RJ
+                    {empresa.chamados.length > 0
+                      ? empresa.chamados.length
+                      : '0'}
                   </TableCell>
                   <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
                     <Badge
