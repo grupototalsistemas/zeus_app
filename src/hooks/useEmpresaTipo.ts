@@ -11,18 +11,17 @@ import {
   selectEmpresaTipos,
   updateEmpresaTipo,
 } from '@/store/slices/empresaTipoSlice';
-import { AppDispatch } from '@/store/store';
 import { EmpresaTipo } from '@/types/empresaTipo.type';
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from './useRedux';
 
 export const useEmpresaTipo = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
 
-  const empresaTipos = useSelector(selectEmpresaTipos);
-  const currentEmpresaTipo = useSelector(selectCurrentEmpresaTipo);
-  const loading = useSelector(selectEmpresaTipoLoading);
-  const error = useSelector(selectEmpresaTipoError);
+  const empresaTipos = useAppSelector(selectEmpresaTipos);
+  const currentEmpresaTipo = useAppSelector(selectCurrentEmpresaTipo);
+  const loading = useAppSelector(selectEmpresaTipoLoading);
+  const error = useAppSelector(selectEmpresaTipoError);
 
   const getAll = useCallback(() => {
     return dispatch(fetchEmpresaTipos());

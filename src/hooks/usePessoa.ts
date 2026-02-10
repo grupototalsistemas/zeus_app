@@ -1,7 +1,5 @@
-import { RootState } from '@/store/rootReducer';
-import { ThunkDispatch } from '@reduxjs/toolkit';
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from './useRedux';
 
 import { clearError } from '@/store/slices/empresaCategoriaSlice';
 import {
@@ -31,17 +29,17 @@ import {
 import { Pessoa } from '@/types/pessoa.type';
 
 export const usePessoa = () => {
-  const dispatch = useDispatch<ThunkDispatch<RootState, unknown, any>>();
+  const dispatch = useAppDispatch();
 
   // Seletores
-  const pessoas = useSelector(selectPessoas);
-  const currentPessoa = useSelector(selectCurrentPessoa);
-  const pessoaLogada = useSelector(selectPessoaLogada);
-  const pessoaInfo = useSelector(selectPessoaInfo);
-  const loading = useSelector(selectPessoaLoading);
-  const error = useSelector(selectPessoaError);
-  const pessoasFormatadas = useSelector(selectPessoasFormatadas);
-  const isLoggedIn = useSelector(selectIsLoggedIn);
+  const pessoas = useAppSelector(selectPessoas);
+  const currentPessoa = useAppSelector(selectCurrentPessoa);
+  const pessoaLogada = useAppSelector(selectPessoaLogada);
+  const pessoaInfo = useAppSelector(selectPessoaInfo);
+  const loading = useAppSelector(selectPessoaLoading);
+  const error = useAppSelector(selectPessoaError);
+  const pessoasFormatadas = useAppSelector(selectPessoasFormatadas);
+  const isLoggedIn = useAppSelector(selectIsLoggedIn);
 
   // --- Async Actions ---
   const handleFetchPessoas = useCallback(async () => {

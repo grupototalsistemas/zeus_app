@@ -14,19 +14,18 @@ import {
   updateMovimentoAnexo,
   uploadAnexo,
 } from '@/store/slices/movimentoAnexoSlice';
-import { AppDispatch } from '@/store/store';
 import { ChamadoMovimentoAnexo } from '@/types/chamadoMovimentoAnexo.type';
 
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from './useRedux';
 
 export const useMovimentoAnexo = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
 
-  const movimentoAnexos = useSelector(selectMovimentoAnexos);
-  const currentMovimentoAnexo = useSelector(selectCurrentMovimentoAnexo);
-  const loading = useSelector(selectMovimentoAnexoLoading);
-  const error = useSelector(selectMovimentoAnexoError);
+  const movimentoAnexos = useAppSelector(selectMovimentoAnexos);
+  const currentMovimentoAnexo = useAppSelector(selectCurrentMovimentoAnexo);
+  const loading = useAppSelector(selectMovimentoAnexoLoading);
+  const error = useAppSelector(selectMovimentoAnexoError);
 
   const getAll = useCallback(() => {
     return dispatch(fetchMovimentoAnexos());

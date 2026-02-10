@@ -1,6 +1,7 @@
 'use client';
 
 import { usePerfil } from '@/hooks/usePerfil';
+import { usePessoa } from '@/hooks/usePessoa';
 import { ChevronDownIcon, ChevronUpIcon, MoreDotIcon } from '@/icons';
 import { PessoaService } from '@/service/pessoa.service';
 import { Pessoa, PessoaResponse } from '@/types/pessoa.type';
@@ -24,22 +25,15 @@ export default function PessoaList() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
+  const { fetchPessoasByEmpresa, pessoaInfo, pessoas } = usePessoa();
+
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
-  const [pessoas, setPessoas] = useState<any[]>([]);
 
   const { selectPerfilById } = usePerfil();
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await PessoaService.getPessoas();
-        setPessoas(response);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
-    fetchUsers();
+    fetchPessoasByEmpresa(pessoaInfo?.id_pessoa_juridica || 0);
   }, []);
 
   const totalPages = Math.ceil(pessoas.length / itemsPerPage);
@@ -91,7 +85,7 @@ export default function PessoaList() {
                   isHeader
                   className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
                 >
-                  {''}
+                  CPF
                 </TableCell>
                 <TableCell
                   isHeader
@@ -104,13 +98,19 @@ export default function PessoaList() {
                   isHeader
                   className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
                 >
-                  Empresa
+                  Login
                 </TableCell>
                 <TableCell
                   isHeader
                   className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
                 >
-                  Acesso
+                  Email
+                </TableCell>
+                <TableCell
+                  isHeader
+                  className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+                >
+                  Documento
                 </TableCell>
                 <TableCell
                   isHeader

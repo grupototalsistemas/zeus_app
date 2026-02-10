@@ -11,19 +11,18 @@ import {
   selectOcorrenciaTipos,
   updateOcorrenciaTipo,
 } from '@/store/slices/ocorrenciaTipoSlice';
-import { AppDispatch } from '@/store/store';
 import { OcorrenciaTipo } from '@/types/chamadoOcorrenciaTipo.type';
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from './useRedux';
 
 export const useOcorrenciaTipo = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
 
   // Seletores
-  const ocorrenciasTipos = useSelector(selectOcorrenciaTipos);
-  const ocorrenciaTipoSelecionado = useSelector(selectCurrentOcorrenciaTipo);
-  const loading = useSelector(selectOcorrenciaTipoLoading);
-  const error = useSelector(selectOcorrenciaTipoError);
+  const ocorrenciasTipos = useAppSelector(selectOcorrenciaTipos);
+  const ocorrenciaTipoSelecionado = useAppSelector(selectCurrentOcorrenciaTipo);
+  const loading = useAppSelector(selectOcorrenciaTipoLoading);
+  const error = useAppSelector(selectOcorrenciaTipoError);
 
   // Ações assíncronas
   const buscarOcorrenciasTipos = useCallback(async () => {

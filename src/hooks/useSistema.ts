@@ -11,19 +11,18 @@ import {
   selectSistemas,
   updateSistema,
 } from '@/store/slices/sistemaSlice';
-import { AppDispatch } from '@/store/store';
 import { StatusRegistro } from '@/types/enum';
 import { Sistema } from '@/types/sistemas.type';
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from './useRedux';
 
 export const useSistema = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
 
-  const sistemas = useSelector(selectSistemas);
-  const currentSistema = useSelector(selectCurrentSistema);
-  const loading = useSelector(selectSistemaLoading);
-  const error = useSelector(selectSistemaError);
+  const sistemas = useAppSelector(selectSistemas);
+  const currentSistema = useAppSelector(selectCurrentSistema);
+  const loading = useAppSelector(selectSistemaLoading);
+  const error = useAppSelector(selectSistemaError);
 
   // Funções assíncronas (mantidas como estão)
   const getAll = useCallback(() => {

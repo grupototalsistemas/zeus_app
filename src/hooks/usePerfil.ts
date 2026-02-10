@@ -1,128 +1,62 @@
-import { PerfilService } from '@/service/perfil.service';
 import {
-  addPerfil,
+  clearError,
   clearPerfil,
-  removePerfil,
+  createPerfil,
+  deletePerfilAsync,
+  fetchPerfilById,
+  fetchPerfis,
   selectError,
   selectLoading,
   selectPerfilSelecionado,
   selectPerfis,
   selectPerfisFormatados,
-  setError,
-  setLoading,
   setPerfilSelecionado,
-  setPerfis,
-  updatePerfil,
+  updatePerfilAsync,
 } from '@/store/slices/perfilSlice';
 import { Perfil } from '@/types/pessoaPerfil.type';
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from './useRedux';
 
 export const usePerfil = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // Seletores
-  const perfis = useSelector(selectPerfis);
+  const perfis = useAppSelector(selectPerfis);
 
-  const perfilSelecionado = useSelector(selectPerfilSelecionado);
-  const loading = useSelector(selectLoading);
-  const error = useSelector(selectError);
-  const perfisFormatados = useSelector(selectPerfisFormatados);
+  const perfilSelecionado = useAppSelector(selectPerfilSelecionado);
+  const loading = useAppSelector(selectLoading);
+  const error = useAppSelector(selectError);
+  const perfisFormatados = useAppSelector(selectPerfisFormatados);
 
   // Ações assíncronas
-  const fetchPerfis = useCallback(async () => {
-    try {
-      dispatch(setLoading(true));
-      dispatch(setError(null));
-
-      const response = await PerfilService.getPerfis();
-      dispatch(setPerfis(response));
-    } catch (error) {
-      console.error('Erro ao buscar perfis:', error);
-      dispatch(setError('Erro ao carregar perfis'));
-    } finally {
-      dispatch(setLoading(false));
-    }
+  const handleFetchPerfis = useCallback(() => {
+    return dispatch(fetchPerfis());
   }, [dispatch]);
 
-  const createPerfil = useCallback(
-    async (perfil: Omit<Perfil, 'id'>) => {
-      try {
-        dispatch(setLoading(true));
-        dispatch(setError(null));
-
-        const newPerfil = await PerfilService.createPerfil(perfil);
-        dispatch(addPerfil(newPerfil));
-        return newPerfil;
-      } catch (error) {
-        console.error('Erro ao criar perfil:', error);
-        dispatch(setError('Erro ao criar perfil'));
-        throw error;
-      } finally {
-        dispatch(setLoading(false));
-      }
+  const handleCreatePerfil = useCallback(
+    (perfil: Omit<Perfil, 'id'>) => {
+      return dispatch(createPerfil(perfil));
     },
     [dispatch]
   );
 
-  const editPerfil = useCallback(
-    async (perfil: Perfil) => {
-      try {
-        dispatch(setLoading(true));
-        dispatch(setError(null));
-
-        const updatedPerfil = await PerfilService.updatePerfil(
-          perfil.id!,
-          perfil
-        );
-        dispatch(updatePerfil(updatedPerfil));
-        return updatedPerfil;
-      } catch (error) {
-        console.error('Erro ao editar perfil:', error);
-        dispatch(setError('Erro ao editar perfil'));
-        throw error;
-      } finally {
-        dispatch(setLoading(false));
-      }
+  const handleEditPerfil = useCallback(
+    (perfil: Perfil) => {
+      return dispatch(updatePerfilAsync(perfil));
     },
     [dispatch]
   );
 
-  const deletePerfil = useCallback(
-    async (id: number) => {
-      try {
-        dispatch(setLoading(true));
-        dispatch(setError(null));
-
-        await PerfilService.deletePerfil(id);
-        dispatch(removePerfil(id));
-      } catch (error) {
-        console.error('Erro ao excluir perfil:', error);
-        dispatch(setError('Erro ao excluir perfil'));
-        throw error;
-      } finally {
-        dispatch(setLoading(false));
-      }
+  const handleDeletePerfil = useCallback(
+    (id: number) => {
+      return dispatch(deletePerfilAsync(id));
     },
     [dispatch]
   );
 
-  const fetchPerfilById = useCallback(
-    async (id: number) => {
-      try {
-        dispatch(setLoading(true));
-        dispatch(setError(null));
-
-        const perfil = await PerfilService.getPerfil(id);
-        dispatch(setPerfilSelecionado(perfil));
-        return perfil;
-      } catch (error) {
-        console.error('Erro ao buscar perfil por ID:', error);
-        dispatch(setError('Erro ao buscar perfil'));
-        throw error;
-      } finally {
-        dispatch(setLoading(false));
-      }
+  const handleFetchPerfilById = useCallback(
+    (id: number) => {
+      return dispatch(fetchPerfilById(id));
     },
     [dispatch]
   );
@@ -139,8 +73,8 @@ export const usePerfil = () => {
     dispatch(clearPerfil());
   }, [dispatch]);
 
-  const clearError = useCallback(() => {
-    dispatch(setError(null));
+  const resetError = useCallback(() => {
+    dispatch(clearError());
   }, [dispatch]);
 
   // selecionar por Id
@@ -157,16 +91,16 @@ export const usePerfil = () => {
     perfisFormatados,
 
     // Ações assíncronas
-    fetchPerfis,
-    createPerfil,
-    editPerfil,
-    deletePerfil,
-    fetchPerfilById,
+    fetchPerfis: handleFetchPerfis,
+    createPerfil: handleCreatePerfil,
+    editPerfil: handleEditPerfil,
+    deletePerfil: handleDeletePerfil,
+    fetchPerfilById: handleFetchPerfilById,
 
     // Ações síncronas
     selectPerfil,
     clearPerfilData,
-    clearError,
+    clearError: resetError,
     selectPerfilById,
   };
 };

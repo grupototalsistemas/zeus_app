@@ -1,131 +1,64 @@
-import { PessoaTipoService } from '@/service/pessoaTipo.service';
 import {
-  addPessoaTipo,
+  clearError,
   clearPessoaTipo,
-  removePessoaTipo,
+  createPessoaTipo,
+  deletePessoaTipoAsync,
+  fetchPessoasTipos,
+  fetchPessoaTipoById,
   selectError,
   selectLoading,
   selectPessoasTipos,
   selectPessoasTiposAtivos,
   selectPessoasTiposFormatados,
   selectPessoaTipoSelecionado,
-  setError,
-  setLoading,
-  setPessoasTipos,
   setPessoaTipoSelecionado,
-  updatePessoaTipo,
+  updatePessoaTipoAsync,
 } from '@/store/slices/pessoaTipoSlice';
 import { PessoaTipo } from '@/types/pessoaTipo.type';
 
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from './useRedux';
 
 export const usePessoaTipo = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // Seletores
-  const pessoasTipos = useSelector(selectPessoasTipos);
-  const pessoasTiposSelecionado = useSelector(selectPessoaTipoSelecionado);
-  const loading = useSelector(selectLoading);
-  const error = useSelector(selectError);
-  const pessoasTiposFormatados = useSelector(selectPessoasTiposFormatados);
-  const pessoasTipoAtivos = useSelector(selectPessoasTiposAtivos);
+  const pessoasTipos = useAppSelector(selectPessoasTipos);
+  const pessoasTiposSelecionado = useAppSelector(selectPessoaTipoSelecionado);
+  const loading = useAppSelector(selectLoading);
+  const error = useAppSelector(selectError);
+  const pessoasTiposFormatados = useAppSelector(selectPessoasTiposFormatados);
+  const pessoasTipoAtivos = useAppSelector(selectPessoasTiposAtivos);
 
   // Ações assíncronas
-  const fetchPessoasTipos = useCallback(async () => {
-    try {
-      dispatch(setLoading(true));
-      dispatch(setError(null));
-
-      const response = await PessoaTipoService.getPessoasTipos();
-      // console.log('PessoasTipos buscados:', response);
-      dispatch(setPessoasTipos(response));
-    } catch (error) {
-      console.error('Erro ao buscar pessoasTipos:', error);
-      dispatch(setError('Erro ao carregar pessoasTipos'));
-    } finally {
-      dispatch(setLoading(false));
-    }
+  const handleFetchPessoasTipos = useCallback(() => {
+    return dispatch(fetchPessoasTipos());
   }, [dispatch]);
 
-  const createPessoaTipo = useCallback(
-    async (tipo: Omit<PessoaTipo, 'id'>) => {
-      try {
-        dispatch(setLoading(true));
-        dispatch(setError(null));
-
-        const newTipo = await PessoaTipoService.createPessoaTipo(tipo);
-        dispatch(addPessoaTipo(newTipo));
-        return newTipo;
-      } catch (error) {
-        console.error('Erro ao criar tipo:', error);
-        dispatch(setError('Erro ao criar tipo'));
-        throw error;
-      } finally {
-        dispatch(setLoading(false));
-      }
+  const handleCreatePessoaTipo = useCallback(
+    (tipo: Omit<PessoaTipo, 'id'>) => {
+      return dispatch(createPessoaTipo(tipo));
     },
     [dispatch]
   );
 
-  const editPessoaTipo = useCallback(
-    async (tipo: PessoaTipo) => {
-      try {
-        dispatch(setLoading(true));
-        dispatch(setError(null));
-
-        const updatedTipo = await PessoaTipoService.updatePessoaTipo(
-          tipo.id!,
-          tipo
-        );
-        dispatch(updatePessoaTipo(updatedTipo));
-        return updatedTipo;
-      } catch (error) {
-        console.error('Erro ao editar tipo:', error);
-        dispatch(setError('Erro ao editar tipo'));
-        throw error;
-      } finally {
-        dispatch(setLoading(false));
-      }
+  const handleEditPessoaTipo = useCallback(
+    (tipo: PessoaTipo) => {
+      return dispatch(updatePessoaTipoAsync(tipo));
     },
     [dispatch]
   );
 
-  const deletePessoaTipo = useCallback(
-    async (id: number) => {
-      try {
-        dispatch(setLoading(true));
-        dispatch(setError(null));
-
-        await PessoaTipoService.deletePessoaTipo(id);
-        dispatch(removePessoaTipo(id));
-      } catch (error) {
-        console.error('Erro ao excluir tipo:', error);
-        dispatch(setError('Erro ao excluir tipo'));
-        throw error;
-      } finally {
-        dispatch(setLoading(false));
-      }
+  const handleDeletePessoaTipo = useCallback(
+    (id: number) => {
+      return dispatch(deletePessoaTipoAsync(id));
     },
     [dispatch]
   );
 
-  const fetchPessoaTipoById = useCallback(
-    async (id: number) => {
-      try {
-        dispatch(setLoading(true));
-        dispatch(setError(null));
-
-        const tipo = await PessoaTipoService.getPessoaTipo(id);
-        dispatch(setPessoaTipoSelecionado(tipo));
-        return tipo;
-      } catch (error) {
-        console.error('Erro ao buscar tipo por ID:', error);
-        dispatch(setError('Erro ao buscar tipo'));
-        throw error;
-      } finally {
-        dispatch(setLoading(false));
-      }
+  const handleFetchPessoaTipoById = useCallback(
+    (id: number) => {
+      return dispatch(fetchPessoaTipoById(id));
     },
     [dispatch]
   );
@@ -142,8 +75,8 @@ export const usePessoaTipo = () => {
     dispatch(clearPessoaTipo());
   }, [dispatch]);
 
-  const clearError = useCallback(() => {
-    dispatch(setError(null));
+  const resetError = useCallback(() => {
+    dispatch(clearError());
   }, [dispatch]);
 
   // Selecionar por Id e mostrar o selecionado
@@ -161,15 +94,15 @@ export const usePessoaTipo = () => {
     pessoasTipoAtivos,
 
     // Ações assíncronas
-    fetchPessoasTipos,
-    createPessoaTipo,
-    editPessoaTipo,
-    deletePessoaTipo,
-    fetchPessoaTipoById,
+    fetchPessoasTipos: handleFetchPessoasTipos,
+    createPessoaTipo: handleCreatePessoaTipo,
+    editPessoaTipo: handleEditPessoaTipo,
+    deletePessoaTipo: handleDeletePessoaTipo,
+    fetchPessoaTipoById: handleFetchPessoaTipoById,
 
     // Ações síncronas
     selectPessoaTipo,
-    clearError,
+    clearError: resetError,
     selectTipoById,
   };
 };

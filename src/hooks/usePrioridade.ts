@@ -1,130 +1,63 @@
-import { PrioridadeService } from '@/service/prioridade.service';
 import {
-  addPrioridade,
+  clearError,
   clearPrioridade,
-  removePrioridade,
+  createPrioridade,
+  deletePrioridadeAsync,
+  fetchPrioridadeById,
+  fetchPrioridades,
   selectError,
   selectLoading,
   selectPrioridades,
   selectPrioridadesAtivas,
   selectPrioridadeSelecionada,
   selectPrioridadesFormatadas,
-  setError,
-  setLoading,
-  setPrioridades,
   setPrioridadeSelecionada,
-  updatePrioridade,
+  updatePrioridadeAsync,
 } from '@/store/slices/prioridadeSlice';
 import { Prioridade } from '@/types/chamadoPrioridade.type';
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from './useRedux';
 
 export const usePrioridade = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // Seletores
-  const prioridades = useSelector(selectPrioridades);
-  const prioridadeSelecionada = useSelector(selectPrioridadeSelecionada);
-  const loading = useSelector(selectLoading);
-  const error = useSelector(selectError);
-  const prioridadesFormatadas = useSelector(selectPrioridadesFormatadas);
-  const prioridadesAtivas = useSelector(selectPrioridadesAtivas);
+  const prioridades = useAppSelector(selectPrioridades);
+  const prioridadeSelecionada = useAppSelector(selectPrioridadeSelecionada);
+  const loading = useAppSelector(selectLoading);
+  const error = useAppSelector(selectError);
+  const prioridadesFormatadas = useAppSelector(selectPrioridadesFormatadas);
+  const prioridadesAtivas = useAppSelector(selectPrioridadesAtivas);
 
   // Ações assíncronas
-  const fetchPrioridades = useCallback(async () => {
-    try {
-      dispatch(setLoading(true));
-      dispatch(setError(null));
-
-      const response = await PrioridadeService.getPrioridades();
-      dispatch(setPrioridades(response));
-    } catch (error) {
-      console.error('Erro ao buscar prioridades:', error);
-      dispatch(setError('Erro ao carregar prioridades'));
-    } finally {
-      dispatch(setLoading(false));
-    }
+  const handleFetchPrioridades = useCallback(() => {
+    return dispatch(fetchPrioridades());
   }, [dispatch]);
 
-  const createPrioridade = useCallback(
-    async (prioridade: Omit<Prioridade, 'id'>) => {
-      try {
-        dispatch(setLoading(true));
-        dispatch(setError(null));
-
-        const newPrioridade =
-          await PrioridadeService.createPrioridade(prioridade);
-        dispatch(addPrioridade(newPrioridade));
-        return newPrioridade;
-      } catch (error) {
-        console.error('Erro ao criar prioridade:', error);
-        dispatch(setError('Erro ao criar prioridade'));
-        throw error;
-      } finally {
-        dispatch(setLoading(false));
-      }
+  const handleCreatePrioridade = useCallback(
+    (prioridade: Omit<Prioridade, 'id'>) => {
+      return dispatch(createPrioridade(prioridade));
     },
     [dispatch]
   );
 
-  const editPrioridade = useCallback(
-    async (prioridade: Prioridade) => {
-      try {
-        dispatch(setLoading(true));
-        dispatch(setError(null));
-
-        const updatedPrioridade = await PrioridadeService.updatePrioridade(
-          prioridade.id!,
-          prioridade
-        );
-        dispatch(updatePrioridade(updatedPrioridade));
-        return updatedPrioridade;
-      } catch (error) {
-        console.error('Erro ao editar prioridade:', error);
-        dispatch(setError('Erro ao editar prioridade'));
-        throw error;
-      } finally {
-        dispatch(setLoading(false));
-      }
+  const handleEditPrioridade = useCallback(
+    (prioridade: Prioridade) => {
+      return dispatch(updatePrioridadeAsync(prioridade));
     },
     [dispatch]
   );
 
-  const deletePrioridade = useCallback(
-    async (id: number) => {
-      try {
-        dispatch(setLoading(true));
-        dispatch(setError(null));
-
-        await PrioridadeService.deletePrioridade(id);
-        dispatch(removePrioridade(id));
-      } catch (error) {
-        console.error('Erro ao excluir prioridade:', error);
-        dispatch(setError('Erro ao excluir prioridade'));
-        throw error;
-      } finally {
-        dispatch(setLoading(false));
-      }
+  const handleDeletePrioridade = useCallback(
+    (id: number) => {
+      return dispatch(deletePrioridadeAsync(id));
     },
     [dispatch]
   );
 
-  const fetchPrioridadeById = useCallback(
-    async (id: number) => {
-      try {
-        dispatch(setLoading(true));
-        dispatch(setError(null));
-
-        const prioridade = await PrioridadeService.getPrioridade(id);
-        dispatch(setPrioridadeSelecionada(prioridade));
-        return prioridade;
-      } catch (error) {
-        console.error('Erro ao buscar prioridade por ID:', error);
-        dispatch(setError('Erro ao buscar prioridade'));
-        throw error;
-      } finally {
-        dispatch(setLoading(false));
-      }
+  const handleFetchPrioridadeById = useCallback(
+    (id: number) => {
+      return dispatch(fetchPrioridadeById(id));
     },
     [dispatch]
   );
@@ -141,8 +74,8 @@ export const usePrioridade = () => {
     dispatch(clearPrioridade());
   }, [dispatch]);
 
-  const clearError = useCallback(() => {
-    dispatch(setError(null));
+  const resetError = useCallback(() => {
+    dispatch(clearError());
   }, [dispatch]);
 
   // Selecionar por Id
@@ -160,16 +93,16 @@ export const usePrioridade = () => {
     prioridadesAtivas,
 
     // Ações assíncronas
-    fetchPrioridades,
-    createPrioridade,
-    editPrioridade,
-    deletePrioridade,
-    fetchPrioridadeById,
+    fetchPrioridades: handleFetchPrioridades,
+    createPrioridade: handleCreatePrioridade,
+    editPrioridade: handleEditPrioridade,
+    deletePrioridade: handleDeletePrioridade,
+    fetchPrioridadeById: handleFetchPrioridadeById,
 
     // Ações síncronas
     selectPrioridade,
     clearPrioridadeData,
-    clearError,
+    clearError: resetError,
     selectPrioridadeById,
   };
 };

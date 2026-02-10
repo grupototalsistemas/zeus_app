@@ -11,18 +11,17 @@ import {
   selectCurrentChamado,
   updateChamado,
 } from '@/store/slices/chamadoSlice';
-import { AppDispatch } from '@/store/store';
 import { Chamado, CreateChamadoDto } from '@/types/chamado.type';
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from './useRedux';
 
 export const useChamado = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
 
-  const chamados = useSelector(selectChamados);
-  const currentChamado = useSelector(selectCurrentChamado);
-  const loading = useSelector(selectChamadoLoading);
-  const error = useSelector(selectChamadoError);
+  const chamados = useAppSelector(selectChamados);
+  const currentChamado = useAppSelector(selectCurrentChamado);
+  const loading = useAppSelector(selectChamadoLoading);
+  const error = useAppSelector(selectChamadoError);
 
   const getAll = useCallback(() => {
     return dispatch(fetchChamados());
@@ -44,7 +43,6 @@ export const useChamado = () => {
 
   const update = useCallback(
     (id: number, data: Chamado) => {
-      console.log('data: ', data);
       return dispatch(updateChamado({ id, data }));
     },
     [dispatch]

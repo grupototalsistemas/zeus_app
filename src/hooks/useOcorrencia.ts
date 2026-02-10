@@ -1,111 +1,56 @@
-import { OcorrenciaService } from '@/service/ocorrencia.service';
 import {
-  addOcorrencia,
+  clearError,
   clearOcorrencia,
-  removeOcorrencia,
+  createOcorrencia,
+  deleteOcorrenciaAsync,
+  fetchOcorrencias,
   selectError,
   selectLoading,
   selectOcorrencias,
   selectOcorrenciasAtivas,
   selectOcorrenciaSelecionada,
   selectOcorrenciasFormatadas,
-  setError,
-  setLoading,
-  setOcorrencias,
   setOcorrenciaSelecionada,
-  updateOcorrencia,
+  updateOcorrenciaAsync,
 } from '@/store/slices/ocorrenciaSlice';
 import { Ocorrencia } from '@/types/chamadoOcorrencia.type';
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from './useRedux';
 
 export const useOcorrencia = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // Seletores
 
-  const ocorrencias = useSelector(selectOcorrencias);
-  const ocorrenciaSelecionada = useSelector(selectOcorrenciaSelecionada);
-  const loading = useSelector(selectLoading);
-  const error = useSelector(selectError);
-  const ocorrenciasFormatadas = useSelector(selectOcorrenciasFormatadas);
-  const ocorrenciasAtivas = useSelector(selectOcorrenciasAtivas);
+  const ocorrencias = useAppSelector(selectOcorrencias);
+  const ocorrenciaSelecionada = useAppSelector(selectOcorrenciaSelecionada);
+  const loading = useAppSelector(selectLoading);
+  const error = useAppSelector(selectError);
+  const ocorrenciasFormatadas = useAppSelector(selectOcorrenciasFormatadas);
+  const ocorrenciasAtivas = useAppSelector(selectOcorrenciasAtivas);
 
   // Ações assíncronas para Ocorrências
-  const fetchOcorrencias = useCallback(async () => {
-    try {
-      dispatch(setLoading(true));
-      dispatch(setError(null));
-
-      const response = await OcorrenciaService.getOcorrencias();
-      dispatch(setOcorrencias(response));
-    } catch (error) {
-      console.error('Erro ao buscar ocorrências:', error);
-      dispatch(setError('Erro ao carregar ocorrências'));
-    } finally {
-      dispatch(setLoading(false));
-    }
+  const handleFetchOcorrencias = useCallback(() => {
+    return dispatch(fetchOcorrencias());
   }, [dispatch]);
 
-  const createOcorrencia = useCallback(
-    async (ocorrencia: Omit<Ocorrencia, 'id'>) => {
-      try {
-        dispatch(setLoading(true));
-        dispatch(setError(null));
-
-        const newOcorrencia =
-          await OcorrenciaService.createOcorrencia(ocorrencia);
-        dispatch(addOcorrencia(newOcorrencia));
-        return newOcorrencia;
-      } catch (error) {
-        console.error('Erro ao criar ocorrência:', error);
-        dispatch(setError('Erro ao criar ocorrência'));
-        throw error;
-      } finally {
-        dispatch(setLoading(false));
-      }
+  const handleCreateOcorrencia = useCallback(
+    (ocorrencia: Omit<Ocorrencia, 'id'>) => {
+      return dispatch(createOcorrencia(ocorrencia));
     },
     [dispatch]
   );
 
-  const editOcorrencia = useCallback(
-    async (ocorrencia: Ocorrencia) => {
-      try {
-        dispatch(setLoading(true));
-        dispatch(setError(null));
-
-        const updatedOcorrencia = await OcorrenciaService.updateOcorrencia(
-          ocorrencia.id!,
-          ocorrencia
-        );
-        dispatch(updateOcorrencia(updatedOcorrencia));
-        return updatedOcorrencia;
-      } catch (error) {
-        console.error('Erro ao editar ocorrência:', error);
-        dispatch(setError('Erro ao editar ocorrência'));
-        throw error;
-      } finally {
-        dispatch(setLoading(false));
-      }
+  const handleEditOcorrencia = useCallback(
+    (ocorrencia: Ocorrencia) => {
+      return dispatch(updateOcorrenciaAsync(ocorrencia));
     },
     [dispatch]
   );
 
-  const deleteOcorrencia = useCallback(
-    async (id: number) => {
-      try {
-        dispatch(setLoading(true));
-        dispatch(setError(null));
-
-        await OcorrenciaService.deleteOcorrencia(id);
-        dispatch(removeOcorrencia(id));
-      } catch (error) {
-        console.error('Erro ao excluir ocorrência:', error);
-        dispatch(setError('Erro ao excluir ocorrência'));
-        throw error;
-      } finally {
-        dispatch(setLoading(false));
-      }
+  const handleDeleteOcorrencia = useCallback(
+    (id: number) => {
+      return dispatch(deleteOcorrenciaAsync(id));
     },
     [dispatch]
   );
@@ -123,8 +68,8 @@ export const useOcorrencia = () => {
     dispatch(clearOcorrencia());
   }, [dispatch]);
 
-  const clearError = useCallback(() => {
-    dispatch(setError(null));
+  const resetError = useCallback(() => {
+    dispatch(clearError());
   }, [dispatch]);
 
   // Selecionar por Id e mostrar o selecionado
@@ -142,15 +87,15 @@ export const useOcorrencia = () => {
     ocorrenciasAtivas,
 
     // Ações assíncronas - Ocorrências
-    fetchOcorrencias,
-    createOcorrencia,
-    editOcorrencia,
-    deleteOcorrencia,
+    fetchOcorrencias: handleFetchOcorrencias,
+    createOcorrencia: handleCreateOcorrencia,
+    editOcorrencia: handleEditOcorrencia,
+    deleteOcorrencia: handleDeleteOcorrencia,
 
     // Ações síncronas
     selectOcorrencia,
     clearOcorrenciaData,
-    clearError,
+    clearError: resetError,
     selectOcorrenciaById,
   };
 };

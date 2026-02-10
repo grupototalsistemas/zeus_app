@@ -1,4 +1,3 @@
-import { RootState } from '@/store/rootReducer';
 import {
   clearError,
   clearEtapaAtual,
@@ -15,20 +14,19 @@ import {
   updateEtapa,
 } from '@/store/slices/etapaMovimento.slice';
 import { ChamadoMovimentoEtapa } from '@/types/chamadoMovimentoEtapa.type';
-import { ThunkDispatch } from '@reduxjs/toolkit';
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from './useRedux';
 
 export const useEtapaMovimento = () => {
-  const dispatch = useDispatch<ThunkDispatch<RootState, unknown, any>>();
+  const dispatch = useAppDispatch();
 
   // Seletores
-  const etapas = useSelector(selectEtapas);
-  const etapasFormatadas = useSelector(selectEtapasFormatadas);
-  const etapasAtivas = useSelector(selectEtapasAtivas);
-  const etapaAtual = useSelector(selectEtapaAtual);
-  const loading = useSelector(selectLoadingEtapa);
-  const error = useSelector(selectErrorEtapa);
+  const etapas = useAppSelector(selectEtapas);
+  const etapasFormatadas = useAppSelector(selectEtapasFormatadas);
+  const etapasAtivas = useAppSelector(selectEtapasAtivas);
+  const etapaAtual = useAppSelector(selectEtapaAtual);
+  const loading = useAppSelector(selectLoadingEtapa);
+  const error = useAppSelector(selectErrorEtapa);
 
   // Ações assíncronas
   const handleFetchEtapas = useCallback(async () => {

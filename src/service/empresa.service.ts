@@ -5,7 +5,7 @@ const getEmpresas = async (params?: {
   id_pessoa_juridica_empresa?: number;
 }): Promise<Empresa[]> => {
   const response = await api.get(
-    `/pessoa-juridica/fornecedores?id_pessoa_juridica_empresa=${params?.id_pessoa_juridica_empresa}`
+    `/pessoa-juridica/fornecedores/com-chamados/${params?.id_pessoa_juridica_empresa}`
   );
   return response.data;
 };

@@ -12,19 +12,20 @@ import {
   selectMovimentoMensagens,
   updateMovimentoMensagem,
 } from '@/store/slices/movimentoMensagemSlice';
-import { AppDispatch } from '@/store/store';
 import { ChamadoMovimentoMensagem } from '@/types/chamadoMovimentoMensagem.type';
 
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from './useRedux';
 
 export const useMovimentoMensagem = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
 
-  const movimentoMensagens = useSelector(selectMovimentoMensagens);
-  const currentMovimentoMensagem = useSelector(selectCurrentMovimentoMensagem);
-  const loading = useSelector(selectMovimentoMensagemLoading);
-  const error = useSelector(selectMovimentoMensagemError);
+  const movimentoMensagens = useAppSelector(selectMovimentoMensagens);
+  const currentMovimentoMensagem = useAppSelector(
+    selectCurrentMovimentoMensagem
+  );
+  const loading = useAppSelector(selectMovimentoMensagemLoading);
+  const error = useAppSelector(selectMovimentoMensagemError);
 
   const getAll = useCallback(() => {
     return dispatch(fetchMovimentoMensagens());

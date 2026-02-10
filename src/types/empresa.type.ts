@@ -1,4 +1,8 @@
 import { BaseEntity } from './base.type';
+import { Pessoas } from './pessoa.type';
+import { PessoasJuridicasJuridicas } from './pessoasJuridicasJuridicas.type';
+import { PessoasOrigens } from './pessoasOrigens.type';
+import { PessoasTipo } from './pessoaTipo.type';
 
 export interface PessoasJuridicas extends BaseEntity {
   id_pessoa: number;
@@ -21,4 +25,8 @@ export interface Empresa extends BaseEntity {
   insc_estadual: string;
   insc_municipal: string;
   filial_principal: number;
+  pessoa?: Pessoas;
+  pessoaTipo?: PessoasTipo;
+  pessoaOrigem?: PessoasOrigens;
+  vinculoJuridico?: PessoasJuridicasJuridicas[];
 }

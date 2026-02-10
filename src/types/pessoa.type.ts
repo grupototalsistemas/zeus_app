@@ -1,4 +1,7 @@
 import { BaseEntity } from './base.type';
+import { PessoasContatos } from './pessoasContatos.type';
+import { PessoasDadosAdicionais } from './pessoasDadosAdicionais.type';
+import { PessoasEnderecos } from './pessoasEnderecos.type';
 
 export interface Pessoas extends BaseEntity {
   id_pessoa_tipo: number;
@@ -7,6 +10,9 @@ export interface Pessoas extends BaseEntity {
   chave?: string;
   senha?: string;
   codigo?: string;
+  pessoasEnderecos?: PessoasEnderecos[];
+  pessoasContatos?: PessoasContatos[];
+  pessoasDadosAdicionais?: PessoasDadosAdicionais[];
 }
 
 export interface PessoaResponse extends BaseEntity {
@@ -16,4 +22,7 @@ export interface PessoaResponse extends BaseEntity {
   codigo?: string;
   chave?: string;
   senha?: string;
+  pessoasEnderecos?: PessoasEnderecos[];
+  pessoasContatos?: PessoasContatos[];
+  pessoasDadosAdicionais?: PessoasDadosAdicionais[];
 }

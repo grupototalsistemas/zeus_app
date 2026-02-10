@@ -12,19 +12,18 @@ import {
   selectEmpresaSistemas,
   updateEmpresaSistema,
 } from '@/store/slices/empresaSistemaSlice';
-import { AppDispatch } from '@/store/store';
 import { EmpresaSistema } from '@/types/empresaSistema.type';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from './useRedux';
 
 export const useEmpresaSistema = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
 
-  const empresaSistemas = useSelector(selectEmpresaSistemas);
-  const currentEmpresaSistema = useSelector(selectCurrentEmpresaSistema);
-  const loading = useSelector(selectEmpresaSistemaLoading);
-  const error = useSelector(selectEmpresaSistemaError);
+  const empresaSistemas = useAppSelector(selectEmpresaSistemas);
+  const currentEmpresaSistema = useAppSelector(selectCurrentEmpresaSistema);
+  const loading = useAppSelector(selectEmpresaSistemaLoading);
+  const error = useAppSelector(selectEmpresaSistemaError);
 
   const getAll = useCallback(() => {
     return dispatch(fetchEmpresaSistemas());

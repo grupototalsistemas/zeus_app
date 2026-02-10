@@ -1,5 +1,11 @@
+import { PerfilService } from '@/service/perfil.service';
 import { Perfil } from '@/types/pessoaPerfil.type';
-import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSelector,
+  createSlice,
+  PayloadAction,
+} from '@reduxjs/toolkit';
 import { RootState } from '../rootReducer';
 
 interface PerfilState {
@@ -18,6 +24,43 @@ const initialState: PerfilState = {
   error: null,
 };
 
+// Async Thunks
+export const fetchPerfis = createAsyncThunk(
+  'pessoa_perfil/fetchAll',
+  async () => {
+    return await PerfilService.getPerfis();
+  }
+);
+
+export const fetchPerfilById = createAsyncThunk(
+  'pessoa_perfil/fetchById',
+  async (id: number) => {
+    return await PerfilService.getPerfil(id);
+  }
+);
+
+export const createPerfil = createAsyncThunk(
+  'pessoa_perfil/create',
+  async (data: Omit<Perfil, 'id'>) => {
+    return await PerfilService.createPerfil(data);
+  }
+);
+
+export const updatePerfilAsync = createAsyncThunk(
+  'pessoa_perfil/update',
+  async (data: Perfil) => {
+    return await PerfilService.updatePerfil(data.id!, data);
+  }
+);
+
+export const deletePerfilAsync = createAsyncThunk(
+  'pessoa_perfil/delete',
+  async (id: number) => {
+    await PerfilService.deletePerfil(id);
+    return id;
+  }
+);
+
 const PerfilSlice = createSlice({
   name: 'pessoa_perfil',
   initialState,
@@ -28,6 +71,9 @@ const PerfilSlice = createSlice({
 
     setError(state, action: PayloadAction<string | null>) {
       state.error = action.payload;
+    },
+    clearError(state) {
+      state.error = null;
     },
 
     setPerfis(state, action: PayloadAction<Perfil[]>) {
@@ -63,11 +109,83 @@ const PerfilSlice = createSlice({
       state.error = null;
     },
   },
+  extraReducers: (builder) => {
+    builder
+      // Fetch All
+      .addCase(fetchPerfis.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchPerfis.fulfilled, (state, action) => {
+        state.loading = false;
+        state.perfis = action.payload;
+      })
+      .addCase(fetchPerfis.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Erro ao carregar perfis';
+      })
+      // Fetch By Id
+      .addCase(fetchPerfilById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchPerfilById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.perfilSelecionado = action.payload;
+      })
+      .addCase(fetchPerfilById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Erro ao carregar perfil';
+      })
+      // Create
+      .addCase(createPerfil.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createPerfil.fulfilled, (state, action) => {
+        state.loading = false;
+        state.perfis.push(action.payload);
+      })
+      .addCase(createPerfil.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Erro ao criar perfil';
+      })
+      // Update
+      .addCase(updatePerfilAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updatePerfilAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.perfis.findIndex((p) => p.id === action.payload.id);
+        if (index !== -1) {
+          state.perfis[index] = action.payload;
+        }
+      })
+      .addCase(updatePerfilAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Erro ao atualizar perfil';
+      })
+      // Delete
+      .addCase(deletePerfilAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deletePerfilAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.perfis = state.perfis.filter((p) => p.id !== action.payload);
+      })
+      .addCase(deletePerfilAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Erro ao excluir perfil';
+      });
+  },
 });
 
 export const {
   setLoading,
   setError,
+  clearError,
   setPerfis,
   addPerfil,
   updatePerfil,

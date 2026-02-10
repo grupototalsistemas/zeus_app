@@ -37,6 +37,7 @@ export default function EmpresaList() {
     resetError,
     removeEmpresa,
   } = useEmpresa();
+  // console.log('Empresas:', empresas);
 
   const itemsPerPage = 10;
   const totalPages = Math.ceil(empresas.length / itemsPerPage);
@@ -51,17 +52,13 @@ export default function EmpresaList() {
         options: [
           {
             label: 'Ativo',
-            value: StatusRegistro.ATIVO,
-            count: empresas.filter(
-              (item) => item.ativo === StatusRegistro.ATIVO
-            ).length,
+            value: 1,
+            count: empresas.filter((item) => item.situacao === 1).length,
           },
           {
             label: 'Inativo',
-            value: StatusRegistro.INATIVO,
-            count: empresas.filter(
-              (item) => item.ativo === StatusRegistro.INATIVO
-            ).length,
+            value: 0,
+            count: empresas.filter((item) => item.situacao === 0).length,
           },
         ],
       },
@@ -131,7 +128,7 @@ export default function EmpresaList() {
 
   const handleDelete = async (empresa: Empresa) => {
     const confirmDelete = window.confirm(
-      `Tem certeza que deseja excluir o/a "${empresa.nomeFantasia}"?\n\nEsta ação não pode ser desfeita.`
+      `Tem certeza que deseja excluir o/a "${empresa.nome_fantasia}"?\n\nEsta ação não pode ser desfeita.`
     );
 
     if (!confirmDelete) return;
@@ -276,7 +273,18 @@ export default function EmpresaList() {
               >
                 Cidade/Estado
               </TableCell>
-
+              <TableCell
+                isHeader
+                className="text-theme-xs py-3 text-center font-medium text-gray-500 dark:text-gray-400"
+              >
+                Sistemas Permitidos
+              </TableCell>
+              <TableCell
+                isHeader
+                className="text-theme-xs py-3 text-center font-medium text-gray-500 dark:text-gray-400"
+              >
+                Chamados Abertos
+              </TableCell>
               <TableCell
                 isHeader
                 className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
@@ -323,6 +331,12 @@ export default function EmpresaList() {
                   </TableCell>
                   <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
                     {formatCNPJ(empresa.cnpj)}
+                  </TableCell>
+                  <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
+                    RJ
+                  </TableCell>
+                  <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
+                    RJ
                   </TableCell>
                   <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
                     RJ
@@ -393,10 +407,6 @@ export default function EmpresaList() {
                               <strong>Categoria:</strong>{' '}
                               {empresa.pessoaOrigem?.descricao || '-'}
                             </p>
-                            <p>
-                              <strong>Empresa Pai:</strong>{' '}
-                              {empresa.parentId || 'Matriz'}
-                            </p>
                           </div>
 
                           <div>
@@ -405,24 +415,39 @@ export default function EmpresaList() {
                             </h4>
                             <p>
                               <strong>Logradouro:</strong>{' '}
-                              {empresa.logradouro || '-'}
+                              {empresa.pessoa?.pessoasEnderecos
+                                ?.map((endereco) => endereco.logradouro || '')
+                                .join(', ') || '-'}
                             </p>
                             <p>
                               <strong>Endereço:</strong>{' '}
-                              {empresa.endereco || '-'}
+                              {empresa.pessoa?.pessoasEnderecos
+                                ?.map((endereco) => endereco.endereco || '')
+                                .join(', ') || '-'}
                             </p>
                             <p>
-                              <strong>Número:</strong> {empresa.numero || '-'}
+                              <strong>Número:</strong>{' '}
+                              {empresa.pessoa?.pessoasEnderecos
+                                ?.map((endereco) => endereco.numero || '')
+                                .join(', ') || '-'}
                             </p>
                             <p>
                               <strong>Complemento:</strong>{' '}
-                              {empresa.complemento || '-'}
+                              {empresa.pessoa?.pessoasEnderecos
+                                ?.map((endereco) => endereco.complemento || '')
+                                .join(', ') || '-'}
                             </p>
                             <p>
-                              <strong>Bairro:</strong> {empresa.bairro || '-'}
+                              <strong>Bairro:</strong>{' '}
+                              {empresa.pessoa?.pessoasEnderecos
+                                ?.map((endereco) => endereco.bairro || '')
+                                .join(', ') || '-'}
                             </p>
                             <p>
-                              <strong>CEP:</strong> {empresa.cep || '-'}
+                              <strong>CEP:</strong>{' '}
+                              {empresa.pessoa?.pessoasEnderecos
+                                ?.map((endereco) => endereco.cep || '')
+                                .join(', ') || '-'}
                             </p>
                           </div>
                         </div>
@@ -434,10 +459,25 @@ export default function EmpresaList() {
                             </h4>
                             <p>
                               <strong>Telefone:</strong>{' '}
-                              {empresa.contato || '-'}
+                              {empresa.pessoa?.pessoasContatos
+                                ?.map((contato) => {
+                                  contato.id_pessoa_contato_tipo === '2' ||
+                                  contato.id_pessoa_contato_tipo === '3' ||
+                                  contato.id_pessoa_contato_tipo === '4'
+                                    ? contato.descricao
+                                    : '';
+                                })
+                                .join(', ') || '-'}
                             </p>
                             <p>
-                              <strong>Email:</strong> {empresa.email || '-'}
+                              <strong>Email:</strong>{' '}
+                              {empresa.pessoa?.pessoasContatos
+                                ?.map((contato) =>
+                                  contato.id_pessoa_contato_tipo === '1'
+                                    ? contato.descricao
+                                    : ''
+                                )
+                                .join(', ') || '-'}
                             </p>
                           </div>
 
@@ -459,15 +499,6 @@ export default function EmpresaList() {
                             )}
                           </div>
                         </div>
-
-                        {empresa.observacao && (
-                          <div className="border-t border-gray-200 pt-2 dark:border-gray-700">
-                            <h4 className="mb-2 font-semibold text-gray-900 dark:text-gray-100">
-                              Observações
-                            </h4>
-                            <p>{empresa.observacao}</p>
-                          </div>
-                        )}
                       </div>
                     </TableCell>
                   </TableRow>

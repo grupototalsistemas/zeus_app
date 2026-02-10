@@ -13,19 +13,20 @@ import {
   selectPessoaUsuariosFormatados,
   updatePessoaUsuario,
 } from '@/store/slices/pessoaUsuarioSlice';
-import { AppDispatch } from '@/store/store';
 import { PessoaUsuario } from '@/types/pessoaUsuario.type';
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from './useRedux';
 
 export const usePessoaUsuario = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
 
-  const pessoaUsuarios = useSelector(selectPessoaUsuarios);
-  const currentPessoaUsuario = useSelector(selectCurrentPessoaUsuario);
-  const loading = useSelector(selectPessoaUsuarioLoading);
-  const selectUsuarioFormatados = useSelector(selectPessoaUsuariosFormatados);
-  const error = useSelector(selectPessoaUsuarioError);
+  const pessoaUsuarios = useAppSelector(selectPessoaUsuarios);
+  const currentPessoaUsuario = useAppSelector(selectCurrentPessoaUsuario);
+  const loading = useAppSelector(selectPessoaUsuarioLoading);
+  const selectUsuarioFormatados = useAppSelector(
+    selectPessoaUsuariosFormatados
+  );
+  const error = useAppSelector(selectPessoaUsuarioError);
 
   const getAll = useCallback(() => {
     return dispatch(fetchPessoaUsuarios());

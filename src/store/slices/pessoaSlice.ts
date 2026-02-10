@@ -35,17 +35,7 @@ const initialState: PessoaState = {
   pessoas: [],
   currentPessoa: null,
   pessoaLogada: null,
-  pessoaInfo: {
-    id: '',
-    email: '',
-    login: '',
-    pessoaId: '',
-    nome: '',
-    nomeSocial: '',
-    perfilId: '',
-    genero: '',
-    perfil: '',
-  },
+  pessoaInfo: {} as loginResponse,
   loading: false,
   error: null,
 };

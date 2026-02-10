@@ -61,38 +61,39 @@ const navItems: NavItem[] = [
   },
   {
     icon: <UserCircleIcon className="text-gray-900 dark:text-white" />,
-    name: 'Pessoas',
+    name: 'Funcionarios',
     subItems: [
-      { name: 'Gerenciar Pessoas', path: '/gerenciar-pessoa', pro: false },
-      { name: 'Listar Pessoas', path: '/listar-pessoa', pro: false },
-      { name: 'Gerenciar Usuarios', path: '/gerenciar-usuarios', pro: false },
-      {
-        name: 'Gerenciar Perfis',
-        path: '/gerenciar-perfis',
-        pro: false,
-      },
-      {
-        name: 'Gerenciar Funções de Pessoas',
-        path: '/gerenciar-tipo',
-        pro: false,
-      },
+      { name: 'Gerenciar Funcionarios', path: '/gerenciar-pessoa', pro: false },
+      { name: 'Listar Funcionarios', path: '/listar-pessoa', pro: false },
+      // { name: 'Gerenciar Usuarios', path: '/gerenciar-usuarios', pro: false },
+      // {
+      //   name: 'Gerenciar Perfis',
+      //   path: '/gerenciar-perfis',
+      //   pro: false,
+      // },
+      // {
+      //   name: 'Gerenciar Funções de Pessoas',
+      //   path: '/gerenciar-tipo',
+      //   pro: false,
+      // },
     ],
   },
   {
     icon: <Empresa className="text-gray-900 dark:text-white" />,
     name: 'Empresas',
     subItems: [
-      { name: 'Gerenciar empresa', path: '/gerenciar-empresa', pro: false },
+      // { name: 'Gerenciar empresa', path: '/gerenciar-empresa', pro: false },
       { name: 'Listar empresas', path: '/listar-empresas', pro: false },
+
+      { name: 'Listar Sistemas', path: '/gerenciar-sistema', pro: false },
       {
-        name: 'Gerenciar Categorias de Empresas',
-        path: '/gerenciar-categoria',
+        name: 'Listar Tipos',
+        path: '/gerenciar-tipo-empresa',
         pro: false,
       },
-      { name: 'Gerenciar Sistemas', path: '/gerenciar-sistema', pro: false },
       {
-        name: 'Gerenciar Tipo de Empresa',
-        path: '/gerenciar-tipo-empresa',
+        name: 'Listar Origens',
+        path: '/gerenciar-categoria',
         pro: false,
       },
     ],
