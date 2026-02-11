@@ -49,7 +49,7 @@ interface TicketFormBaseProps {
 }
 
 interface Option {
-  value: number;
+  value: string | number;
   label: string;
 }
 
@@ -62,6 +62,8 @@ export function TicketFormBase({
   const prioridades = useSelector(selectPrioridadesFormatadas);
   const { getByEmpresaFormatados } = useEmpresaSistema();
   const [sistemas, setSistemas] = useState<Option[]>([]);
+  const [sistemasDefinidosPelaEmpresa, setSistemasDefinidosPelaEmpresa] =
+    useState(false);
   const [anexosFiles, setAnexosFiles] = useState<File[]>([]);
   const { pessoaInfo } = useSelector((state: RootState) => state.pessoa);
   const [resetDropzone, setResetDropzone] = useState(false);
@@ -93,13 +95,26 @@ export function TicketFormBase({
     },
   });
 
+  const mapEmpresaSistemasToOptions = (empresa: Empresa): Option[] => {
+    return (
+      empresa.pessoasJuridicasSistemas?.map((item) => ({
+        value: item.sistema?.id?.toString?.() || '',
+        label:
+          item.sistema?.nome ||
+          item.sistema?.sistema ||
+          item.sistema?.descricao ||
+          'Sistema sem nome',
+      })) || []
+    ).filter((option) => option.value !== '');
+  };
+
   useEffect(() => {
     console.log('empresaId: ');
     const empresaId = watch('empresaId');
-    if (empresaId) {
+    if (empresaId && !sistemasDefinidosPelaEmpresa) {
       pegarSitemas(empresaId);
     }
-  }, [watch('empresaId')]);
+  }, [watch('empresaId'), sistemasDefinidosPelaEmpresa]);
 
   const pegarSitemas = async (id_empresa: string) => {
     const sistemas = await getByEmpresaFormatados(id_empresa);
@@ -202,6 +217,7 @@ export function TicketFormBase({
 
         // Limpar lista de sistemas
         setSistemas([]);
+        setSistemasDefinidosPelaEmpresa(false);
       }
     } catch (error) {
       // O erro será tratado no componente pai (CreateTicketPage)
@@ -236,9 +252,24 @@ export function TicketFormBase({
                 onSelect={(empresa: Empresa | null) => {
                   if (empresa) {
                     setValue('empresaId', empresa.id?.toString() || '');
+                    const sistemasEmpresa = mapEmpresaSistemasToOptions(empresa);
+
+                    if (sistemasEmpresa.length > 0) {
+                      setSistemasDefinidosPelaEmpresa(true);
+                      setSistemas(sistemasEmpresa);
+                      setValue('sistemaId', sistemasEmpresa[0].value.toString());
+                    } else {
+                      setSistemasDefinidosPelaEmpresa(false);
+                      setValue('sistemaId', '');
+                    }
+
                     trigger('empresaId');
+                    trigger('sistemaId');
                   } else {
+                    setSistemasDefinidosPelaEmpresa(false);
                     setValue('empresaId', '');
+                    setValue('sistemaId', '');
+                    setSistemas([]);
                   }
                 }}
                 disabled={isSubmitting}

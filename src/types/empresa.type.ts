@@ -16,6 +16,17 @@ export interface PessoasJuridicas extends BaseEntity {
   filial_principal?: number;
 }
 
+export interface EmpresaSistemaResumo {
+  id: number | string;
+  nome?: string;
+  sistema?: string;
+  descricao?: string;
+}
+
+export interface PessoaJuridicaSistemaVinculo {
+  sistema: EmpresaSistemaResumo;
+}
+
 // Manter interface legada para compatibilidade
 export interface Empresa extends BaseEntity {
   id_pessoa: number;
@@ -30,5 +41,6 @@ export interface Empresa extends BaseEntity {
   pessoaTipo?: PessoasTipo;
   pessoaOrigem?: PessoasOrigens;
   vinculoJuridico?: PessoasJuridicasJuridicas[];
-  chamados?: Chamado[]; // Substituir por tipo específico de Chamado quando disponível
+  pessoasJuridicasSistemas?: PessoaJuridicaSistemaVinculo[];
+  chamados?: Chamado[]; // Substituir por tipo especifico de Chamado quando disponivel
 }

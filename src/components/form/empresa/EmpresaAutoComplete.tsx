@@ -74,6 +74,9 @@ export default function EmpresaAutocomplete({
 
   // Buscar empresas quando o termo de pesquisa mudar
   useEffect(() => {
+    // console.log('Debounced Search:', debouncedSearch);
+    // console.log('Selected Empresa:', selectedEmpresa);
+    // console.log('Empresas disponíveis:', empresas);
     if (selectedEmpresa) return;
 
     const searchEmpresas = async () => {
@@ -89,7 +92,7 @@ export default function EmpresaAutocomplete({
         const response =
           empresas?.length > 0 ? empresas : await EmpresaService.getEmpresas();
         const filtered = response.filter((empresa) =>
-          empresa.nome_fantasia
+          (empresa.nome_fantasia || empresa.razao_social)
             .toLowerCase()
             .includes(debouncedSearch.toLowerCase())
         );
@@ -122,7 +125,7 @@ export default function EmpresaAutocomplete({
   };
 
   const handleCreateEmpresa = async () => {
-    if (!newEmpresa.nome_fantasia || !newEmpresa.tipoId) {
+    if (!newEmpresa.nome_fantasia || !newEmpresa.razao_social || !newEmpresa.pessoaTipo) {
       setError('Nome, função e serventia são obrigatórios');
       return;
     }
@@ -166,7 +169,7 @@ export default function EmpresaAutocomplete({
       {/* Mostrar info da empresa selecionada */}
       {selectedEmpresa && (
         <div className="mt-2 flex items-center justify-between rounded bg-gray-100 p-2 text-sm dark:bg-gray-700">
-          <span>{selectedEmpresa.nome_fantasia}</span>
+          <span>{selectedEmpresa.nome_fantasia || selectedEmpresa.razao_social}</span>
           <button
             type="button"
             onClick={handleClearSelection}
@@ -193,7 +196,7 @@ export default function EmpresaAutocomplete({
                     className="cursor-pointer rounded-md px-4 py-2 hover:bg-gray-500"
                     onClick={() => handleSelect(empresa)}
                   >
-                    {empresa.nome_fantasia}
+                    {empresa.nome_fantasia || empresa.razao_social}
                   </li>
                 ))}
               </ul>

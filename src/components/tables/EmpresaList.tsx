@@ -273,12 +273,7 @@ export default function EmpresaList() {
               >
                 Cidade/Estado
               </TableCell>
-              <TableCell
-                isHeader
-                className="text-theme-xs py-3 text-center font-medium text-gray-500 dark:text-gray-400"
-              >
-                Sistemas Permitidos
-              </TableCell>
+              
               <TableCell
                 isHeader
                 className="text-theme-xs py-3 text-center font-medium text-gray-500 dark:text-gray-400"
@@ -335,9 +330,7 @@ export default function EmpresaList() {
                   <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
                     RJ
                   </TableCell>
-                  <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
-                    RJ
-                  </TableCell>
+                  
                   <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
                     {empresa.chamados.length > 0
                       ? empresa.chamados.length

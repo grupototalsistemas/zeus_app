@@ -72,26 +72,26 @@ export const useEmpresaSistema = () => {
     return dispatch(clearError());
   }, [dispatch]);
 
-  // Formatação dos sistemas em value e label para select
+  // Formatacao dos sistemas em value e label para select
   const getByEmpresaFormatados = useCallback(
     async (empresaId: string) => {
-      // dispara a action para buscar os sistemas dessa empresa
       const resultAction = await dispatch(
         fetchEmpresaSistemaByEmpresa(Number(empresaId))
       );
-
-      // unwrapResult para pegar payload direto se quiser tratar erro
       const data = unwrapResult(resultAction);
-
-      // como o payload vem no resultAction.payload
 
       if (!data) return [];
 
-      // transforma em { value, label }
-      return data.map((es) => ({
-        value: es.sistema.id, // ou es.id, depende de qual você quer no select
-        label: es.sistema.nome, // nome do sistema
-      }));
+      return data
+        .map((es) => ({
+          value: es.sistema?.id?.toString?.() || '',
+          label:
+            es.sistema?.nome ||
+            es.sistema?.sistema ||
+            es.sistema?.descricao ||
+            'Sistema sem nome',
+        }))
+        .filter((item) => item.value !== '');
     },
     [dispatch]
   );
