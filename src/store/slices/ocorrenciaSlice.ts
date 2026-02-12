@@ -184,20 +184,19 @@ export const selectLoading = (state: RootState) =>
 
 export const selectError = (state: RootState) => state.chamado_ocorrencia.error;
 
-// Seletores derivados memoizados
+// // Seletores derivados memoizados
 export const selectOcorrenciasFormatadas = createSelector(
   [selectOcorrencias],
   (ocorrencias) =>
-    ocorrencias.map((ocorrencia) => ({
+    (ocorrencias || []).map((ocorrencia) => ({
       value: ocorrencia.id || 0,
-      label: ocorrencia.descricao,
+      label: ocorrencia.descricao || '',
     }))
 );
 
 export const selectOcorrenciasAtivas = createSelector(
   [selectOcorrencias],
-  (ocorrencias) =>
-    ocorrencias.filter((ocorrencia) => ocorrencia.ativo === 'ATIVO')
+  (ocorrencias) => ocorrencias.filter((ocorrencia) => ocorrencia.situacao === 1)
 );
 
 export default OcorrenciaSlice.reducer;

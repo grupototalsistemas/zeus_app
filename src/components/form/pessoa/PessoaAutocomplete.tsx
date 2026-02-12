@@ -78,9 +78,14 @@ export default function PessoaAutocomplete({
       setError(null);
 
       try {
-        const response = await PessoaService.getPessoas();
+        const response = await PessoaService.getPessoas(empresaId);
         const filtered = response.filter((pessoa) =>
-          pessoa.nome.toLowerCase().includes(debouncedSearch.toLowerCase())
+          (
+            pessoa.pessoaFisica?.nome_social ||
+            pessoa.pessoaFisica?.nome_registro
+          )
+            .toLowerCase()
+            .includes(debouncedSearch.toLowerCase())
         );
         setResults(filtered);
         setShowResults(true);
@@ -155,7 +160,10 @@ export default function PessoaAutocomplete({
       {/* Mostrar info da pessoa selecionada */}
       {selectedPessoa && (
         <div className="mt-2 flex items-center justify-between rounded bg-gray-100 p-2 text-sm dark:bg-gray-700">
-          <span>{selectedPessoa.nome}</span>
+          <span>
+            {selectedPessoa.pessoaFisica?.nome_social ||
+              selectedPessoa.pessoaFisica?.nome_registro}
+          </span>
           <button
             type="button"
             onClick={handleClearSelection}
@@ -182,7 +190,8 @@ export default function PessoaAutocomplete({
                     className="cursor-pointer rounded-md px-4 py-2 hover:bg-gray-500"
                     onClick={() => handleSelect(pessoa)}
                   >
-                    {pessoa.nome}
+                    {pessoa.pessoaFisica?.nome_social ||
+                      pessoa.pessoaFisica?.nome_registro}
                   </li>
                 ))}
               </ul>
