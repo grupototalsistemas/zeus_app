@@ -196,7 +196,8 @@ export const selectOcorrenciasFormatadas = createSelector(
 
 export const selectOcorrenciasAtivas = createSelector(
   [selectOcorrencias],
-  (ocorrencias) => ocorrencias.filter((ocorrencia) => ocorrencia.situacao === 1)
+  (ocorrencias) =>
+    (ocorrencias || []).filter((ocorrencia) => ocorrencia.situacao === 1)
 );
 
 export default OcorrenciaSlice.reducer;

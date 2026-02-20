@@ -21,7 +21,7 @@ const createChamado = async (data: CreateChamadoDto & { anexos?: File[] }) => {
     // 1. Primeiro, criar o chamado (sem anexos)
     const { anexos, ...chamadoData } = data;
 
-    const response = await api.post('/chamados', chamadoData, {
+    const response = await api.post('/chamados', [chamadoData], {
       headers: {
         'Content-Type': 'application/json',
       },

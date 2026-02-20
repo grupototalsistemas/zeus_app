@@ -18,17 +18,17 @@ export interface Chamado extends BaseEntity {
 
 // DTO principal de criação de chamado
 export interface CreateChamadoDto {
-  empresaId: number;
-  sistemaId: number;
-  pessoaId: number;
-  usuarioId: number;
-  ocorrenciaId: number;
-  prioridadeId: number;
+  id_pessoa_juridica: number;
+  id_sistema: number;
+  id_pessoa_empresa: number;
+  id_pessoa_usuario: number;
+  id_ocorrencia: number;
+  id_prioridade: number;
   protocolo?: string;
   titulo: string;
   descricao: string;
   observacao?: string;
   movimento?: MovimentoDto; // movimento inicial opcional
-  ativo?: StatusRegistro;
+  situacao?: StatusRegistro;
   anexos?: File[]; // arquivos anexados
 }

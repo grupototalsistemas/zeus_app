@@ -37,11 +37,11 @@ export enum StatusSiglaEstado {
 
 /** 1=Masculino, 2=Feminino, 3=Neutro, 4=Não Binarie, 5=Ignorado */
 export enum StatusGenero {
-  MASCULINO = 'MASCULINO',
-  FEMININO = 'FEMININO',
-  NEUTRO = 'NEUTRO',
-  NAO_BINARIE = 'NAO_BINARIE',
-  IGNORADO = 'IGNORADO',
+  CISGÊNERO = 1,
+  TRANSGÊNERO = 2,
+  NÃO_BINÁRIO = 3,
+  GÊNERO_FLUIDO = 4,
+  IGNORADO = 5,
 }
 
 /** 1=Sim, 2=Nao */

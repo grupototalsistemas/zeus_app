@@ -6,6 +6,8 @@ import { useDispatch } from 'react-redux';
 
 // Hooks de dados
 import LoadingScreen from '@/components/common/LoadingScreen';
+import { useOcorrencia } from '@/hooks/useOcorrencia';
+import { usePrioridade } from '@/hooks/usePrioridade';
 // import { useChamado } from '@/hooks/useChamado';
 // import { useEmpresaCategoria } from '@/hooks/useEmpresaCategoria';
 // import { useEmpresaSistema } from '@/hooks/useEmpresaSistema';
@@ -30,8 +32,8 @@ export default function InitialLoader() {
   // Hooks
   // const { getAll: getAllChamados } = useChamado();
   // const { getAll: getAllMovimentoMensagens } = useMovimentoMensagem();
-  // const { fetchPrioridades } = usePrioridade();
-  // const { fetchOcorrencias } = useOcorrencia();
+  const { fetchPrioridades } = usePrioridade();
+  const { fetchOcorrencias } = useOcorrencia();
   // const { fetchEtapas } = useEtapaMovimento();
   // const { buscarOcorrenciasTipos } = useOcorrenciaTipo();
   // const { getAll: getAllPessoaUsuarios } = usePessoaUsuario();
@@ -46,6 +48,8 @@ export default function InitialLoader() {
   useEffect(() => {
     const loadAllData = async () => {
       try {
+        await fetchPrioridades();
+        await fetchOcorrencias();
         setIsLoading(false);
         router.push('/listar-chamado');
       } catch (error) {

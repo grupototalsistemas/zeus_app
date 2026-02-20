@@ -36,7 +36,7 @@ const ticketSchema = z.object({
   ocorrenciaId: z.string().optional(),
   protocolo: z.string().optional(),
   observacao: z.string().optional(),
-  ativo: z.enum(StatusRegistro),
+  ativo: z.nativeEnum(StatusRegistro),
   anexos: z.array(z.instanceof(File)).optional(),
 });
 
@@ -78,6 +78,7 @@ export function TicketFormBase({
     watch,
     trigger,
     reset,
+    getValues,
   } = useForm<TicketFormData>({
     resolver: zodResolver(ticketSchema),
     defaultValues: {
@@ -89,7 +90,7 @@ export function TicketFormBase({
       prioridadeId: initialData?.prioridadeId ?? '',
       observacao: initialData?.observacao ?? '',
       pessoaId: initialData?.pessoaId ?? (pessoaInfo?.id || ''), // vem do redux
-      usuarioId: initialData?.usuarioId ?? (pessoaInfo?.id || ''), // vem do redux
+      usuarioId: '1', // vem do redux
       ativo: initialData?.ativo ?? StatusRegistro.ATIVO,
       protocolo: initialData?.protocolo ?? Date.now().toString(),
     },
@@ -132,6 +133,21 @@ export function TicketFormBase({
     }
   }, [initialData, setValue]);
 
+  useEffect(() => {
+    if (!pessoaInfo?.id) return;
+
+    const currentPessoaId = getValues('pessoaId');
+    const currentUsuarioId = getValues('usuarioId');
+
+    if (!currentPessoaId) {
+      setValue('pessoaId', pessoaInfo.id.toString());
+    }
+
+    // if (!currentUsuarioId) {
+    //   setValue('usuarioId', pessoaInfo.id.toString());
+    // }
+  }, [getValues, pessoaInfo?.id, setValue]);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
@@ -169,13 +185,16 @@ export function TicketFormBase({
   }, [errors]);
 
   const handleFormSubmit = async (data: TicketFormData) => {
+    console.log('Dados do formulário antes do submit:', data);
     const formDataWithFiles = {
       ...data,
       anexos: anexosFiles,
     };
 
     try {
-      await onSubmit(formDataWithFiles);
+      console.log('Dados do formulário com arquivos:', formDataWithFiles);
+      const result = await onSubmit(formDataWithFiles);
+      console.log('Resultado do submit:', result);
 
       // Só limpa os campos se for modo CREATE e não houve erro
       if (mode === 'create') {
@@ -225,6 +244,10 @@ export function TicketFormBase({
     }
   };
 
+  const handleFormInvalid = (formErrors: typeof errors) => {
+    console.log('Submit bloqueado por validacao:', formErrors);
+  };
+
   const handleDropzoneResetComplete = () => {
     setResetDropzone(false);
   };
@@ -244,7 +267,10 @@ export function TicketFormBase({
       <ComponentCard
         title={mode === 'create' ? 'Novo Chamado' : 'Editar Chamado'}
       >
-        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+        <form
+          onSubmit={handleSubmit(handleFormSubmit, handleFormInvalid)}
+          className="space-y-6"
+        >
           {/* Identificação */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
@@ -252,12 +278,16 @@ export function TicketFormBase({
                 onSelect={(empresa: Empresa | null) => {
                   if (empresa) {
                     setValue('empresaId', empresa.id?.toString() || '');
-                    const sistemasEmpresa = mapEmpresaSistemasToOptions(empresa);
+                    const sistemasEmpresa =
+                      mapEmpresaSistemasToOptions(empresa);
 
                     if (sistemasEmpresa.length > 0) {
                       setSistemasDefinidosPelaEmpresa(true);
                       setSistemas(sistemasEmpresa);
-                      setValue('sistemaId', sistemasEmpresa[0].value.toString());
+                      setValue(
+                        'sistemaId',
+                        sistemasEmpresa[0].value.toString()
+                      );
                     } else {
                       setSistemasDefinidosPelaEmpresa(false);
                       setValue('sistemaId', '');
@@ -307,6 +337,7 @@ export function TicketFormBase({
             <PessoaAutocomplete
               onSelect={(pessoa: Pessoa | null) => {
                 if (pessoa) {
+                  console.log('Pessoa selecionada no autocomplete:', pessoa);
                   setValue('pessoaId', pessoa.id?.toString() || '');
                   trigger('pessoaId');
                 } else {
@@ -406,7 +437,13 @@ export function TicketFormBase({
 
           {/* Ações */}
           <div className="flex justify-end gap-3">
-            <Button variant="primary" disabled={isSubmitting}>
+            <Button
+              variant="primary"
+              disabled={isSubmitting}
+              onClick={() =>
+                console.log('Clique no botao de submit:', getValues())
+              }
+            >
               {isSubmitting
                 ? mode === 'create'
                   ? 'Salvando...'

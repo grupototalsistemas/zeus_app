@@ -217,8 +217,7 @@ export const selectPrioridadesFormatadas = createSelector(
 );
 export const selectPrioridadesAtivas = createSelector(
   [selectPrioridades],
-  (prioridades) =>
-    prioridades.filter((prioridade) => prioridade.ativo === 'ATIVO')
+  (prioridades) => prioridades.filter((prioridade) => prioridade.situacao === 1)
 );
 
 export default PrioridadeSlice.reducer;

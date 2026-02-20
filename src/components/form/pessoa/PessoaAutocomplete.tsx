@@ -5,14 +5,14 @@ import { useAppSelector } from '@/hooks/useRedux';
 import { PessoaService } from '@/service/pessoa.service';
 import { selectPessoasTiposFormatados } from '@/store/slices/pessoaTipoSlice';
 import { StatusGenero } from '@/types/enum';
-import { Pessoa } from '@/types/pessoa.type';
+// import { Pessoas } from '@/types/pessoa.type';
+import { PessoasFisica } from '@/types';
 import { useEffect, useState } from 'react';
 import Label from '../Label';
-import Select from '../Select';
 import Input from '../input/InputField';
 
 interface PessoaAutocompleteProps {
-  onSelect: (pessoa: Pessoa | null) => void;
+  onSelect: (pessoa: PessoasFisica | null) => void;
   empresaId?: string;
   disabled?: boolean;
   resetSelection?: boolean; // Nova prop
@@ -27,22 +27,19 @@ export default function PessoaAutocomplete({
   onResetComplete,
 }: PessoaAutocompleteProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [results, setResults] = useState<Pessoa[]>([]);
+  const [results, setResults] = useState<PessoasFisica[]>([]);
   const [showResults, setShowResults] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Estado do formulário de criação
-  const [newPessoa, setNewPessoa] = useState<Partial<Pessoa>>({
-    nome: '',
-    genero: StatusGenero.IGNORADO,
-    tipoId: undefined,
-    empresaId: undefined,
-  });
+  const [newPessoa, setNewPessoa] = useState<Partial<PessoasFisica>>({});
 
   // Novo: estado da pessoa selecionada
-  const [selectedPessoa, setSelectedPessoa] = useState<Pessoa | null>(null);
+  const [selectedPessoa, setSelectedPessoa] = useState<PessoasFisica | null>(
+    null
+  );
 
   const pessoaTipos = useAppSelector(selectPessoasTiposFormatados);
   const debouncedSearch = useDebounce(searchTerm, 500);
@@ -87,6 +84,7 @@ export default function PessoaAutocomplete({
             .toLowerCase()
             .includes(debouncedSearch.toLowerCase())
         );
+        // console.log('Pessoas filtradas:', filtered);
         setResults(filtered);
         setShowResults(true);
       } catch (err) {
@@ -100,11 +98,15 @@ export default function PessoaAutocomplete({
     searchPessoas();
   }, [debouncedSearch, empresaId, selectedPessoa]);
 
-  const handleSelect = (pessoa: Pessoa) => {
-    setSelectedPessoa(pessoa); // 🚀 Marca a pessoa escolhida
-    setSearchTerm(pessoa.nome);
+  const handleSelect = (pessoa: PessoasFisica) => {
+    setSelectedPessoa(pessoa.pessoaFisica);
+    setSearchTerm(
+      pessoa.pessoaFisica?.nome_social ||
+        pessoa.pessoaFisica?.nome_registro ||
+        ''
+    );
     setShowResults(false);
-    onSelect(pessoa);
+    onSelect(pessoa.pessoaFisica || null);
   };
 
   const handleClearSelection = () => {
@@ -114,26 +116,27 @@ export default function PessoaAutocomplete({
   };
 
   const handleCreatePessoa = async () => {
-    if (!newPessoa.nome || !newPessoa.tipoId || !empresaId) {
+    if (!newPessoa.nome_registro || !newPessoa.nome_social || !empresaId) {
       setError('Nome, função e serventia são obrigatórios');
       return;
     }
 
-    newPessoa.empresaId = parseInt(empresaId);
+    // newPessoa.empresaId = parseInt(empresaId);
 
     setIsLoading(true);
     setError(null);
 
     try {
       const createdPessoa = await PessoaService.createPessoa(
-        newPessoa as Pessoa
+        newPessoa as PessoasFisica
       );
       handleSelect(createdPessoa);
       setShowCreateForm(false);
       setNewPessoa({
-        nome: '',
-        genero: StatusGenero.IGNORADO,
-        tipoId: undefined,
+        nome_registro: '',
+        nome_social: '',
+        cpf: '',
+        id_pessoa_genero: StatusGenero.CISGÊNERO,
       });
     } catch (err) {
       setError('Erro ao criar pessoa');
@@ -145,7 +148,7 @@ export default function PessoaAutocomplete({
 
   return (
     <div className="relative dark:text-white">
-      <Label>Pessoa *</Label>
+      <Label>Pessoas *</Label>
       <Input
         type="text"
         placeholder="Pesquisar pessoa por nome..."
@@ -161,8 +164,7 @@ export default function PessoaAutocomplete({
       {selectedPessoa && (
         <div className="mt-2 flex items-center justify-between rounded bg-gray-100 p-2 text-sm dark:bg-gray-700">
           <span>
-            {selectedPessoa.pessoaFisica?.nome_social ||
-              selectedPessoa.pessoaFisica?.nome_registro}
+            {selectedPessoa?.nome_social || selectedPessoa?.nome_registro}
           </span>
           <button
             type="button"
@@ -184,9 +186,9 @@ export default function PessoaAutocomplete({
               <div className="p-4 text-center text-gray-500">Carregando...</div>
             ) : results.length > 0 ? (
               <ul className="max-h-48 overflow-auto">
-                {results.map((pessoa) => (
+                {results.map((pessoa: any, index) => (
                   <li
-                    key={pessoa.id}
+                    key={pessoa.id || index}
                     className="cursor-pointer rounded-md px-4 py-2 hover:bg-gray-500"
                     onClick={() => handleSelect(pessoa)}
                   >
@@ -203,7 +205,11 @@ export default function PessoaAutocomplete({
                   onClick={() => {
                     setShowCreateForm(true);
                     setShowResults(false);
-                    setNewPessoa({ ...newPessoa, nome: searchTerm });
+                    setNewPessoa({
+                      ...newPessoa,
+                      nome_registro: searchTerm,
+                      nome_social: searchTerm,
+                    });
                   }}
                   className="text-blue-600 hover:text-blue-800"
                 >
@@ -217,28 +223,32 @@ export default function PessoaAutocomplete({
       {/* Formulário de criação */}
       {showCreateForm && (
         <div className="mt-4 space-y-4 rounded-md bg-gray-50 p-4 dark:bg-gray-800">
-          <h3 className="font-medium">Nova Pessoa</h3>
+          <h3 className="font-medium">Nova Pessoas</h3>
           <div>
             <Label>Nome *</Label>
             <Input
               type="text"
-              value={newPessoa.nome}
+              value={newPessoa.nome_registro || ''}
               onChange={(e) =>
-                setNewPessoa({ ...newPessoa, nome: e.target.value })
+                setNewPessoa({
+                  ...newPessoa,
+                  nome_registro: e.target.value,
+                  nome_social: e.target.value,
+                })
               }
               disabled={isLoading}
             />
           </div>
           <div>
             <Label>Função *</Label>
-            <Select
+            {/* <Select
               options={pessoaTipos}
-              value={newPessoa.tipoId?.toString()}
+              value={newPessoa.?.toString()}
               onChange={(value: any) =>
                 setNewPessoa({ ...newPessoa, tipoId: value })
               }
               placeholder="Selecione a função"
-            />
+            /> */}
           </div>
           {error && <p className="text-sm text-red-500">{error}</p>}
           <div className="flex justify-end gap-2">
