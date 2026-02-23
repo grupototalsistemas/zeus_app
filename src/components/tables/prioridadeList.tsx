@@ -174,18 +174,18 @@ export default function PrioridadeList() {
                   {ColorSquare({ color: prioridade.cor })}
                 </TableCell>
                 <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                  {prioridade.tempo} min
+                  {prioridade.tempoResolucao} min
                 </TableCell>
                 <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
                   <Badge
                     size="sm"
                     color={
-                      prioridade.ativo === StatusRegistro.ATIVO
+                      prioridade.situacao === StatusRegistro.ATIVO
                         ? 'success'
                         : 'error'
                     }
                   >
-                    {prioridade.ativo === StatusRegistro.ATIVO
+                    {prioridade.situacao === StatusRegistro.ATIVO
                       ? 'Ativo'
                       : 'Inativo'}
                   </Badge>

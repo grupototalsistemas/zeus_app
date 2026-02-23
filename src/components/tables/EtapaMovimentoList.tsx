@@ -146,12 +146,12 @@ export default function EtapaMovimentoList() {
                   <Badge
                     size="sm"
                     color={
-                      movimento.ativo === StatusRegistro.ATIVO
+                      movimento.situacao === StatusRegistro.ATIVO
                         ? 'success'
                         : 'error'
                     }
                   >
-                    {movimento.ativo === StatusRegistro.ATIVO
+                    {movimento.situacao === StatusRegistro.ATIVO
                       ? 'Ativo'
                       : 'Inativo'}
                   </Badge>

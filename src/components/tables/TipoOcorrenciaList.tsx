@@ -165,12 +165,12 @@ export default function TipoOcorrenciaList() {
                   <Badge
                     size="sm"
                     color={
-                      ocorrencia.ativo === StatusRegistro.ATIVO
+                      ocorrencia.situacao === StatusRegistro.ATIVO
                         ? 'success'
                         : 'error'
                     }
                   >
-                    {ocorrencia.ativo === StatusRegistro.ATIVO
+                    {ocorrencia.situacao === StatusRegistro.ATIVO
                       ? 'Ativo'
                       : 'Inativo'}
                   </Badge>
