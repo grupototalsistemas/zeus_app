@@ -24,7 +24,6 @@ export default function CreateTicketPage() {
 
       // Mapear dados do formulário para o DTO do chamado
       const chamadoData = mapChamados(data);
-      console.log('Chamado Data:', chamadoData);
 
       // Separar anexos dos dados do chamado
       const { anexos, ...chamadoSemAnexos } = chamadoData;

@@ -3,7 +3,7 @@ import api from './api';
 
 const getPessoas = async (empresaid: string): Promise<any[]> => {
   const response = await api.get(
-    `/pessoas-fisicas/funcionarios/pessoa-juridica/${empresaid}`
+    `/pessoas-fisicas/funcionarios/empresa/${empresaid}`
   );
   return response.data;
 };

@@ -90,7 +90,8 @@ export function TicketFormBase({
       prioridadeId: initialData?.prioridadeId ?? '',
       observacao: initialData?.observacao ?? '',
       pessoaId: initialData?.pessoaId ?? (pessoaInfo?.id || ''), // vem do redux
-      usuarioId: '1', // vem do redux
+      usuarioId:
+        initialData?.usuarioId ?? (pessoaInfo?.id_pessoa_usuario || ''), // vem do redux
       ativo: initialData?.ativo ?? StatusRegistro.ATIVO,
       protocolo: initialData?.protocolo ?? Date.now().toString(),
     },
@@ -143,10 +144,10 @@ export function TicketFormBase({
       setValue('pessoaId', pessoaInfo.id.toString());
     }
 
-    // if (!currentUsuarioId) {
-    //   setValue('usuarioId', pessoaInfo.id.toString());
-    // }
-  }, [getValues, pessoaInfo?.id, setValue]);
+    if (!currentUsuarioId) {
+      setValue('usuarioId', pessoaInfo.id_pessoa_usuario?.toString() || '');
+    }
+  }, [getValues, pessoaInfo?.id, pessoaInfo?.id_pessoa_usuario, setValue]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {

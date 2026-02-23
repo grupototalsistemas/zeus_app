@@ -4,11 +4,10 @@ import { usePerfil } from '@/hooks/usePerfil';
 import { usePessoa } from '@/hooks/usePessoa';
 import { ChevronDownIcon, ChevronUpIcon, MoreDotIcon } from '@/icons';
 import { PessoaService } from '@/service/pessoa.service';
-import { Pessoa, PessoaResponse } from '@/types/pessoa.type';
+import { Pessoa, PessoaFisicaResponse } from '@/types/pessoa.type';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import PageBreadcrumb from '../common/PageBreadCrumb';
-import Badge from '../ui/badge/Badge';
 import { Dropdown } from '../ui/dropdown/Dropdown';
 import { DropdownItem } from '../ui/dropdown/DropdownItem';
 import {
@@ -33,6 +32,7 @@ export default function PessoaList() {
   const { selectPerfilById } = usePerfil();
 
   useEffect(() => {
+    console.log('Pessoa Info:', pessoaInfo);
     fetchPessoasByEmpresa(pessoaInfo?.id_pessoa_juridica || 0);
   }, []);
 
@@ -85,6 +85,12 @@ export default function PessoaList() {
                   isHeader
                   className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
                 >
+                  {''}
+                </TableCell>
+                <TableCell
+                  isHeader
+                  className="text-theme-xs py-3 text-start font-medium text-gray-500 dark:text-gray-400"
+                >
                   CPF
                 </TableCell>
                 <TableCell
@@ -122,15 +128,20 @@ export default function PessoaList() {
             </TableHeader>
             <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
               {paginatedData.length > 0 &&
-                paginatedData.map((user: PessoaResponse) => (
+                paginatedData.map((user: PessoaFisicaResponse) => (
                   <>
-                    <TableRow key={user.id}>
+                    <TableRow
+                      key={user.pessoaFisica.id}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-900/30"
+                    >
                       <TableCell className="w-8">
                         <button
-                          onClick={() => handleToggleExpand(String(user.id))}
+                          onClick={() =>
+                            handleToggleExpand(String(user.pessoaFisica.id))
+                          }
                           className="p-1 text-gray-500 hover:text-gray-800"
                         >
-                          {expandedRowId === String(user.id) ? (
+                          {expandedRowId === String(user.pessoaFisica.id) ? (
                             <ChevronUpIcon size={18} />
                           ) : (
                             <ChevronDownIcon size={18} />
@@ -138,44 +149,49 @@ export default function PessoaList() {
                         </button>
                       </TableCell>
                       <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                        {user.nomeSocial || user.nome}
+                        {user.pessoaFisica.cpf}
+                      </TableCell>
+                      <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                        {user.pessoaFisica.nome_social ||
+                          user.pessoaFisica.nome_registro}
                       </TableCell>
 
                       <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                        {user.empresa?.nomeFantasia}
+                        {user.pessoaFisica.pessoasUsuarios
+                          .map((usuarios) => usuarios.nome_login)
+                          .join(', ')}
                       </TableCell>
                       <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
-                        <Badge
-                          size="sm"
-                          color={
-                            user.tipo?.descricao === 'FUNCIONARIO'
-                              ? 'success'
-                              : user.tipo?.descricao === 'SUPERVISOR'
-                                ? 'warning'
-                                : 'info'
-                          }
-                        >
-                          {user.tipo?.descricao}
-                        </Badge>
+                        {user.pessoaFisica.pessoasUsuarios
+                          .map((usuarios) => usuarios.login)
+                          .join(', ')}
                       </TableCell>
+                      <TableCell className="text-theme-sm py-3 text-gray-500 dark:text-gray-400">
+                        {user.pessoaFisica.doc_numero || 'N/A'}
+                      </TableCell>
+
                       <TableCell>
                         <div className="relative inline-block">
                           <button
                             onClick={() =>
-                              handleToggleDropdown(String(user.id))
+                              handleToggleDropdown(String(user.pessoaFisica.id))
                             }
                             className="dropdown-toggle"
                           >
                             <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
                           </button>
                           <Dropdown
-                            isOpen={openDropdownId === String(user.id)}
+                            isOpen={
+                              openDropdownId === String(user.pessoaFisica.id)
+                            }
                             onClose={() => setOpenDropdownId(null)}
                             className="w-40 p-2"
                           >
                             <DropdownItem
                               onClick={() =>
-                                router.push(`/gerenciar-pessoa/${user.id}`)
+                                router.push(
+                                  `/gerenciar-pessoa/${user.pessoaFisica.id}`
+                                )
                               }
                             >
                               Editar
@@ -188,30 +204,31 @@ export default function PessoaList() {
                       </TableCell>
                     </TableRow>
 
-                    {expandedRowId === String(user.id) && (
+                    {expandedRowId === String(user.pessoaFisica.id) && (
                       <TableRow>
                         <TableCell
+                          key={user.pessoaFisica.id}
                           colSpan={6}
                           className="bg-gray-50 dark:bg-gray-900/30"
                         >
                           <div className="space-y-2 p-4 text-sm text-gray-700 dark:text-gray-300">
                             <p>
                               <strong>Login:&nbsp;</strong>
-                              {user.usuarios.map((usuarios) => usuarios.login)}
+                              {user.pessoaFisica.pessoasUsuarios
+                                .map((usuarios) => usuarios.nome_login)
+                                .join(', ')}
                             </p>
                             <p>
                               <strong>Perfil:&nbsp;</strong>{' '}
-                              {user.usuarios.map(
-                                (usuarios) =>
-                                  selectPerfilById(usuarios.perfilId || 0)
-                                    ?.descricao
-                              )}
+                              {user.id_pessoa_juridica_perfil}
                             </p>
                             <p>
-                              <strong>Gênero:&nbsp;</strong> {user.genero}
+                              <strong>Gênero:&nbsp;</strong>{' '}
+                              {user.pessoaFisica.id_pessoa_genero}
                             </p>
                             <p>
-                              <strong>Ativo:&nbsp;</strong> {user.ativo}
+                              <strong>Ativo:&nbsp;</strong>{' '}
+                              {user.pessoaFisica.situacao === 1 ? 'Sim' : 'Não'}
                             </p>
                             <p>
                               <strong>Criado em:&nbsp;</strong>{' '}

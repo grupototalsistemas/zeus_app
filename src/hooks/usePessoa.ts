@@ -26,7 +26,7 @@ import {
   updatePessoa,
   updatePessoaLocal,
 } from '@/store/slices/pessoaSlice';
-import { Pessoa } from '@/types/pessoa.type';
+import { Pessoas } from '@/types/pessoa.type';
 
 export const usePessoa = () => {
   const dispatch = useAppDispatch();
@@ -100,7 +100,7 @@ export const usePessoa = () => {
   );
 
   const handleUpdatePessoa = useCallback(
-    async ({ id, data }: { id: number; data: Partial<Pessoa> }) => {
+    async ({ id, data }: { id: number; data: Partial<Pessoas> }) => {
       try {
         return await dispatch(updatePessoa({ id, data })).unwrap();
       } catch (err) {
@@ -144,7 +144,7 @@ export const usePessoa = () => {
   );
 
   const handleSetPessoaLogada = useCallback(
-    (pessoa: Pessoa) => {
+    (pessoa: Pessoas) => {
       dispatch(setPessoaLogada(pessoa));
     },
     [dispatch]
@@ -163,7 +163,7 @@ export const usePessoa = () => {
   }, [dispatch]);
 
   const handleUpdatePessoaLocal = useCallback(
-    (pessoa: Pessoa) => {
+    (pessoa: Pessoas) => {
       dispatch(updatePessoaLocal(pessoa));
     },
     [dispatch]

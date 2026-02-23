@@ -14,8 +14,6 @@ const getChamado = async (id: number) => {
   return response.data;
 };
 
-const verificaTempoMedio = async (id: number) => {};
-
 const createChamado = async (data: CreateChamadoDto & { anexos?: File[] }) => {
   try {
     // 1. Primeiro, criar o chamado (sem anexos)
@@ -133,6 +131,16 @@ const getChamadosByResponsavel = async (
   return response.data;
 };
 
+const metricas = async (empresaId: number, inicio: Date, fim: Date) => {
+  const response = await api.get(`/chamados/metricas-empresa/${empresaId}`, {
+    params: {
+      inicio: inicio.toISOString(),
+      fim: fim.toISOString(),
+    },
+  });
+  return response.data;
+};
+
 export const ChamadoService = {
   getChamados,
   getChamado,
@@ -144,4 +152,5 @@ export const ChamadoService = {
   adicionarAnexosAoMovimento,
   getChamadosByEmpresa,
   getChamadosByResponsavel,
+  metricas,
 };

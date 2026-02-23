@@ -1,6 +1,6 @@
 import { PessoaService } from '@/service/pessoa.service';
 import { StatusGenero } from '@/types/enum';
-import { Pessoa } from '@/types/pessoa.type';
+import { PessoaFisicaResponse, Pessoas } from '@/types/pessoa.type';
 import { loginResponse } from '@/types/pessoaUsuario.type';
 import {
   createAsyncThunk,
@@ -23,9 +23,9 @@ export interface UpdatePessoaDto extends Partial<CreatePessoaDto> {
 }
 
 interface PessoaState {
-  pessoas: Pessoa[];
-  currentPessoa: Pessoa | null;
-  pessoaLogada: Pessoa | null;
+  pessoas: PessoaFisicaResponse[];
+  currentPessoa: Pessoas | null;
+  pessoaLogada: Pessoas | null;
   pessoaInfo: loginResponse;
   loading: boolean;
   error: string | null;
@@ -75,8 +75,8 @@ export const createPessoa = createAsyncThunk(
 
 export const updatePessoa = createAsyncThunk(
   'pessoa/update',
-  async ({ id, data }: { id: number; data: Partial<Pessoa> }) => {
-    const pessoa = { ...data } as Pessoa; // garante que todos os campos sejam preenchidos
+  async ({ id, data }: { id: number; data: Partial<Pessoas> }) => {
+    const pessoa = { ...data } as Pessoas; // garante que todos os campos sejam preenchidos
     return await PessoaService.updatePessoa(id, pessoa);
   }
 );
@@ -113,7 +113,7 @@ const pessoaSlice = createSlice({
       state.error = null;
     },
 
-    setPessoaLogada: (state, action: PayloadAction<Pessoa>) => {
+    setPessoaLogada: (state, action: PayloadAction<Pessoas>) => {
       state.pessoaLogada = action.payload;
       state.error = null;
     },
@@ -142,7 +142,7 @@ const pessoaSlice = createSlice({
       state.error = null;
     },
 
-    updatePessoaLocal: (state, action: PayloadAction<Pessoa>) => {
+    updatePessoaLocal: (state, action: PayloadAction<Pessoas>) => {
       const index = state.pessoas.findIndex((p) => p.id === action.payload.id);
       if (index !== -1) {
         state.pessoas[index] = action.payload;
@@ -320,7 +320,7 @@ export const selectPessoaError = (state: RootState) => state.pessoa.error;
 
 export const selectPessoasFormatadas = createSelector(
   [selectPessoas],
-  (pessoas: Pessoa[] = []) =>
+  (pessoas: Pessoas[] = []) =>
     pessoas.map((pessoa) => ({
       value: pessoa.id || 0,
       label: pessoa.nomeSocial || pessoa.nome,

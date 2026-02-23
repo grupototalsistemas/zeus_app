@@ -32,3 +32,13 @@ export interface CreateChamadoDto {
   situacao?: StatusRegistro;
   anexos?: File[]; // arquivos anexados
 }
+
+export interface MetricasChamado {
+  totalChamados: number;
+  chamadosAbertos: number;
+  chamadosFechados: number;
+  chamadosPorSistema: any[];
+  chamadosPorPrioridade: any[];
+  chamadosAbertosPorDia: any[];
+  chamadosFechadosPorDia: any[];
+}

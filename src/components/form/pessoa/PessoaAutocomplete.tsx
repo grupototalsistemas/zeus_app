@@ -84,7 +84,7 @@ export default function PessoaAutocomplete({
             .toLowerCase()
             .includes(debouncedSearch.toLowerCase())
         );
-        // console.log('Pessoas filtradas:', filtered);
+        console.log('Pessoas filtradas:', filtered);
         setResults(filtered);
         setShowResults(true);
       } catch (err) {

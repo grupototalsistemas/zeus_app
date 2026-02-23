@@ -45,13 +45,18 @@ export interface PessoaUsuarioDTO {
 }
 
 export interface loginResponse {
-  id: string;
-  email: string;
+  id_pessoa_usuario: string;
+  id_pessoa: string;
+  id_pessoa_juridica: string;
+  id_pessoa_juridica_fisica: string;
+  id_pessoa_fisica: string;
+  id_pessoa_juridica_perfil: string;
+  id_sistema: string;
+  juridica_principal: number;
+  nome_login: string;
   login: string;
-  pessoaId: string;
-  nome: string;
-  nomeSocial: string;
-  perfilId: string;
-  genero: string;
-  perfil: string;
+  empresa: string;
+  funcionario: string;
+  first_access: number;
+  chave: string | null;
 }
