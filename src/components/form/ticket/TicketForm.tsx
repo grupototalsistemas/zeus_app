@@ -9,7 +9,13 @@ import PessoaAutocomplete from '@/components/form/pessoa/PessoaAutocomplete';
 import Select from '@/components/form/Select';
 import Button from '@/components/ui/button/Button';
 import { useEmpresaSistema } from '@/hooks/useEmpresaSistema';
-import { selectOcorrenciasFormatadas } from '@/store/slices/ocorrenciaSlice';
+import { useOcorrencia } from '@/hooks/useOcorrencia';
+import { useOcorrenciaTipo } from '@/hooks/useOcorrenciaTipo';
+import {
+  selectOcorrencias,
+  selectOcorrenciasFormatadas,
+} from '@/store/slices/ocorrenciaSlice';
+import { selectOcorrenciaTiposFormatadas } from '@/store/slices/ocorrenciaTipoSlice';
 import { selectPrioridadesFormatadas } from '@/store/slices/prioridadeSlice';
 import { RootState } from '@/store/store';
 import { Empresa } from '@/types/empresa.type';
@@ -31,9 +37,8 @@ const ticketSchema = z.object({
   titulo: z.string().min(3, 'Título é obrigatório'),
   descricao: z.string().min(5, 'Descrição é obrigatória'),
   prioridadeId: z.string().min(1, 'Prioridade é obrigatória'),
+  ocorrenciaId: z.string().min(1, 'Ocorrência é obrigatória'),
   // opcionais / backend preenchidos
-
-  ocorrenciaId: z.string().optional(),
   protocolo: z.string().optional(),
   observacao: z.string().optional(),
   ativo: z.nativeEnum(StatusRegistro),
@@ -58,13 +63,18 @@ export function TicketFormBase({
   initialData,
   onSubmit,
 }: TicketFormBaseProps) {
+  const ocorrenciasCompleta = useSelector(selectOcorrencias);
   const ocorrencias = useSelector(selectOcorrenciasFormatadas);
+  const tiposOcorrencia = useSelector(selectOcorrenciaTiposFormatadas);
   const prioridades = useSelector(selectPrioridadesFormatadas);
   const { getByEmpresaFormatados } = useEmpresaSistema();
+  const { fetchOcorrencias } = useOcorrencia();
+  const { buscarOcorrenciasTipos } = useOcorrenciaTipo();
   const [sistemas, setSistemas] = useState<Option[]>([]);
   const [sistemasDefinidosPelaEmpresa, setSistemasDefinidosPelaEmpresa] =
     useState(false);
   const [anexosFiles, setAnexosFiles] = useState<File[]>([]);
+  const [tipoOcorrenciaId, setTipoOcorrenciaId] = useState<string>('');
   const { pessoaInfo } = useSelector((state: RootState) => state.pessoa);
   const [resetDropzone, setResetDropzone] = useState(false);
   const [resetPessoa, setResetPessoa] = useState(false);
@@ -117,6 +127,12 @@ export function TicketFormBase({
       pegarSitemas(empresaId);
     }
   }, [watch('empresaId'), sistemasDefinidosPelaEmpresa]);
+
+  // Carregar tipos de ocorrência e ocorrências na montagem
+  useEffect(() => {
+    buscarOcorrenciasTipos();
+    fetchOcorrencias();
+  }, [buscarOcorrenciasTipos, fetchOcorrencias]);
 
   const pegarSitemas = async (id_empresa: string) => {
     const sistemas = await getByEmpresaFormatados(id_empresa);
@@ -184,6 +200,56 @@ export function TicketFormBase({
       scrollToError(firstErrorKey);
     }
   }, [errors]);
+
+  const getOcorrenciasFiltradas = (): Option[] => {
+    console.log('getOcorrenciasFiltradas chamada');
+    console.log(
+      'tipoOcorrenciaId:',
+      tipoOcorrenciaId,
+      'tipo:',
+      typeof tipoOcorrenciaId
+    );
+    console.log('ocorrenciasCompleta:', ocorrenciasCompleta);
+
+    if (!tipoOcorrenciaId) {
+      console.log('Retornando vazio - tipoOcorrenciaId está vazio');
+      return [];
+    }
+
+    const tipoIdNumero = Number(tipoOcorrenciaId);
+    console.log('tipoIdNumero:', tipoIdNumero, 'tipo:', typeof tipoIdNumero);
+
+    const resultado =
+      ocorrenciasCompleta
+        ?.filter((ocorrencia) => {
+          console.log('Comparação detalhada:', {
+            ocorrenciaId: ocorrencia.id,
+            id_ocorrencia_tipo: ocorrencia.id_ocorrencia_tipo,
+            tipo_id_ocorrencia_tipo: typeof ocorrencia.id_ocorrencia_tipo,
+            tipoIdNumero: tipoIdNumero,
+            tipo_tipoIdNumero: typeof tipoIdNumero,
+            comparacao_direta: ocorrencia.id_ocorrencia_tipo === tipoIdNumero,
+            comparacao_string:
+              String(ocorrencia.id_ocorrencia_tipo) === String(tipoIdNumero),
+            comparacao_number:
+              Number(ocorrencia.id_ocorrencia_tipo) === Number(tipoIdNumero),
+          });
+          return Number(ocorrencia.id_ocorrencia_tipo) === Number(tipoIdNumero);
+        })
+        .map((ocorrencia) => ({
+          value: ocorrencia.id || 0,
+          label: ocorrencia.descricao || '',
+        })) || [];
+
+    console.log('Resultado da filtragem:', resultado);
+    return resultado;
+  };
+
+  const handleTipoOcorrenciaChange = (opt: any) => {
+    setTipoOcorrenciaId(opt);
+    // Limpar a seleção anterior de ocorrência
+    setValue('ocorrenciaId', '');
+  };
 
   const handleFormSubmit = async (data: TicketFormData) => {
     console.log('Dados do formulário antes do submit:', data);
@@ -382,15 +448,36 @@ export function TicketFormBase({
             )}
           </div>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div>
-              <Label>Ocorrência</Label>
+              <Label>Tipo de Ocorrência *</Label>
               <Select
-                options={ocorrencias}
-                placeholder="Selecione a Ocorrência"
-                onChange={(opt: any) => setValue('ocorrenciaId', opt)}
-                value={watch('ocorrenciaId')}
+                options={tiposOcorrencia}
+                placeholder="Selecione o Tipo de Ocorrência"
+                onChange={(opt: any) => {
+                  handleTipoOcorrenciaChange(opt);
+                  trigger('ocorrenciaId');
+                }}
+                value={tipoOcorrenciaId}
               />
+            </div>
+            <div>
+              <Label>Ocorrência *</Label>
+              <Select
+                options={getOcorrenciasFiltradas()}
+                placeholder="Selecione a Ocorrência"
+                onChange={(opt: any) => {
+                  setValue('ocorrenciaId', opt);
+                  trigger('ocorrenciaId');
+                }}
+                value={watch('ocorrenciaId')}
+                emptyMessage="Selecione um tipo de ocorrência primeiro"
+              />
+              {errors.ocorrenciaId && (
+                <p className="text-sm text-red-500">
+                  {errors.ocorrenciaId.message}
+                </p>
+              )}
             </div>
             <div>
               <Label>Prioridade *</Label>

@@ -12,6 +12,8 @@ interface SelectProps {
   className?: string;
   value?: string;
   disabled?: boolean;
+  disabledMessage?: string;
+  emptyMessage?: string;
 }
 
 const CustomSelect: React.FC<SelectProps> = ({
@@ -21,6 +23,8 @@ const CustomSelect: React.FC<SelectProps> = ({
   className = '',
   value = '',
   disabled = false,
+  disabledMessage = 'Selecione uma empresa para continuar',
+  emptyMessage = 'Não ha sistemas cadastrados pra esta empresa',
 }) => {
   const [selectedValue, setSelectedValue] = useState<string>(value);
   const [isOpen, setIsOpen] = useState(false);
@@ -89,9 +93,9 @@ const CustomSelect: React.FC<SelectProps> = ({
         disabled={disabled || options.length === 0}
       >
         {disabled ? (
-          'Selecione uma empresa para continuar'
+          disabledMessage
         ) : options.length === 0 ? (
-          'Não ha sistemas cadastrados pra esta empresa'
+          emptyMessage
         ) : (
           <>{selectedOption ? selectedOption.label : placeholder}</>
         )}

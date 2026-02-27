@@ -1,6 +1,10 @@
 import { BaseEntity, MovimentoDto } from './base.type';
 import { ChamadoMovimento } from './chamadoMovimento.type';
+import { PessoasJuridicas } from './empresa.type';
 import { StatusRegistro } from './enum';
+import { PessoasFisica } from './pessoasFisica.type';
+import { PessoaUsuario } from './pessoaUsuario.type';
+import { Sistemas } from './sistemas.type';
 
 export interface Chamado extends BaseEntity {
   id_empresa: number;
@@ -14,6 +18,10 @@ export interface Chamado extends BaseEntity {
   descricao: string;
   observacao: string;
   movimentos?: ChamadoMovimento[];
+  pessoaFisica: PessoasFisica;
+  usuario?: PessoaUsuario;
+  sistema: Sistemas;
+  empresa: PessoasJuridicas;
 }
 
 // DTO principal de criação de chamado

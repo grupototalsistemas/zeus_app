@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import LoadingScreen from '@/components/common/LoadingScreen';
 import { useOcorrencia } from '@/hooks/useOcorrencia';
 import { usePrioridade } from '@/hooks/usePrioridade';
+import { fetchOcorrenciaTipos } from '@/store/slices/ocorrenciaTipoSlice';
 // import { useChamado } from '@/hooks/useChamado';
 // import { useEmpresaCategoria } from '@/hooks/useEmpresaCategoria';
 // import { useEmpresaSistema } from '@/hooks/useEmpresaSistema';
@@ -50,8 +51,9 @@ export default function InitialLoader() {
       try {
         await fetchPrioridades();
         await fetchOcorrencias();
+        fetchOcorrenciaTipos();
         setIsLoading(false);
-        router.push('/listar-chamado');
+        router.push('/dashboard');
       } catch (error) {
         setHasError(true);
         router.push('/signin');

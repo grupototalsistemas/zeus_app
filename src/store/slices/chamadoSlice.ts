@@ -36,6 +36,13 @@ export const fetchChamadosByResponsavel = createAsyncThunk(
   }
 );
 
+export const fetchChamadosByUsuario = createAsyncThunk(
+  'chamado/fetchByUsuario',
+  async (idPessoaUsuario: string) => {
+    return await ChamadoService.getChamadosByUsuario(idPessoaUsuario);
+  }
+);
+
 export const fetchChamadoById = createAsyncThunk(
   'chamado/fetchById',
   async (id: number) => {
@@ -118,6 +125,20 @@ const chamadoSlice = createSlice({
         state.loading = false;
         state.error =
           action.error.message || 'Erro ao carregar chamados do responsável';
+      })
+      // Fetch By Usuario
+      .addCase(fetchChamadosByUsuario.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchChamadosByUsuario.fulfilled, (state, action) => {
+        state.loading = false;
+        state.chamados = action.payload;
+      })
+      .addCase(fetchChamadosByUsuario.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || 'Erro ao carregar chamados do usuário';
       })
       // Fetch By Id
       .addCase(fetchChamadoById.pending, (state) => {

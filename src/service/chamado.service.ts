@@ -131,6 +131,17 @@ const getChamadosByResponsavel = async (
   return response.data;
 };
 
+const getChamadosByUsuario = async (
+  idPessoaUsuario: string
+): Promise<Chamado[]> => {
+  const response = await api.get('/chamados', {
+    params: {
+      id_pessoa_usuario: idPessoaUsuario,
+    },
+  });
+  return response.data;
+};
+
 const metricas = async (empresaId: number, inicio: Date, fim: Date) => {
   const response = await api.get(`/chamados/metricas-empresa/${empresaId}`, {
     params: {
@@ -152,5 +163,6 @@ export const ChamadoService = {
   adicionarAnexosAoMovimento,
   getChamadosByEmpresa,
   getChamadosByResponsavel,
+  getChamadosByUsuario,
   metricas,
 };

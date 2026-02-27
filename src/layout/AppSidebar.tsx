@@ -35,7 +35,7 @@ const navItems: NavItem[] = [
     icon: <Chamado className="text-gray-900 dark:text-white" />,
     name: 'Chamados',
     subItems: [
-      { name: 'Gerenciar Chamado', path: '/gerenciar-chamado', pro: false },
+      { name: 'Abrir Chamado', path: '/gerenciar-chamado', pro: false },
       { name: 'Listar Chamados', path: '/listar-chamado', pro: false },
       {
         name: 'Gerenciar tempo de execução',

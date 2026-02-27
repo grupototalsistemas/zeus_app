@@ -1,6 +1,10 @@
 import { TipoOcorrenciaService } from '@/service/ocorrenciaTipo.service';
 import { OcorrenciaTipo } from '@/types/chamadoOcorrenciaTipo.type';
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSelector,
+  createSlice,
+} from '@reduxjs/toolkit';
 import { RootState } from '../rootReducer';
 
 interface OcorrenciaTipoState {
@@ -159,5 +163,15 @@ export const selectOcorrenciaTipoLoading = (state: RootState) =>
   state.chamado_ocorrencia_tipo.loading;
 export const selectOcorrenciaTipoError = (state: RootState) =>
   state.chamado_ocorrencia_tipo.error;
+
+// Seletores derivados memoizados
+export const selectOcorrenciaTiposFormatadas = createSelector(
+  [selectOcorrenciaTipos],
+  (ocorrenciaTipos) =>
+    (ocorrenciaTipos || []).map((tipo) => ({
+      value: tipo.id || 0,
+      label: tipo.descricao || '',
+    }))
+);
 
 export default ocorrenciaTipoSlice.reducer;

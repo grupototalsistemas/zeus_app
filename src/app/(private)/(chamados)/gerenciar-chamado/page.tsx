@@ -20,7 +20,7 @@ export default function CreateTicketPage() {
     setSuccess(false);
 
     try {
-      console.log('Form Data:', data);
+      // console.log('Form Data:', data);
 
       // Mapear dados do formulário para o DTO do chamado
       const chamadoData = mapChamados(data);
@@ -48,7 +48,7 @@ export default function CreateTicketPage() {
         anexos,
       });
 
-      console.log('Chamado criado com sucesso:', response);
+      // console.log('Chamado criado com sucesso:', response);
       setSuccess(true);
 
       //  A limpeza dos campos acontece automaticamente no TicketFormBase
