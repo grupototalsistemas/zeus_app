@@ -1,24 +1,51 @@
 'use client';
+import { MovimentoAnexoService } from '@/service/movimentoAnexo.service';
+import { ChamadoMovimentoAnexo } from '@/types/chamadoMovimentoAnexo.type';
 import React, { useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import ComponentCard from '../../common/ComponentCard';
+
+interface ExistingAttachment {
+  id: number;
+  name: string;
+  size?: number;
+  descricao?: string;
+}
 
 interface DropzoneProps {
   onFilesChange: (files: File[]) => void;
   resetFiles?: boolean;
   onResetComplete?: () => void;
+  existingAttachments?: ChamadoMovimentoAnexo[];
 }
 
 const DropzoneComponent: React.FC<DropzoneProps> = ({
   onFilesChange,
   resetFiles = false,
   onResetComplete,
+  existingAttachments = [],
 }) => {
   const [files, setFiles] = React.useState<File[]>([]);
+  const [existingFiles, setExistingFiles] = React.useState<
+    ExistingAttachment[]
+  >([]);
+
+  // Carregar anexos existentes
+  useEffect(() => {
+    if (existingAttachments && existingAttachments.length > 0) {
+      const mapped = existingAttachments.map((anexo) => ({
+        id: anexo.id || 0,
+        name: anexo.descricao || `Anexo ${anexo.id}`,
+        descricao: anexo.descricao,
+      }));
+      setExistingFiles(mapped);
+    }
+  }, [existingAttachments]);
 
   useEffect(() => {
     if (resetFiles) {
       setFiles([]);
+      setExistingFiles([]);
       onFilesChange([]);
       if (onResetComplete) {
         onResetComplete();
@@ -38,9 +65,32 @@ const DropzoneComponent: React.FC<DropzoneProps> = ({
     onFilesChange(newFiles);
   };
 
+  const removeExistingFile = (fileId: number) => {
+    const newExistingFiles = existingFiles.filter((file) => file.id !== fileId);
+    setExistingFiles(newExistingFiles);
+    // Aqui você pode adicionar lógica para marcar para exclusão no backend
+  };
+
+  const downloadExistingFile = async (file: ExistingAttachment) => {
+    try {
+      const blob = await MovimentoAnexoService.downloadAnexo(file.id);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = file.name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Erro ao baixar arquivo:', error);
+      alert('Erro ao baixar arquivo. Por favor, tente novamente.');
+    }
+  };
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    maxSize: 5242880, // 5MB em bytes
+    maxSize: 31457280, // 30MB em bytes
     accept: {
       'image/png': [],
       'image/jpeg': [],
@@ -96,7 +146,7 @@ const DropzoneComponent: React.FC<DropzoneProps> = ({
             </h4>
 
             <span className="mb-5 block w-full max-w-[290px] text-center text-sm text-gray-700 dark:text-gray-400">
-              PNG, JPG, WebP, SVG imagens (max. 5MB).
+              PNG, JPG, WebP, SVG, PDF (máx. 30MB).
             </span>
 
             <span className="text-theme-sm text-brand-500 font-medium underline">
@@ -105,11 +155,87 @@ const DropzoneComponent: React.FC<DropzoneProps> = ({
           </div>
         </div>
 
-        {/* Lista de arquivos */}
+        {/* Lista de anexos existentes */}
+        {existingFiles.length > 0 && (
+          <div className="mt-4 space-y-2">
+            <h4 className="font-semibold text-gray-800 dark:text-white/90">
+              Anexos existentes:
+            </h4>
+            <ul className="space-y-2">
+              {existingFiles.map((file) => (
+                <li
+                  key={file.id}
+                  className="flex items-center justify-between rounded-lg border border-blue-300 bg-blue-50 p-2 dark:border-blue-700 dark:bg-blue-900/20"
+                >
+                  <div className="flex items-center">
+                    <svg
+                      className="h-5 w-5 text-blue-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
+                    </svg>
+                    <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                      {file.name}
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => downloadExistingFile(file)}
+                      className="text-blue-500 hover:text-blue-600"
+                      title="Baixar anexo"
+                    >
+                      <svg
+                        className="h-5 w-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeExistingFile(file.id)}
+                      className="text-red-500 hover:text-red-600"
+                      title="Remover anexo"
+                    >
+                      <svg
+                        className="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Lista de arquivos novos */}
         {files.length > 0 && (
           <div className="mt-4 space-y-2">
             <h4 className="font-semibold text-gray-800 dark:text-white/90">
-              Arquivos selecionados:
+              Novos arquivos:
             </h4>
             <ul className="space-y-2">
               {files.map((file, index) => (

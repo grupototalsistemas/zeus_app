@@ -6,7 +6,7 @@ import { PessoaService } from '@/service/pessoa.service';
 import { selectPessoasTiposFormatados } from '@/store/slices/pessoaTipoSlice';
 import { StatusGenero } from '@/types/enum';
 // import { Pessoas } from '@/types/pessoa.type';
-import { PessoasFisica } from '@/types';
+import { PessoaFisicaResponse, PessoasFisica } from '@/types';
 import { useEffect, useState } from 'react';
 import Label from '../Label';
 import Input from '../input/InputField';
@@ -14,6 +14,8 @@ import Input from '../input/InputField';
 interface PessoaAutocompleteProps {
   onSelect: (pessoa: PessoasFisica | null) => void;
   empresaId?: string;
+  pessoaId?: string;
+  initialDisplayValue?: string;
   disabled?: boolean;
   resetSelection?: boolean; // Nova prop
   onResetComplete?: () => void;
@@ -22,12 +24,14 @@ interface PessoaAutocompleteProps {
 export default function PessoaAutocomplete({
   onSelect,
   empresaId,
+  pessoaId,
+  initialDisplayValue = '',
   disabled = false,
   resetSelection = false,
   onResetComplete,
 }: PessoaAutocompleteProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [results, setResults] = useState<PessoasFisica[]>([]);
+  const [results, setResults] = useState<PessoaFisicaResponse[]>([]);
   const [showResults, setShowResults] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -44,6 +48,48 @@ export default function PessoaAutocomplete({
   const pessoaTipos = useAppSelector(selectPessoasTiposFormatados);
   const debouncedSearch = useDebounce(searchTerm, 500);
 
+  // Buscar e setar pessoa inicial quando pessoaId for fornecido
+  useEffect(() => {
+    if (pessoaId && empresaId) {
+      const fetchPessoaById = async () => {
+        try {
+          const pessoaIdStr = String(pessoaId);
+          const response: PessoaFisicaResponse[] =
+            await PessoaService.getPessoas(empresaId);
+          const pessoa = response.find(
+            (p) =>
+              String(p.id) === pessoaIdStr ||
+              String(p.pessoaFisica?.pessoa?.id) === pessoaIdStr ||
+              String(p.pessoaFisica?.id) === pessoaIdStr ||
+              String(p.pessoaFisica?.id_pessoa) === pessoaIdStr
+          );
+          if (pessoa && pessoa.pessoaFisica) {
+            setSelectedPessoa(pessoa.pessoaFisica as unknown as PessoasFisica);
+            setSearchTerm(
+              pessoa.pessoaFisica.nome_social ||
+                pessoa.pessoaFisica.nome_registro ||
+                ''
+            );
+          } else if (initialDisplayValue) {
+            setSearchTerm(initialDisplayValue);
+          }
+        } catch (error) {
+          console.error('Erro ao buscar pessoa por ID:', error);
+          if (initialDisplayValue) {
+            setSearchTerm(initialDisplayValue);
+          }
+        }
+      };
+      fetchPessoaById();
+    }
+  }, [pessoaId, empresaId, initialDisplayValue]);
+
+  useEffect(() => {
+    if (!selectedPessoa && initialDisplayValue && !searchTerm) {
+      setSearchTerm(initialDisplayValue);
+    }
+  }, [initialDisplayValue, searchTerm, selectedPessoa]);
+
   useEffect(() => {
     if (resetSelection) {
       setSelectedPessoa(null);
@@ -53,7 +99,7 @@ export default function PessoaAutocomplete({
         onResetComplete();
       }
     }
-  }, [resetSelection, onSelect, onResetComplete]);
+  }, [resetSelection]);
 
   // Buscar pessoas quando o termo de pesquisa mudar
   useEffect(() => {
@@ -66,7 +112,7 @@ export default function PessoaAutocomplete({
       }
 
       if (!empresaId) {
-        setError('Selecione uma serventia antes de buscar pessoas');
+        setError('Selecione uma empresa antes de buscar pessoas');
         setResults([]);
         return;
       }
@@ -75,7 +121,8 @@ export default function PessoaAutocomplete({
       setError(null);
 
       try {
-        const response = await PessoaService.getPessoas(empresaId);
+        const response: PessoaFisicaResponse[] =
+          await PessoaService.getPessoas(empresaId);
         const filtered = response.filter((pessoa) =>
           (
             pessoa.pessoaFisica?.nome_social ||
@@ -98,15 +145,15 @@ export default function PessoaAutocomplete({
     searchPessoas();
   }, [debouncedSearch, empresaId, selectedPessoa]);
 
-  const handleSelect = (pessoa: PessoasFisica) => {
-    setSelectedPessoa(pessoa.pessoaFisica);
+  const handleSelect = (pessoa: PessoaFisicaResponse) => {
+    setSelectedPessoa(pessoa.pessoaFisica as unknown as PessoasFisica);
     setSearchTerm(
       pessoa.pessoaFisica?.nome_social ||
         pessoa.pessoaFisica?.nome_registro ||
         ''
     );
     setShowResults(false);
-    onSelect(pessoa.pessoaFisica || null);
+    onSelect((pessoa.pessoaFisica as unknown as PessoasFisica) || null);
   };
 
   const handleClearSelection = () => {

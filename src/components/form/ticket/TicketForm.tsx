@@ -18,9 +18,10 @@ import {
 import { selectOcorrenciaTiposFormatadas } from '@/store/slices/ocorrenciaTipoSlice';
 import { selectPrioridadesFormatadas } from '@/store/slices/prioridadeSlice';
 import { RootState } from '@/store/store';
+import { ChamadoMovimentoAnexo } from '@/types/chamadoMovimentoAnexo.type';
 import { Empresa } from '@/types/empresa.type';
 import { StatusRegistro } from '@/types/enum';
-import { Pessoa } from '@/types/pessoa.type';
+import { PessoasFisica } from '@/types/pessoasFisica.type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -28,6 +29,16 @@ import { useSelector } from 'react-redux';
 import { z } from 'zod';
 import EmpresaAutocomplete from '../empresa/EmpresaAutoComplete';
 import DropzoneComponent from '../form-elements/DropZone';
+
+const MAX_FILE_SIZE = 30 * 1024 * 1024; // 30MB
+const ALLOWED_FILE_TYPES = [
+  'image/png',
+  'image/jpeg',
+  'image/jpg',
+  'image/webp',
+  'image/svg+xml',
+  'application/pdf',
+];
 
 const ticketSchema = z.object({
   empresaId: z.string().min(1, 'Empresa é obrigatória'),
@@ -41,7 +52,20 @@ const ticketSchema = z.object({
   // opcionais / backend preenchidos
   protocolo: z.string().optional(),
   observacao: z.string().optional(),
+  descricaoAnexo: z.string().optional(),
   ativo: z.nativeEnum(StatusRegistro),
+  arquivo: z
+    .instanceof(File)
+    .refine(
+      (file) => file.size <= MAX_FILE_SIZE,
+      `Arquivo não pode ser maior que 30MB`
+    )
+    .refine(
+      (file) => ALLOWED_FILE_TYPES.includes(file.type),
+      'Apenas PNG, JPG, WebP, SVG ou PDF são permitidos'
+    )
+    .optional()
+    .or(z.undefined()),
   anexos: z.array(z.instanceof(File)).optional(),
 });
 
@@ -51,6 +75,9 @@ interface TicketFormBaseProps {
   mode: 'create' | 'edit';
   initialData?: Partial<TicketFormData>;
   onSubmit: (data: TicketFormData) => void;
+  existingAttachments?: ChamadoMovimentoAnexo[];
+  initialEmpresaNome?: string;
+  initialPessoaNome?: string;
 }
 
 interface Option {
@@ -61,6 +88,9 @@ interface Option {
 export function TicketFormBase({
   mode,
   initialData,
+  existingAttachments = [],
+  initialEmpresaNome,
+  initialPessoaNome,
   onSubmit,
 }: TicketFormBaseProps) {
   const ocorrenciasCompleta = useSelector(selectOcorrencias);
@@ -74,6 +104,9 @@ export function TicketFormBase({
   const [sistemasDefinidosPelaEmpresa, setSistemasDefinidosPelaEmpresa] =
     useState(false);
   const [anexosFiles, setAnexosFiles] = useState<File[]>([]);
+  const [arquivoSelecionado, setArquivoSelecionado] = useState<File | null>(
+    null
+  );
   const [tipoOcorrenciaId, setTipoOcorrenciaId] = useState<string>('');
   const { pessoaInfo } = useSelector((state: RootState) => state.pessoa);
   const [resetDropzone, setResetDropzone] = useState(false);
@@ -99,7 +132,7 @@ export function TicketFormBase({
       descricao: initialData?.descricao ?? '',
       prioridadeId: initialData?.prioridadeId ?? '',
       observacao: initialData?.observacao ?? '',
-      pessoaId: initialData?.pessoaId ?? (pessoaInfo?.id || ''), // vem do redux
+      pessoaId: initialData?.pessoaId ?? (pessoaInfo?.id_pessoa_fisica || ''), // vem do redux
       usuarioId:
         initialData?.usuarioId ?? (pessoaInfo?.id_pessoa_usuario || ''), // vem do redux
       ativo: initialData?.ativo ?? StatusRegistro.ATIVO,
@@ -150,26 +183,78 @@ export function TicketFormBase({
     }
   }, [initialData, setValue]);
 
+  // Inicializa sistemas quando em modo edit
   useEffect(() => {
-    if (!pessoaInfo?.id) return;
+    if (mode === 'edit' && initialData?.empresaId) {
+      const loadSistemas = async () => {
+        try {
+          const sistemasData = await getByEmpresaFormatados(
+            initialData.empresaId!
+          );
+          setSistemas(sistemasData);
+          setSistemasDefinidosPelaEmpresa(true);
+        } catch (error) {
+          console.error('Erro ao carregar sistemas:', error);
+        }
+      };
+      loadSistemas();
+    }
+  }, [mode, initialData?.empresaId]);
+
+  // Inicializa tipo de ocorrência quando em modo edit
+  useEffect(() => {
+    if (
+      mode === 'edit' &&
+      initialData?.ocorrenciaId &&
+      ocorrenciasCompleta.length > 0
+    ) {
+      const ocorrenciaEncontrada = ocorrenciasCompleta.find(
+        (oc) => oc.id?.toString() === initialData.ocorrenciaId?.toString()
+      );
+
+      if (ocorrenciaEncontrada && ocorrenciaEncontrada.id_ocorrencia_tipo) {
+        console.log(
+          'Setando tipo de ocorrência:',
+          ocorrenciaEncontrada.id_ocorrencia_tipo
+        );
+        setTipoOcorrenciaId(ocorrenciaEncontrada.id_ocorrencia_tipo.toString());
+      }
+    }
+  }, [mode, initialData?.ocorrenciaId, ocorrenciasCompleta]);
+
+  useEffect(() => {
+    if (!pessoaInfo?.id_pessoa_fisica) return;
 
     const currentPessoaId = getValues('pessoaId');
     const currentUsuarioId = getValues('usuarioId');
 
     if (!currentPessoaId) {
-      setValue('pessoaId', pessoaInfo.id.toString());
+      setValue('pessoaId', pessoaInfo.id_pessoa_fisica.toString());
     }
 
     if (!currentUsuarioId) {
       setValue('usuarioId', pessoaInfo.id_pessoa_usuario?.toString() || '');
     }
-  }, [getValues, pessoaInfo?.id, pessoaInfo?.id_pessoa_usuario, setValue]);
+  }, [
+    getValues,
+    pessoaInfo?.id_pessoa_fisica,
+    pessoaInfo?.id_pessoa_usuario,
+    setValue,
+  ]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
+      // Para o novo endpoint, usamos apenas um arquivo
+      if (files.length > 0) {
+        setArquivoSelecionado(files[0]);
+        setValue('arquivo', files[0]);
+      } else {
+        setArquivoSelecionado(null);
+        setValue('arquivo', undefined);
+      }
+      // Manter compatibilidade com o antigo annexos array
       setAnexosFiles(files);
-      setValue('anexos', files);
     }
   };
 
@@ -275,8 +360,8 @@ export function TicketFormBase({
             descricao: '',
             prioridadeId: '',
             observacao: '',
-            pessoaId: pessoaInfo?.id || '',
-            usuarioId: pessoaInfo?.id || '',
+            pessoaId: pessoaInfo?.id_pessoa_fisica || '',
+            usuarioId: pessoaInfo?.id_pessoa_usuario || '',
             ativo: StatusRegistro.ATIVO,
             protocolo: Date.now().toString(),
           },
@@ -295,6 +380,7 @@ export function TicketFormBase({
 
         // Limpar anexos
         setAnexosFiles([]);
+        setArquivoSelecionado(null);
 
         // Resetar componentes autocomplete
         setResetDropzone(true);
@@ -342,6 +428,8 @@ export function TicketFormBase({
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <EmpresaAutocomplete
+                empresaId={mode === 'edit' ? initialData?.empresaId : undefined}
+                initialDisplayValue={mode === 'edit' ? initialEmpresaNome : ''}
                 onSelect={(empresa: Empresa | null) => {
                   if (empresa) {
                     setValue('empresaId', empresa.id?.toString() || '');
@@ -351,13 +439,18 @@ export function TicketFormBase({
                     if (sistemasEmpresa.length > 0) {
                       setSistemasDefinidosPelaEmpresa(true);
                       setSistemas(sistemasEmpresa);
-                      setValue(
-                        'sistemaId',
-                        sistemasEmpresa[0].value.toString()
-                      );
+                      // No modo edit, preservar o sistema já selecionado
+                      if (mode === 'create') {
+                        setValue(
+                          'sistemaId',
+                          sistemasEmpresa[0].value.toString()
+                        );
+                      }
                     } else {
                       setSistemasDefinidosPelaEmpresa(false);
-                      setValue('sistemaId', '');
+                      if (mode === 'create') {
+                        setValue('sistemaId', '');
+                      }
                     }
 
                     trigger('empresaId');
@@ -402,10 +495,16 @@ export function TicketFormBase({
           {/* Identificação da Pessoa */}
           <div className="grid grid-cols-1 gap-4">
             <PessoaAutocomplete
-              onSelect={(pessoa: Pessoa | null) => {
+              pessoaId={mode === 'edit' ? initialData?.pessoaId : undefined}
+              initialDisplayValue={mode === 'edit' ? initialPessoaNome : ''}
+              onSelect={(pessoa: PessoasFisica | null) => {
                 if (pessoa) {
                   console.log('Pessoa selecionada no autocomplete:', pessoa);
-                  setValue('pessoaId', pessoa.id?.toString() || '');
+                  setValue(
+                    'pessoaId',
+                    (pessoa.id_pessoa?.toString() || pessoa.id?.toString()) ??
+                      ''
+                  );
                   trigger('pessoaId');
                 } else {
                   setValue('pessoaId', '');
@@ -500,12 +599,30 @@ export function TicketFormBase({
 
           {/* Extras */}
           <DropzoneComponent
-            onFilesChange={(files) => {
+            onFilesChange={(files: File[]) => {
               handleFileChange({ target: { files } } as any);
             }}
+            existingAttachments={existingAttachments}
             resetFiles={resetDropzone}
             onResetComplete={handleDropzoneResetComplete}
           />
+
+          <div>
+            <Label>Descrição do Anexo (opcional)</Label>
+            <Input
+              type="text"
+              placeholder="Ex: Screenshot do erro, Comprovante, etc"
+              value={watch('descricaoAnexo') || ''}
+              onChange={(e) => setValue('descricaoAnexo', e.target.value)}
+              disabled={!arquivoSelecionado}
+            />
+            {arquivoSelecionado && (
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                Arquivo selecionado: {arquivoSelecionado.name} (
+                {(arquivoSelecionado.size / 1024 / 1024).toFixed(2)}MB)
+              </p>
+            )}
+          </div>
 
           <div>
             <Label>Observação (opcional)</Label>

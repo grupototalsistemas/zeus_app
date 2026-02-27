@@ -14,6 +14,7 @@ import Input from '../input/InputField';
 interface EmpresaAutocompleteProps {
   onSelect: (empresa: Empresa | null) => void;
   empresaId?: string;
+  initialDisplayValue?: string;
   disabled?: boolean;
   resetSelection?: boolean; // Nova prop
   onResetComplete?: () => void;
@@ -22,6 +23,7 @@ interface EmpresaAutocompleteProps {
 export default function EmpresaAutocomplete({
   onSelect,
   empresaId,
+  initialDisplayValue = '',
   disabled = false,
   resetSelection = false,
   onResetComplete,
@@ -49,16 +51,52 @@ export default function EmpresaAutocomplete({
   const empresaTipos = useAppSelector(selectTiposFormatados);
   const debouncedSearch = useDebounce(searchTerm, 500);
 
+  // Buscar e setar empresa inicial quando empresaId for fornecido
   useEffect(() => {
     if (empresaId) {
-      const empresa = empresas.find((emp) => emp.id === Number(empresaId));
-      if (empresa) {
-        setSelectedEmpresa(empresa);
-        setSearchTerm(empresa.nome_fantasia);
-        onSelect(empresa);
-      }
+      const fetchEmpresaById = async () => {
+        try {
+          const empresaIdStr = String(empresaId);
+
+          // Primeiro tenta buscar no Redux
+          let empresa = empresas.find(
+            (emp) =>
+              String(emp.id) === empresaIdStr ||
+              String(emp.id_pessoa) === empresaIdStr
+          );
+
+          // Se não encontrar no Redux, busca da API
+          if (!empresa) {
+            const response = await EmpresaService.getEmpresas();
+            empresa = response.find(
+              (emp) =>
+                String(emp.id) === empresaIdStr ||
+                String(emp.id_pessoa) === empresaIdStr
+            );
+          }
+
+          if (empresa) {
+            setSelectedEmpresa(empresa);
+            setSearchTerm(empresa.nome_fantasia || empresa.razao_social || '');
+          } else if (initialDisplayValue) {
+            setSearchTerm(initialDisplayValue);
+          }
+        } catch (error) {
+          console.error('Erro ao buscar empresa por ID:', error);
+          if (initialDisplayValue) {
+            setSearchTerm(initialDisplayValue);
+          }
+        }
+      };
+      fetchEmpresaById();
     }
-  }, [empresaId]);
+  }, [empresaId, initialDisplayValue]);
+
+  useEffect(() => {
+    if (!selectedEmpresa && initialDisplayValue && !searchTerm) {
+      setSearchTerm(initialDisplayValue);
+    }
+  }, [initialDisplayValue, searchTerm, selectedEmpresa]);
 
   // Effect para resetar a seleção quando resetSelection mudar
   useEffect(() => {
@@ -70,7 +108,7 @@ export default function EmpresaAutocomplete({
         onResetComplete();
       }
     }
-  }, [resetSelection, onSelect, onResetComplete]);
+  }, [resetSelection]);
 
   // Buscar empresas quando o termo de pesquisa mudar
   useEffect(() => {
@@ -125,7 +163,11 @@ export default function EmpresaAutocomplete({
   };
 
   const handleCreateEmpresa = async () => {
-    if (!newEmpresa.nome_fantasia || !newEmpresa.razao_social || !newEmpresa.pessoaTipo) {
+    if (
+      !newEmpresa.nome_fantasia ||
+      !newEmpresa.razao_social ||
+      !newEmpresa.pessoaTipo
+    ) {
       setError('Nome, função e serventia são obrigatórios');
       return;
     }
@@ -169,7 +211,9 @@ export default function EmpresaAutocomplete({
       {/* Mostrar info da empresa selecionada */}
       {selectedEmpresa && (
         <div className="mt-2 flex items-center justify-between rounded bg-gray-100 p-2 text-sm dark:bg-gray-700">
-          <span>{selectedEmpresa.nome_fantasia || selectedEmpresa.razao_social}</span>
+          <span>
+            {selectedEmpresa.nome_fantasia || selectedEmpresa.razao_social}
+          </span>
           <button
             type="button"
             onClick={handleClearSelection}

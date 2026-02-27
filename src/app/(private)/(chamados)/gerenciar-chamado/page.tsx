@@ -20,46 +20,50 @@ export default function CreateTicketPage() {
     setSuccess(false);
 
     try {
-      // console.log('Form Data:', data);
-
       // Mapear dados do formulário para o DTO do chamado
       const chamadoData = mapChamados(data);
 
-      // Separar anexos dos dados do chamado
+      // Separar anexos e arquivo individual dos dados do chamado
       const { anexos, ...chamadoSemAnexos } = chamadoData;
 
-      // Criar o chamado com movimento inicial se há anexos
-      const chamadoComMovimento: CreateChamadoDto = {
-        ...chamadoSemAnexos,
-        movimento:
-          anexos && anexos.length > 0
-            ? {
-                etapaId: 1,
-                usuarioId: Number(data.usuarioId),
-                descricaoAcao: 'Chamado criado com anexos',
-                observacaoTec: 'Movimento inicial para upload de anexos',
-              }
-            : undefined,
-      };
+      // Usar o novo endpoint com-attachment se há arquivo
+      if (data.arquivo) {
+        const response = await ChamadoService.createChamadoWithAttachment({
+          ...chamadoSemAnexos,
+          arquivo: data.arquivo,
+          descricaoAnexo: data.descricaoAnexo,
+        });
 
-      // Criar chamado usando o service
-      const response = await ChamadoService.createChamado({
-        ...chamadoComMovimento,
-        anexos,
-      });
+        setSuccess(true);
+        setTimeout(() => {
+          setSuccess(false);
+        }, 3000);
+      } else {
+        // Usar o endpoint antigo se não há arquivo
+        const chamadoComMovimento: CreateChamadoDto = {
+          ...chamadoSemAnexos,
+          movimento:
+            anexos && anexos.length > 0
+              ? {
+                  etapaId: 1,
+                  usuarioId: Number(data.usuarioId),
+                  descricaoAcao: 'Chamado criado com anexos',
+                  observacaoTec: 'Movimento inicial para upload de anexos',
+                }
+              : undefined,
+        };
 
-      // console.log('Chamado criado com sucesso:', response);
-      setSuccess(true);
+        const response = await ChamadoService.createChamado({
+          ...chamadoComMovimento,
+          anexos,
+        });
 
-      //  A limpeza dos campos acontece automaticamente no TicketFormBase
-      // quando onSubmit é resolvido com sucesso
-
-      // Limpar mensagem de sucesso após 3 segundos
-      setTimeout(() => {
-        setSuccess(false);
-      }, 3000);
+        setSuccess(true);
+        setTimeout(() => {
+          setSuccess(false);
+        }, 3000);
+      }
     } catch (error) {
-      //  Em caso de erro, os campos NÃO são limpos
       let errorMessage = 'Erro desconhecido ao criar chamado';
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as any;

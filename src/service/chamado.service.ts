@@ -43,6 +43,62 @@ const createChamado = async (data: CreateChamadoDto & { anexos?: File[] }) => {
   }
 };
 
+const createChamadoWithAttachment = async (
+  data: CreateChamadoDto & {
+    descricaoAnexo?: string;
+    arquivo?: File;
+  }
+) => {
+  try {
+    const { arquivo, descricaoAnexo, ...chamadoData } = data;
+
+    const formData = new FormData();
+
+    // Adicionar dados do chamado
+    formData.append(
+      'id_pessoa_juridica',
+      chamadoData.id_pessoa_juridica?.toString() || ''
+    );
+    formData.append('id_sistema', chamadoData.id_sistema?.toString() || '');
+    formData.append(
+      'id_pessoa_empresa',
+      chamadoData.id_pessoa_empresa?.toString() || ''
+    );
+    formData.append(
+      'id_pessoa_usuario',
+      chamadoData.id_pessoa_usuario?.toString() || ''
+    );
+    formData.append(
+      'id_ocorrencia',
+      chamadoData.id_ocorrencia?.toString() || ''
+    );
+    formData.append(
+      'id_prioridade',
+      chamadoData.id_prioridade?.toString() || ''
+    );
+    formData.append('titulo', chamadoData.titulo || '');
+    formData.append('descricao', chamadoData.descricao || '');
+    formData.append('observacao', chamadoData.observacao || '');
+
+    // Adicionar arquivo se fornecido
+    if (arquivo) {
+      formData.append('arquivo', arquivo);
+      formData.append('descricaoAnexo', descricaoAnexo || '');
+    }
+
+    const response = await api.post('/chamados/with-attachment', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao criar chamado com anexo:', error);
+    throw error;
+  }
+};
+
 const uploadAnexos = async (
   movimentoId: number,
   arquivos: File[],
@@ -105,8 +161,10 @@ const updateChamado = async (id: number, data: any) => {
   return response.data;
 };
 
-const deleteChamado = async (id: number) => {
-  const response = await api.delete(`/chamados/${id}`);
+const deleteChamado = async (id: number, motivo: string) => {
+  const response = await api.delete(`/chamados/${id}`, {
+    data: { motivo },
+  });
   return response.data;
 };
 
@@ -134,6 +192,7 @@ const getChamadosByResponsavel = async (
 const getChamadosByUsuario = async (
   idPessoaUsuario: string
 ): Promise<Chamado[]> => {
+  console.log('Buscando chamados para id_pessoa_usuario:', idPessoaUsuario);
   const response = await api.get('/chamados', {
     params: {
       id_pessoa_usuario: idPessoaUsuario,
@@ -156,6 +215,7 @@ export const ChamadoService = {
   getChamados,
   getChamado,
   createChamado,
+  createChamadoWithAttachment,
   uploadAnexos,
   downloadAnexo,
   updateChamado,

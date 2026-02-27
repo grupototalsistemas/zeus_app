@@ -74,13 +74,6 @@ const CustomSelect: React.FC<SelectProps> = ({
     setIsOpen(false);
   };
 
-  //caso seja desabilitado novamente limpa o select
-  useEffect(() => {
-    if (disabled) {
-      setSelectedValue(''); // Limpa o select
-    }
-  }, [disabled]);
-
   const selectedOption = options.find((opt) => opt.value === selectedValue);
 
   return (

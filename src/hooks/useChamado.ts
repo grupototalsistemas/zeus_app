@@ -58,8 +58,8 @@ export const useChamado = () => {
   );
 
   const remove = useCallback(
-    (id: number) => {
-      return dispatch(deleteChamado(id));
+    (id: number, motivo: string) => {
+      return dispatch(deleteChamado({ id, motivo }));
     },
     [dispatch]
   );

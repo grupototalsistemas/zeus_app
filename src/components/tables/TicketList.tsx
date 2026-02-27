@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import ChamadoModal from '../modal/ChamadoModal';
+import DeleteChamadoModal from '../modal/DeleteChamadoModal';
 import Badge from '../ui/badge/Badge';
 import { Dropdown } from '../ui/dropdown/Dropdown';
 import { DropdownItem } from '../ui/dropdown/DropdownItem';
@@ -49,6 +50,8 @@ export default function TicketList() {
   const itemsPerPage = 10;
   const [selectedChamado, setSelectedChamado] = useState<Chamado | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [chamadoToDelete, setChamadoToDelete] = useState<Chamado | null>(null);
 
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const triggerRefs = useRef<{
@@ -90,19 +93,16 @@ export default function TicketList() {
     getAllByUsuarioLogado();
   }, [getAllByUsuarioLogado]);
 
-  const handleDelete = async (chamado: Chamado) => {
-    // Confirmação antes de excluir
-    const confirmDelete = window.confirm(
-      `Tem certeza que deseja excluir o chamado: "${chamado.titulo}"?\n\nEsta ação não pode ser desfeita.`
-    );
+  const handleDelete = (chamado: Chamado) => {
+    setChamadoToDelete(chamado);
+    setIsDeleteModalOpen(true);
+  };
 
-    if (!confirmDelete) {
-      return; // Usuário cancelou a exclusão
-    }
+  const handleConfirmDelete = async (motivo: string) => {
+    if (!chamadoToDelete?.id) return;
 
     try {
-      // await ChamadoService.deleteChamado(chamado.id!);
-      remove(chamado.id!);
+      await remove(chamadoToDelete.id, motivo);
       // Fecha o dropdown se estiver aberto
       setOpenDropdownId(null);
       // Recarrega a tabela
@@ -117,7 +117,7 @@ export default function TicketList() {
       console.log('Chamado excluído com sucesso');
     } catch (error) {
       console.error('Erro ao excluir chamado:', error);
-      alert('Erro ao excluir o chamado. Tente novamente.');
+      throw new Error('Erro ao excluir o chamado. Tente novamente.');
     }
   };
 
@@ -165,7 +165,7 @@ export default function TicketList() {
           {/* Table Body */}
           <TableBody className="divide-y divide-gray-100 dark:divide-gray-800">
             {chamados.length > 0 &&
-              chamados.map((chamado) => (
+              chamados.map((chamado: Chamado) => (
                 <TableRow
                   key={chamado.id}
                   className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50"
@@ -253,7 +253,7 @@ export default function TicketList() {
                         <DropdownItem
                           tag="a"
                           onClick={() =>
-                            router.push(`/editar-chamado/${chamado.id}`)
+                            router.push(`/gerenciar-chamado/${chamado.id}`)
                           }
                           className="flex w-full rounded-lg text-left font-normal text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
                         >
@@ -301,6 +301,15 @@ export default function TicketList() {
           />
         </>
       )}
+      <DeleteChamadoModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setChamadoToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        chamado={chamadoToDelete}
+      />
     </div>
   );
 }

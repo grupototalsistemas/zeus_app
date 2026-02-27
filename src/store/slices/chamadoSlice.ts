@@ -66,8 +66,8 @@ export const updateChamado = createAsyncThunk(
 
 export const deleteChamado = createAsyncThunk(
   'chamado/delete',
-  async (id: number) => {
-    await ChamadoService.deleteChamado(id);
+  async ({ id, motivo }: { id: number; motivo: string }) => {
+    await ChamadoService.deleteChamado(id, motivo);
     return id;
   }
 );
