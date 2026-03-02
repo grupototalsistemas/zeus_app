@@ -5,7 +5,6 @@ import { usePrioridade } from '@/hooks/usePrioridade';
 import { useSistema } from '@/hooks/useSistema';
 import { RootState } from '@/store/rootReducer';
 import { Chamado } from '@/types/chamado.type';
-import { StatusRegistro } from '@/types/enum';
 import { formatarData } from '@/utils/fomata-data';
 import { useSelector } from 'react-redux';
 
@@ -46,26 +45,26 @@ export const ChamadoModalInformacoes: React.FC<
           <p className="mb-1 text-sm font-medium text-gray-500 dark:text-gray-400">
             Status
           </p>
-          <Badge
-            size="md"
-            color={
-              chamado.ativo === StatusRegistro.ATIVO
-                ? 'success'
-                : chamado.ativo === StatusRegistro.INATIVO
-                  ? 'warning'
-                  : 'error'
-            }
-          >
+          <span className="text-black dark:text-white">
             {ultimoMovimento(chamado)?.etapa?.descricao || 'N/A'}
-          </Badge>
+          </span>
         </div>
         <div>
           <p className="mb-1 text-sm font-medium text-gray-500 dark:text-gray-400">
             Prioridade
           </p>
-          <span className="inline-flex rounded-full bg-orange-100 px-3 py-1 text-sm font-medium text-orange-800 dark:bg-orange-900/20 dark:text-orange-400">
-            {selectPrioridadeById(String(chamado.prioridadeId))?.descricao ||
-              'N/A'}
+
+          <span className="inline-flex rounded-full px-3 py-1 text-sm font-medium">
+            <Badge
+              size="sm"
+              color={
+                selectPrioridadeById(String(chamado.id_prioridade))?.cor ||
+                'primary'
+              }
+            >
+              {selectPrioridadeById(String(chamado.id_prioridade))?.descricao ||
+                'N/A'}
+            </Badge>
           </span>
         </div>
       </div>
@@ -96,9 +95,7 @@ export const ChamadoModalInformacoes: React.FC<
             Responsável
           </p>
           <p className="text-gray-900 dark:text-white">
-            {selectPessoaById(ultimoMovimento(chamado)?.usuarioId || 0)
-              ?.nomeSocial ||
-              selectPessoaById(ultimoMovimento(chamado)?.usuarioId || 0)?.nome}
+            {chamado.usuario?.nome_login || 'N/A'}
           </p>
         </div>
         <div>
@@ -116,8 +113,8 @@ export const ChamadoModalInformacoes: React.FC<
             <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
               Sistema
             </p>
-            <p className="text-gray-900 dark:text-white">
-              {findById(chamado.sistemaId)?.descricao}
+            <p className="text-black dark:text-white">
+              {chamado.sistema.sistema}
             </p>
           </div>
           <div>
@@ -125,7 +122,7 @@ export const ChamadoModalInformacoes: React.FC<
               Empresa
             </p>
             <p className="text-gray-900 dark:text-white">
-              {selectEmpresasById(chamado.empresaId)?.nomeFantasia}
+              {chamado.empresa.nome_fantasia || chamado.empresa.razao_social}
             </p>
           </div>
         </div>
@@ -136,9 +133,11 @@ export const ChamadoModalInformacoes: React.FC<
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
             Requerente
           </p>
-          <p className="text-gray-900 dark:text-white">
-            {selectPessoaById(chamado.pessoaId)?.nomeSocial ||
-              selectPessoaById(chamado.pessoaId)?.nome ||
+          <p className="pb-4 text-gray-900 dark:text-white">
+            {selectPessoaById(chamado.id_pessoa_empresa)?.pessoaFisica
+              ?.nome_social ||
+              selectPessoaById(chamado.id_pessoa_empresa)?.pessoaFisica
+                ?.nome_registro ||
               'N/A'}
           </p>
         </div>

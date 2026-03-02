@@ -3,7 +3,7 @@ import { ChamadoMovimento } from './chamadoMovimento.type';
 import { PessoasJuridicas } from './empresa.type';
 import { StatusRegistro } from './enum';
 import { PessoasFisica } from './pessoasFisica.type';
-import { PessoaUsuario } from './pessoaUsuario.type';
+import { PessoasUsuarios } from './pessoaUsuario.type';
 import { Sistemas } from './sistemas.type';
 
 export interface Chamado extends BaseEntity {
@@ -19,7 +19,7 @@ export interface Chamado extends BaseEntity {
   observacao: string;
   movimentos?: ChamadoMovimento[];
   pessoaFisica: PessoasFisica;
-  usuario?: PessoaUsuario;
+  usuario?: PessoasUsuarios;
   sistema: Sistemas;
   empresa: PessoasJuridicas;
 }

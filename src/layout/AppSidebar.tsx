@@ -65,17 +65,6 @@ const navItems: NavItem[] = [
     subItems: [
       { name: 'Gerenciar Funcionarios', path: '/gerenciar-pessoa', pro: false },
       { name: 'Listar Funcionarios', path: '/listar-pessoa', pro: false },
-      // { name: 'Gerenciar Usuarios', path: '/gerenciar-usuarios', pro: false },
-      // {
-      //   name: 'Gerenciar Perfis',
-      //   path: '/gerenciar-perfis',
-      //   pro: false,
-      // },
-      // {
-      //   name: 'Gerenciar Funções de Pessoas',
-      //   path: '/gerenciar-tipo',
-      //   pro: false,
-      // },
     ],
   },
   {
@@ -86,16 +75,6 @@ const navItems: NavItem[] = [
       { name: 'Listar empresas', path: '/listar-empresas', pro: false },
 
       { name: 'Listar Sistemas', path: '/gerenciar-sistema', pro: false },
-      {
-        name: 'Listar Tipos',
-        path: '/gerenciar-tipo-empresa',
-        pro: false,
-      },
-      {
-        name: 'Listar Origens',
-        path: '/gerenciar-categoria',
-        pro: false,
-      },
     ],
   },
 

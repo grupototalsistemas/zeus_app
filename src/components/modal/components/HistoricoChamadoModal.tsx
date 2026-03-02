@@ -1,9 +1,9 @@
 'use client';
 
-import { usePessoa } from '@/hooks/usePessoa';
+import { usePessoaUsuario } from '@/hooks/usePessoaUsuario';
 import { Chamado } from '@/types/chamado.type';
 import { formatarData } from '@/utils/fomata-data';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Collapse } from '../CollapseModal';
 
 interface ChamadoModalHistoricoProps {
@@ -14,7 +14,16 @@ export const ChamadoModalHistorico: React.FC<ChamadoModalHistoricoProps> = ({
   chamado,
 }) => {
   const movimentos = chamado.movimentos || [];
-  const { selectPessoaById } = usePessoa();
+  const { getById, selectUsuarioById } = usePessoaUsuario();
+
+  useEffect(() => {
+    // Carregar os dados dos usuários envolvidos nos movimentos
+    movimentos.forEach((mov) => {
+      if (mov.id_pessoa_usuario) {
+        getById(mov.id_pessoa_usuario);
+      }
+    });
+  }, [movimentos, getById]);
 
   return (
     <Collapse title="Histórico" count={movimentos.length}>
@@ -39,7 +48,9 @@ export const ChamadoModalHistorico: React.FC<ChamadoModalHistoricoProps> = ({
                   </span>
                 </div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  por {selectPessoaById(item.usuarioId)?.nome}
+                  por{' '}
+                  {selectUsuarioById(item.id_pessoa_usuario)?.nome_login ||
+                    'N/A'}
                 </p>
                 {item.motivo && (
                   <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">

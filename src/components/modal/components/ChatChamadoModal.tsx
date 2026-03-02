@@ -9,7 +9,7 @@ import { Chamado } from '@/types/chamado.type';
 import { ChamadoMovimentoMensagem } from '@/types/chamadoMovimentoMensagem.type';
 import { StatusRegistro } from '@/types/enum';
 import { formatarData } from '@/utils/fomata-data';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Collapse } from '../CollapseModal';
 
@@ -40,10 +40,10 @@ export const ChamadoModalMensagens: React.FC<ChamadoModalMensagensProps> = ({
     if (novaMensagem.trim() === '') return;
 
     const mensagem: ChamadoMovimentoMensagem = {
-      ativo: StatusRegistro.ATIVO,
-      movimentoId: ultimoMovimento(chamado)?.id || 0,
-      usuarioEnvioId: Number(pessoaInfo?.id) || 0,
-      usuarioLeituraId: chamado.usuarioId || 0,
+      situacao: StatusRegistro.ATIVO,
+      id_chamado_movimento: ultimoMovimento(chamado)?.id || 0,
+      id_pessoa_usuario_envio: Number(pessoaInfo?.id_pessoa_usuario) || 0,
+      id_pessoa_usuario_leitura: chamado.usuario?.id || 0,
       descricao: novaMensagem,
     };
 
@@ -63,6 +63,10 @@ export const ChamadoModalMensagens: React.FC<ChamadoModalMensagensProps> = ({
     }
   };
 
+  useEffect(() => {
+    // Lógica para marcar mensagens como lidas pode ser implementada aqui
+  }, [chamado]);
+
   return (
     <Collapse title="Mensagens" count={mensagens.length} defaultOpen={true}>
       <div className="scrollbar-stable h-6/9 space-y-4 px-6 pt-6">
@@ -73,7 +77,8 @@ export const ChamadoModalMensagens: React.FC<ChamadoModalMensagensProps> = ({
           >
             <div className="mb-2 flex items-center justify-between">
               <span className="font-medium text-gray-900 dark:text-white">
-                {mensagem?.usuarioEnvioId}
+                {JSON.stringify(mensagem)}
+                {/* {mensagem?.id_pessoa_usuario_leitura} */}
               </span>
               <span className="text-xs text-gray-500 dark:text-gray-400">
                 {formatarData(mensagem?.createdAt || '', 'data')} às{' '}
