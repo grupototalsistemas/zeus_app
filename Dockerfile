@@ -17,7 +17,7 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 # =========================
-# Builder (CRÍTICO)
+# Builder
 # =========================
 FROM base AS builder
 
@@ -29,11 +29,10 @@ ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# 👉 Aqui o Next lê a env e embute no JS
 RUN npm run build
 
 # =========================
-# Runner (produção)
+# Runner
 # =========================
 FROM node:20.18.1-alpine AS runner
 
@@ -47,17 +46,15 @@ ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 ENV TZ=America/Sao_Paulo
 
-# Usuário não-root
 RUN addgroup -S nodejs -g 1001 \
   && adduser -S nextjs -u 1001
 
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/.next/standalone ./
 
 USER nextjs
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["node", "server.js"]
