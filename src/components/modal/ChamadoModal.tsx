@@ -1,7 +1,7 @@
 'use client';
 
 import { useChamado } from '@/hooks/useChamado';
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal } from '../ui/modal';
 import { ChamadoModalAnexos } from './components/AnexoChamadoModal';
 import { ChamadoModalMensagens } from './components/ChatChamadoModal';
@@ -21,26 +21,40 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
   onClose,
   chamadoId,
 }) => {
-  const { chamados, getAll, update } = useChamado();
+  const { chamados, update, optimisticUpdate } = useChamado();
   const chamado = chamados.find((c) => c.id === chamadoId);
+  const [updateError, setUpdateError] = useState<string | null>(null);
 
   if (!chamado) return null;
 
-  const handleAtualizarChamadoRapido = async (partePraAtualizar: any) => {
+  const handleAtualizarChamadoRapido = async (
+    partePraAtualizar: any,
+    payloadApi?: any
+  ) => {
+    const previous = {
+      ...chamado,
+      movimentos: chamado.movimentos ? [...chamado.movimentos] : [],
+    };
+    const merged = { ...chamado, ...partePraAtualizar };
+
+    optimisticUpdate(merged);
+    setUpdateError(null);
+
     try {
       if (chamado.id) {
-        await update(chamado.id, {
-          ...partePraAtualizar,
-        });
-        getAll();
+        await update(chamado.id, payloadApi ?? partePraAtualizar);
       }
     } catch (error) {
       console.error('Erro ao atualizar chamado:', error);
+      optimisticUpdate(previous);
+      setUpdateError(
+        'Erro ao atualizar chamado. As alterações foram revertidas.'
+      );
     }
   };
 
   const handleRefresh = () => {
-    getAll();
+    // no longer needed after optimistic updates; keep for manual refresh use-cases
   };
 
   return (
@@ -71,6 +85,8 @@ const ChamadoModal: React.FC<ChamadoModalProps> = ({
         chamado={chamado}
         onClose={onClose}
         onUpdateChamado={handleAtualizarChamadoRapido}
+        updateError={updateError}
+        onClearError={() => setUpdateError(null)}
       />
     </Modal>
   );

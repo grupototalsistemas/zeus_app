@@ -7,22 +7,28 @@ import { Chamado } from '@/types/chamado.type';
 
 import Label from '@/components/form/Label';
 import Select from '@/components/form/Select';
+import { usePessoaUsuario } from '@/hooks/usePessoaUsuario';
 import React, { useEffect, useState } from 'react';
 
 interface ChamadoModalFooterProps {
   chamado: Chamado;
   onClose: () => void;
-  onUpdateChamado: (update: any) => void;
+  onUpdateChamado: (update: any, apiPayload?: any) => void;
+  updateError?: string | null;
+  onClearError?: () => void;
 }
 
 export const ChamadoModalFooter: React.FC<ChamadoModalFooterProps> = ({
   chamado,
   onClose,
   onUpdateChamado,
+  updateError,
+  onClearError,
 }) => {
   const { prioridadesFormatadas } = usePrioridade();
   const { pessoasFormatadas } = usePessoa();
-  const { etapasFormatadas } = useEtapaMovimento();
+  usePessoaUsuario();
+  const { etapasFormatadas, fetchEtapas } = useEtapaMovimento();
 
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -39,17 +45,63 @@ export const ChamadoModalFooter: React.FC<ChamadoModalFooterProps> = ({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  useEffect(() => {
+    if (etapasFormatadas.length === 0) {
+      fetchEtapas();
+    }
+  }, [etapasFormatadas.length, fetchEtapas]);
+
   const handleUpdateStatus = (value: string) => {
-    const aux_chamado = { ...chamado };
-    const mov = aux_chamado.movimentos || [];
+    const mov = chamado.movimentos || [];
+
     if (mov.length > 0) {
-      mov[mov.length - 1].etapaId = Number(value);
-      onUpdateChamado({ movimentos: mov });
+      const ultimoMovimento = mov[mov.length - 1];
+      const updatedMovimentos = mov.map((item, index) =>
+        index === mov.length - 1
+          ? {
+              ...item,
+              id_chamado_movimento_etapa: Number(value),
+            }
+          : item
+      );
+
+      onUpdateChamado(
+        { movimentos: updatedMovimentos },
+        {
+          movimento: {
+            etapaId: Number(value),
+            usuarioId: ultimoMovimento.id_pessoa_usuario,
+            descricaoAcao:
+              ultimoMovimento.descricaoAcao || 'Alteracao de etapa do chamado',
+            observacaoTec: ultimoMovimento.observacaoTecnica || '',
+          },
+        }
+      );
     }
   };
 
+  const currentEtapaValue = (() => {
+    const movs = chamado.movimentos;
+    if (movs && movs.length > 0) {
+      return movs[movs.length - 1].id_chamado_movimento_etapa?.toString() ?? '';
+    }
+    return '';
+  })();
+
   const FooterContent = () => (
     <>
+      {updateError && (
+        <div className="mb-2 flex w-full items-center justify-between rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-700 dark:bg-red-900/30 dark:text-red-400">
+          <span>{updateError}</span>
+          <button
+            onClick={onClearError}
+            className="ml-2 text-red-500 hover:text-red-700 dark:text-red-400"
+            aria-label="Fechar alerta"
+          >
+            ✕
+          </button>
+        </div>
+      )}
       <div className="flex w-full flex-col space-y-3 md:flex-row md:space-y-0 md:space-x-3">
         <Label className="flex items-center justify-center text-sm font-medium text-gray-700 dark:text-gray-300">
           Opções Rápidas:
@@ -57,18 +109,23 @@ export const ChamadoModalFooter: React.FC<ChamadoModalFooterProps> = ({
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 md:flex md:space-x-3">
           <Select
             onChange={(value) =>
-              onUpdateChamado({ prioridadeId: Number(value) })
+              onUpdateChamado({ id_prioridade: Number(value) })
             }
+            value={chamado.id_prioridade?.toString() ?? ''}
             options={prioridadesFormatadas}
             placeholder="Alterar Prioridade"
           />
           <Select
-            onChange={(value) => onUpdateChamado({ usuarioId: Number(value) })}
+            onChange={(value) =>
+              onUpdateChamado({ id_pessoa_usuario: Number(value) })
+            }
+            value={chamado.id_pessoa_usuario?.toString() ?? ''}
             options={pessoasFormatadas}
             placeholder="Alterar Responsável"
           />
           <Select
             onChange={handleUpdateStatus}
+            value={currentEtapaValue}
             options={etapasFormatadas}
             placeholder="Alterar Status"
           />
@@ -76,7 +133,7 @@ export const ChamadoModalFooter: React.FC<ChamadoModalFooterProps> = ({
       </div>
       <div className="flex w-full flex-col gap-3 pt-3 md:flex-row-reverse md:pt-0">
         <button
-          onClick={() => setIsBottomSheetOpen(false)}
+          onClick={onClose}
           className="w-full rounded-lg bg-gray-100 px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 focus:ring-2 focus:ring-gray-300 focus:outline-none md:w-auto md:py-2 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:focus:ring-gray-500"
         >
           Fechar

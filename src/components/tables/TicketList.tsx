@@ -181,11 +181,11 @@ export default function TicketList() {
                   </TableCell>
                   {/* Sistema */}
                   <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
-                    {chamado.sistema.sistema}
+                    {chamado.sistema?.sistema || 'N/A'}
                   </TableCell>
                   {/* Empresa */}
                   <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
-                    {chamado.empresa.nome_fantasia ||
+                    {chamado.empresa?.nome_fantasia ||
                       selectEmpresasById(chamado.id_empresa)?.nome_fantasia ||
                       'N/A'}
                   </TableCell>
@@ -229,8 +229,9 @@ export default function TicketList() {
                   </TableCell>
                   {/* Responsavel */}
                   <TableCell className="text-theme-sm px-2 py-3 text-gray-500 dark:text-gray-400">
-                    {chamado.pessoaFisica.nome_social ||
-                      chamado.pessoaFisica.nome_registro}
+                    {chamado.pessoaFisica?.nome_social ||
+                      chamado.pessoaFisica?.nome_registro ||
+                      'N/A'}
                   </TableCell>
                   {/* Ações */}
                   <TableCell

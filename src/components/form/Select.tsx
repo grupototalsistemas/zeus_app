@@ -74,7 +74,9 @@ const CustomSelect: React.FC<SelectProps> = ({
     setIsOpen(false);
   };
 
-  const selectedOption = options.find((opt) => opt.value === selectedValue);
+  const selectedOption = options.find(
+    (opt) => opt.value.toString() === selectedValue
+  );
 
   return (
     <div className={`relative w-full ${className}`} ref={ref}>
@@ -123,7 +125,7 @@ const CustomSelect: React.FC<SelectProps> = ({
               key={option.value}
               onClick={() => handleSelect(option.value.toString())}
               className={`cursor-pointer px-4 py-2 text-sm hover:bg-blue-100 dark:text-white dark:hover:bg-gray-700 ${
-                option.value === selectedValue
+                option.value.toString() === selectedValue
                   ? 'bg-blue-50 font-medium dark:bg-gray-700'
                   : ''
               }`}

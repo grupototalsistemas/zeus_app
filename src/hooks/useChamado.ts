@@ -6,6 +6,7 @@ import {
   fetchChamadoById,
   fetchChamados,
   fetchChamadosByUsuario,
+  optimisticUpdateChamado,
   selectChamadoError,
   selectChamadoLoading,
   selectChamados,
@@ -51,7 +52,7 @@ export const useChamado = () => {
   );
 
   const update = useCallback(
-    (id: number, data: Chamado) => {
+    (id: number, data: Partial<Chamado>) => {
       return dispatch(updateChamado({ id, data }));
     },
     [dispatch]
@@ -72,6 +73,13 @@ export const useChamado = () => {
     return dispatch(clearError());
   }, [dispatch]);
 
+  const optimisticUpdate = useCallback(
+    (chamado: Chamado) => {
+      dispatch(optimisticUpdateChamado(chamado));
+    },
+    [dispatch]
+  );
+
   return {
     // State
     chamados,
@@ -88,5 +96,6 @@ export const useChamado = () => {
     remove,
     clearCurrent,
     resetError,
+    optimisticUpdate,
   };
 };

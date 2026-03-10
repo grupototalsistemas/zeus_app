@@ -59,7 +59,7 @@ export const createChamado = createAsyncThunk(
 
 export const updateChamado = createAsyncThunk(
   'chamado/update',
-  async ({ id, data }: { id: number; data: Chamado }) => {
+  async ({ id, data }: { id: number; data: Partial<Chamado> }) => {
     return await ChamadoService.updateChamado(id, data);
   }
 );
@@ -81,6 +81,12 @@ const chamadoSlice = createSlice({
     },
     clearError: (state) => {
       state.error = null;
+    },
+    optimisticUpdateChamado: (state, action) => {
+      const index = state.chamados.findIndex((c) => c.id === action.payload.id);
+      if (index !== -1) {
+        state.chamados[index] = action.payload;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -200,7 +206,8 @@ const chamadoSlice = createSlice({
   },
 });
 
-export const { clearCurrentChamado, clearError } = chamadoSlice.actions;
+export const { clearCurrentChamado, clearError, optimisticUpdateChamado } =
+  chamadoSlice.actions;
 
 // Selectors
 export const selectChamados = (state: RootState) => state.chamado.chamados;
