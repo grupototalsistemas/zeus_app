@@ -6,20 +6,16 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  /* config options here */
   experimental: {
     optimizePackageImports: ['@next/font'],
   },
-  eslint: {
-    ignoreDuringBuilds: true, // <-- ignora erros do ESLint durante o build
-  },
-  // Configuração removida: optimizeFonts foi removido do Next.js 13+
-  webpack(config) {
-    config.module.rules.push({
-      test: /\.svg$/,
-      use: ['@svgr/webpack'],
-    });
-    return config;
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
+      },
+    },
   },
   allowedDevOrigins: [
     '189.126.111.30', // IP público da VPS

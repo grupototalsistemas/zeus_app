@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Alert from './components/ui/alert/Alert';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // console.log('=== MIDDLEWARE DEBUG ===');
   // console.log('URL:', request.nextUrl.pathname);
   // console.log('Cookies raw:', request.headers.get('cookie'));
